@@ -1,5 +1,5 @@
-#include "lib/stack.h"
-#include "lib/model.h"
+#include "stack.h"
+#include "model.h"
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>

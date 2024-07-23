@@ -4,7 +4,7 @@ CFLAGS = -Wall -Wextra -g
 
 # Directories
 SRC_DIR = src
-LIB_DIR = src/lib
+LIB_DIR = libs
 BUILD_DIR = build
 BIN_DIR = bin
 

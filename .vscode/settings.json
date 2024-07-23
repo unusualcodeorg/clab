@@ -1,0 +1,12 @@
+{
+	"files.associations": {
+		"*.html": "html",
+		"*.js": "javascriptreact",
+		"*.md": "markdown",
+		"stdio.h": "c",
+		"stack.h": "c",
+		"stdlib.h": "c",
+		"stdbool.h": "c",
+		"string.h": "c"
+	}
+}

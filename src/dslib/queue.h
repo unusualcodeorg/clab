@@ -2,8 +2,8 @@
 #include <pthread.h>
 #include <stdbool.h>
 
-#ifndef QUEUE_H
-#define QUEUE_H
+#ifndef DS_LIB_QUEUE_H
+#define DS_LIB_QUEUE_H
 
 #ifdef __cplusplus
 extern "C"
@@ -38,4 +38,4 @@ extern "C"
 }
 #endif
 
-#endif // QUEUE_H
+#endif // DS_LIB_QUEUE_H

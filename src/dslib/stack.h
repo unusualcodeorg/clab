@@ -2,8 +2,8 @@
 #include <pthread.h>
 #include <stdbool.h>
 
-#ifndef STACK_H
-#define STACK_H
+#ifndef DS_LIB_STACK_H
+#define DS_LIB_STACK_H
 
 #ifdef __cplusplus
 extern "C"
@@ -37,4 +37,4 @@ extern "C"
 }
 #endif
 
-#endif // STACK_H
+#endif // DS_LIB_STACK_H

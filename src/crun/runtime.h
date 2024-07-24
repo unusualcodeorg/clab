@@ -2,8 +2,8 @@
 #include <pthread.h>
 #include <stdbool.h>
 
-#ifndef RUNTIME_H
-#define RUNTIME_H
+#ifndef CRUN_RUNTIME_H
+#define CRUN_RUNTIME_H
 
 #ifdef __cplusplus
 extern "C"
@@ -35,4 +35,4 @@ extern "C"
 }
 #endif
 
-#endif // RUNTIME_H
+#endif // CRUN_RUNTIME_H

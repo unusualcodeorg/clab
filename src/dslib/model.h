@@ -1,6 +1,6 @@
 #include <stdbool.h>
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef DS_LIB_MODEL_H
+#define DS_LIB_MODEL_H
 
 #ifdef __cplusplus
 extern "C"
@@ -21,4 +21,4 @@ extern "C"
 }
 #endif
 
-#endif // MODEL_H
+#endif // DS_LIB_MODEL_H

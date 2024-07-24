@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-Stack *stack_create(void)
+Stack *stack_create(bool autofree)
 {
 	Stack *stack = malloc(sizeof(Stack));
 	if (stack == NULL)
@@ -13,6 +13,7 @@ Stack *stack_create(void)
 	}
 	stack->top = NULL;
 	stack->size = 0;
+	stack->autofree = autofree;
 	pthread_rwlock_init(&stack->rwlock, NULL);
 	return stack;
 }
@@ -28,18 +29,23 @@ void stack_push(Stack *stack, void *data)
 	pthread_rwlock_unlock(&stack->rwlock);
 }
 
-void stack_pop(Stack *stack)
+void *stack_pop(Stack *stack)
 {
 	pthread_rwlock_wrlock(&stack->rwlock);
+	void *data = NULL;
 	if (stack->top != NULL)
 	{
 		StackNode *node = stack->top;
 		stack->top = stack->top->next;
 		stack->size--;
-		free(node->data);
+		if (stack->autofree)
+			free(node->data);
+		else
+			data = node->data;
 		free(node);
 	}
 	pthread_rwlock_unlock(&stack->rwlock);
+	return data;
 }
 
 void *stack_peek(Stack *stack)

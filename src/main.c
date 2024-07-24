@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "dsa/demo.h"
+#include "crun/demo.h"
 
 int main(void)
 {
-	queue_concurrent_demo();
+	crun_demo();
 	return EXIT_SUCCESS;
 }

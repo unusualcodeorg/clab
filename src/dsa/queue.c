@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
+#include <stdbool.h>
 
-Queue *queue_create(void)
+Queue *queue_create(bool autofree)
 {
 	Queue *queue = malloc(sizeof(Queue));
 	if (queue == NULL)
@@ -14,6 +15,7 @@ Queue *queue_create(void)
 	queue->start = NULL;
 	queue->end = NULL;
 	queue->size = 0;
+	queue->autofree = autofree;
 	pthread_rwlock_init(&queue->rwlock, NULL);
 	return queue;
 }
@@ -23,6 +25,7 @@ void queue_enqueue(Queue *queue, void *data)
 	pthread_rwlock_wrlock(&queue->rwlock);
 	QueueNode *node = malloc(sizeof(QueueNode));
 	node->data = data;
+	node->next = NULL;
 
 	if (queue->start == NULL)
 	{
@@ -43,18 +46,23 @@ void queue_enqueue(Queue *queue, void *data)
 	pthread_rwlock_unlock(&queue->rwlock);
 }
 
-void queue_dequeue(Queue *queue)
+void *queue_dequeue(Queue *queue)
 {
 	pthread_rwlock_wrlock(&queue->rwlock);
+	void *data = NULL;
 	if (queue->start != NULL)
 	{
 		QueueNode *node = queue->start;
 		queue->start = node->next;
 		queue->size--;
-		free(node->data);
+		if (queue->autofree)
+			free(node->data);
+		else
+			data = node->data;
 		free(node);
 	}
 	pthread_rwlock_unlock(&queue->rwlock);
+	return data;
 }
 
 void *queue_peek(Queue *queue)

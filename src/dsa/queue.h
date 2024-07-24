@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <pthread.h>
+#include <stdbool.h>
 
 #ifndef QUEUE_H
 #define QUEUE_H
@@ -22,12 +23,13 @@ extern "C"
 		QueueNode *start;
 		QueueNode *end;
 		uint32_t size;
+		bool autofree;
 		pthread_rwlock_t rwlock;
 	} Queue;
 
-	Queue *queue_create(void);
+	Queue *queue_create(bool autofree);
 	void queue_enqueue(Queue *queue, void *data);
-	void queue_dequeue(Queue *queue);
+	void *queue_dequeue(Queue *queue);
 	void *queue_peek(Queue *queue);
 	void queue_print(Queue *queue, fn_to_string to_string);
 	void queue_destroy(Queue *queue);

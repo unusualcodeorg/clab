@@ -1,6 +1,7 @@
 #include "print.h"
 #include <stdio.h>
-#include <unistd.h> // For usleep function
+#include <unistd.h>
+#include <pthread.h>
 
 void clear_console(void)
 {

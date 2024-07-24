@@ -12,7 +12,7 @@
 /*--------------------STACK DEMO------------------------ */
 int stack_demo(void)
 {
-	Stack *stack = stack_create();
+	Stack *stack = stack_create(true);
 
 	stack_push(stack, new_customer("Janishar Ali 1", 100, true));
 	stack_push(stack, new_customer("Janishar Ali 2", 10, true));
@@ -88,7 +88,7 @@ int stack_concurrent_demo(void)
 	printf("Thread ID: Create: %lu\n", tid);
 
 	pthread_t thread1, thread2;
-	Stack *stack = stack_create();
+	Stack *stack = stack_create(true);
 
 	pthread_create(&thread1, NULL, s_thread_1_push_function, stack);
 	pthread_create(&thread2, NULL, s_thread_2_push_function, stack);
@@ -114,7 +114,7 @@ int stack_concurrent_demo(void)
 
 int queue_demo(void)
 {
-	Queue *queue = queue_create();
+	Queue *queue = queue_create(true);
 
 	queue_enqueue(queue, new_customer("Janishar Ali 1", 100, true));
 	queue_enqueue(queue, new_customer("Janishar Ali 2", 10, true));
@@ -190,7 +190,7 @@ int queue_concurrent_demo(void)
 	printf("Thread ID: Create: %lu\n", tid);
 
 	pthread_t thread1, thread2;
-	Queue *queue = queue_create();
+	Queue *queue = queue_create(true);
 
 	pthread_create(&thread1, NULL, q_thread_1_push_function, queue);
 	pthread_create(&thread2, NULL, q_thread_2_push_function, queue);

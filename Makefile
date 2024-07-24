@@ -35,8 +35,8 @@ debug: $(TARGET)
 	lldb -o 'run' $(TARGET)
 
 # Run the program
-run: $(TARGET)
-	./$(TARGET)
+run:
+	./$(BIN_DIR)/main
 
 # Phony targets
 .PHONY: all clean

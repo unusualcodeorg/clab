@@ -103,15 +103,10 @@ void crun_exec(Runtime *runtime, Croutine croutine, void *context)
 		crun_resume(runtime);
 }
 
-void crun_block(Runtime *runtime)
+int crun_destroy(Runtime *runtime)
 {
 	crun_exit(runtime);
 	pthread_join(runtime->thread, NULL);
-	crun_destroy(runtime);
-}
-
-int crun_destroy(Runtime *runtime)
-{
 	queue_destroy(runtime->execs);
 	pthread_mutex_destroy(&runtime->mutex);
 	pthread_cond_destroy(&runtime->cond);

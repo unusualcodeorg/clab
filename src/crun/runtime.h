@@ -34,7 +34,6 @@ extern "C"
 	void crun_pause(Runtime *runtime);
 	void crun_resume(Runtime *runtime);
 	void crun_exec(Runtime *runtime, Croutine croutine, void *context);
-	void crun_block(Runtime *runtime);
 	int crun_destroy(Runtime *runtime);
 
 #ifdef __cplusplus

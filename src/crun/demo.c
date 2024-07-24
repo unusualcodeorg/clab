@@ -27,7 +27,7 @@ int crun_demo(void)
 		sleep(2);
 	}
 
-	crun_block(runtime);
+	crun_destroy(runtime);
 	printf("--------------RUNTIME DEMO----------------\n");
 	return EXIT_SUCCESS;
 }

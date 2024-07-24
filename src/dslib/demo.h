@@ -1,5 +1,5 @@
-#ifndef DEMO_H
-#define DEMO_H
+#ifndef DS_LIB_DEMO_H
+#define DS_LIB_DEMO_H
 
 #ifdef __cplusplus
 extern "C"
@@ -15,4 +15,4 @@ extern "C"
 }
 #endif
 
-#endif // DEMO_H
+#endif // DS_LIB_DEMO_H

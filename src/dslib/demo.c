@@ -12,6 +12,7 @@
 /*--------------------STACK DEMO------------------------ */
 int stack_demo(void)
 {
+	printf("\n--------------STACK DEMO----------------\n");
 	Stack *stack = stack_create(true);
 
 	stack_push(stack, new_customer("Janishar Ali 1", 100, true));
@@ -28,7 +29,7 @@ int stack_demo(void)
 	printf("Stack: Peek = %s\n", customer_to_string(customer));
 
 	stack_print(stack, customer_to_string);
-
+	printf("--------------STACK DEMO----------------\n");
 	return 0;
 }
 /*--------------------STACK DEMO------------------------ */
@@ -50,7 +51,7 @@ void *s_thread_1_push_function(void *arg)
 	printf("Thread ID: Create: %lu\n", tid);
 	Stack *stack = (Stack *)arg;
 
-	for (char i = 1; i < 15; i++)
+	for (char i = 1; i < 3; i++)
 	{
 		push_customer(stack, "Tom", i);
 		usleep(1500000);
@@ -66,7 +67,7 @@ void *s_thread_2_push_function(void *arg)
 	printf("Thread ID: Create: %lu\n", tid);
 	Stack *stack = (Stack *)arg;
 
-	for (char i = 1; i < 10; i++)
+	for (char i = 1; i < 5; i++)
 	{
 		push_customer(stack, "Hardy", i);
 		usleep(2000000);
@@ -84,6 +85,7 @@ void *s_thread_2_push_function(void *arg)
 
 int stack_concurrent_demo(void)
 {
+	printf("\n---------STACK CUNCURRENT DEMO---------\n");
 	unsigned long tid = (unsigned long)pthread_self();
 	printf("Thread ID: Create: %lu\n", tid);
 
@@ -104,7 +106,7 @@ int stack_concurrent_demo(void)
 
 	stack_print(stack, customer_to_string);
 	stack_destroy(stack);
-
+	printf("---------STACK CUNCURRENT DEMO---------\n");
 	return EXIT_SUCCESS;
 }
 
@@ -114,6 +116,7 @@ int stack_concurrent_demo(void)
 
 int queue_demo(void)
 {
+	printf("\n--------------QUEUE DEMO----------------\n");
 	Queue *queue = queue_create(true);
 
 	queue_enqueue(queue, new_customer("Janishar Ali 1", 100, true));
@@ -130,7 +133,7 @@ int queue_demo(void)
 	printf("Queue: Peek = %s\n", customer_to_string(customer));
 
 	queue_print(queue, customer_to_string);
-
+	printf("--------------QUEUE DEMO----------------\n");
 	return 0;
 }
 /*--------------------QUEUE DEMO------------------------ */
@@ -152,7 +155,7 @@ void *q_thread_1_push_function(void *arg)
 	printf("Thread ID: Create: %lu\n", tid);
 	Queue *queue = (Queue *)arg;
 
-	for (char i = 1; i < 15; i++)
+	for (char i = 1; i < 3; i++)
 	{
 		queue_customer(queue, "Tom", i);
 		usleep(1500000);
@@ -168,7 +171,7 @@ void *q_thread_2_push_function(void *arg)
 	printf("Thread ID: Create: %lu\n", tid);
 	Queue *queue = (Queue *)arg;
 
-	for (char i = 1; i < 10; i++)
+	for (char i = 1; i < 5; i++)
 	{
 		queue_customer(queue, "Hardy", i);
 		usleep(2000000);
@@ -186,6 +189,7 @@ void *q_thread_2_push_function(void *arg)
 
 int queue_concurrent_demo(void)
 {
+	printf("\n---------QUEUE CUNCURRENT DEMO---------\n");
 	unsigned long tid = (unsigned long)pthread_self();
 	printf("Thread ID: Create: %lu\n", tid);
 
@@ -206,7 +210,7 @@ int queue_concurrent_demo(void)
 
 	queue_print(queue, customer_to_string);
 	queue_destroy(queue);
-
+	printf("---------QUEUE CUNCURRENT DEMO---------\n");
 	return EXIT_SUCCESS;
 }
 

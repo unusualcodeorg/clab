@@ -10,23 +10,24 @@
 void work(void)
 {
 	printf("Croutine: started\n");
-	sleep(2);
+	sleep(1);
 	printf("Croutine: completed\n");
 }
 
 int crun_demo(void)
 {
+	printf("\n--------------RUNTIME DEMO----------------\n");
 	Runtime *runtime = crun_create("Demo", true);
 
 	for (int i = 0; i < 3; i++)
 	{
 		printf("work scheduled\n");
 		crun_exec(runtime, work);
-		sleep(3);
+		sleep(2);
 	}
 
 	crun_block(runtime);
-
+	printf("--------------RUNTIME DEMO----------------\n");
 	return EXIT_SUCCESS;
 }
 

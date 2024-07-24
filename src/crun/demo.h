@@ -1,5 +1,5 @@
-#ifndef DEMO_H
-#define DEMO_H
+#ifndef CRUN_DEMO_H
+#define CRUN_DEMO_H
 
 #ifdef __cplusplus
 extern "C"
@@ -11,4 +11,4 @@ extern "C"
 }
 #endif
 
-#endif // DEMO_H
+#endif // CRUN_DEMO_H

@@ -134,3 +134,80 @@ int queue_demo(void)
 	return 0;
 }
 /*--------------------QUEUE DEMO------------------------ */
+
+/*--------------------QUEUE CUNCURRENT DEMO------------- */
+
+void queue_customer(Queue *queue, char *name, char i)
+{
+	char buff[50];
+	snprintf(buff, 50, "%s %d", name, i);
+	Customer *customer = new_customer(buff, 100 * i, true);
+	queue_enqueue(queue, customer);
+	printf("  %s\n", customer_to_string(customer));
+}
+
+void *q_thread_1_push_function(void *arg)
+{
+	unsigned long tid = (unsigned long)pthread_self();
+	printf("Thread ID: Create: %lu\n", tid);
+	Queue *queue = (Queue *)arg;
+
+	for (char i = 1; i < 15; i++)
+	{
+		queue_customer(queue, "Tom", i);
+		usleep(1500000);
+	}
+
+	printf("Thread:%lu, Queue: Size = %d\n", tid, queue->size);
+	return NULL;
+}
+
+void *q_thread_2_push_function(void *arg)
+{
+	unsigned long tid = (unsigned long)pthread_self();
+	printf("Thread ID: Create: %lu\n", tid);
+	Queue *queue = (Queue *)arg;
+
+	for (char i = 1; i < 10; i++)
+	{
+		queue_customer(queue, "Hardy", i);
+		usleep(2000000);
+	}
+
+	printf("Thread:%lu, Queue: Size = %d\n", tid, queue->size);
+
+	Customer *cust = queue_peek(queue);
+	printf("Thread:%lu, Queue: Pop = %s\n", tid, customer_to_string(cust));
+	queue_dequeue(queue);
+	printf("Thread:%lu, Queue: Size = %d\n", tid, queue->size);
+
+	return NULL;
+}
+
+int queue_concurrent_demo(void)
+{
+	unsigned long tid = (unsigned long)pthread_self();
+	printf("Thread ID: Create: %lu\n", tid);
+
+	pthread_t thread1, thread2;
+	Queue *queue = queue_create();
+
+	pthread_create(&thread1, NULL, q_thread_1_push_function, queue);
+	pthread_create(&thread2, NULL, q_thread_2_push_function, queue);
+
+	printf("Thread:%lu, Queue: Size = %d\n", tid, queue->size);
+	queue_print(queue, customer_to_string);
+
+	pthread_join(thread1, NULL);
+	pthread_join(thread2, NULL);
+
+	printf("Thread ID: End: %lu\n", tid);
+	printf("Thread:%lu, Queue: Size = %d\n", tid, queue->size);
+
+	queue_print(queue, customer_to_string);
+	queue_destroy(queue);
+
+	return EXIT_SUCCESS;
+}
+
+/*--------------------QUEUE CUNCURRENT DEMO------------- */

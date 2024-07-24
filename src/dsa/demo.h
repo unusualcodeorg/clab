@@ -9,6 +9,7 @@ extern "C"
 	int stack_demo(void);
 	int stack_concurrent_demo(void);
 	int queue_demo(void);
+	int queue_concurrent_demo(void);
 
 #ifdef __cplusplus
 }

@@ -4,6 +4,6 @@
 
 int main(void)
 {
-	stack_concurrent_demo();
+	queue_concurrent_demo();
 	return EXIT_SUCCESS;
 }

@@ -15,7 +15,11 @@ void *execution(void *arg)
 		{
 			if (runtime->debug)
 				printf("Runtime - %s: has paused.\n", runtime->name);
+
 			pthread_cond_wait(&runtime->cond, &runtime->mutex);
+
+			if (runtime->debug)
+				printf("Runtime - %s: has resumed.\n", runtime->name);
 		}
 		pthread_mutex_unlock(&runtime->mutex);
 
@@ -30,9 +34,6 @@ void *execution(void *arg)
 			crun_pause(runtime);
 			continue;
 		}
-
-		if (runtime->debug)
-			printf("Runtime - %s: has resumed.\n", runtime->name);
 
 		Croutine croutine = (void (*)(void))queue_dequeue(runtime->execs);
 		if (croutine != NULL)
@@ -105,7 +106,7 @@ int crun_destroy(Runtime *runtime)
 	pthread_cond_destroy(&runtime->cond);
 	pthread_cancel(runtime->thread);
 	if (runtime->debug)
-		printf("Runtime - %s: is destroyed.\n", runtime->name);
+		printf("Runtime - %s: has destroyed.\n", runtime->name);
 	free(runtime);
 	return EXIT_SUCCESS;
 }

@@ -9,14 +9,14 @@
 
 void work(void)
 {
-	printf("work start\n");
+	printf("Croutine: started\n");
 	sleep(2);
-	printf("work completed\n");
+	printf("Croutine: completed\n");
 }
 
 int crun_demo(void)
 {
-	Runtime *runtime = crun_create("Demo Runtime", true);
+	Runtime *runtime = crun_create("Demo", true);
 
 	for (int i = 0; i < 3; i++)
 	{

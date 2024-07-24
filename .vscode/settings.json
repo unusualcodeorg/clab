@@ -22,6 +22,7 @@
 		"initializer_list": "c",
 		"map": "c",
 		"set": "c",
-		"unordered_map": "c"
+		"unordered_map": "c",
+		"__node_handle": "c"
 	}
 }

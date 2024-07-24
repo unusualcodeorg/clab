@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include <pthread.h>
+
 #ifndef QUEUE_H
 #define QUEUE_H
 
@@ -20,6 +22,7 @@ extern "C"
 		QueueNode *start;
 		QueueNode *end;
 		uint32_t size;
+		pthread_rwlock_t rwlock;
 	} Queue;
 
 	Queue *queue_new();

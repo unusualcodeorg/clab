@@ -9,7 +9,7 @@
 
 int stack_demo()
 {
-	Stack *stack = stack_new();
+	Stack *stack = stack_create();
 
 	stack_push(stack, new_customer("Janishar Ali 1", 100, true));
 	stack_push(stack, new_customer("Janishar Ali 2", 10, true));

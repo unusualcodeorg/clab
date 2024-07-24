@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <pthread.h>
 
 #ifndef STACK_H
 #define STACK_H
@@ -20,9 +21,10 @@ extern "C"
 	{
 		StackNode *top;
 		uint32_t size;
+		pthread_rwlock_t rwlock;
 	} Stack;
 
-	Stack *stack_new();
+	Stack *stack_create();
 	void stack_push(Stack *stack, void *data);
 	void stack_pop(Stack *stack);
 	void *stack_peek(Stack *stack);

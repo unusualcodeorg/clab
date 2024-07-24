@@ -1,8 +1,9 @@
 #include "stack.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 
-Stack *stack_new()
+Stack *stack_create()
 {
 	Stack *stack = malloc(sizeof(Stack));
 	if (stack == NULL)
@@ -12,43 +13,50 @@ Stack *stack_new()
 	}
 	stack->top = NULL;
 	stack->size = 0;
-
+	pthread_rwlock_init(&stack->rwlock, NULL);
 	return stack;
 }
 
 void stack_push(Stack *stack, void *data)
 {
+	pthread_rwlock_wrlock(&stack->rwlock);
 	StackNode *node = malloc(sizeof(StackNode));
 	node->data = data;
 	node->next = stack->top;
 	stack->top = node;
 	stack->size++;
+	pthread_rwlock_unlock(&stack->rwlock);
 }
 
 void stack_pop(Stack *stack)
 {
-	if (stack->top == NULL)
-		return;
-
-	StackNode *node = stack->top;
-	stack->top = stack->top->next;
-	stack->size--;
-	free(node->data);
-	free(node);
+	pthread_rwlock_wrlock(&stack->rwlock);
+	if (stack->top != NULL)
+	{
+		StackNode *node = stack->top;
+		stack->top = stack->top->next;
+		stack->size--;
+		free(node->data);
+		free(node);
+	}
+	pthread_rwlock_unlock(&stack->rwlock);
 }
 
 void *stack_peek(Stack *stack)
 {
-	if (stack->top == NULL)
-		return NULL;
+	pthread_rwlock_rdlock(&stack->rwlock);
+	void *data = NULL;
+	if (stack->top != NULL)
+		data = stack->top->data;
 
-	return stack->top->data;
+	pthread_rwlock_unlock(&stack->rwlock);
+	return data;
 }
 
 void stack_print(Stack *stack, fn_to_string to_string)
 {
+	pthread_rwlock_rdlock(&stack->rwlock);
 	printf("Stack: [\n");
-
 	StackNode *top = stack->top;
 	while (top != NULL)
 	{
@@ -62,10 +70,12 @@ void stack_print(Stack *stack, fn_to_string to_string)
 			printf(",\n");
 	}
 	printf("\n]\n");
+	pthread_rwlock_unlock(&stack->rwlock);
 }
 
 void stack_destroy(Stack *stack)
 {
+	pthread_rwlock_wrlock(&stack->rwlock);
 	StackNode *top = stack->top;
 	while (top != NULL)
 	{
@@ -74,6 +84,7 @@ void stack_destroy(Stack *stack)
 		free(top);
 		top = next;
 	}
-
+	pthread_rwlock_unlock(&stack->rwlock);
+	pthread_rwlock_destroy(&stack->rwlock);
 	free(stack);
 }

@@ -35,25 +35,24 @@ int stack_demo(void)
 
 /*--------------------STACK CUNCURRENT DEMO------------- */
 
-void push_customer(Stack *stack, char i)
+void push_customer(Stack *stack, char *name, char i)
 {
-	char name[] = "Ali";
-	char result[strlen(name) + 1];
-	sprintf("%s %d", result, i);
-	Customer *customer = new_customer(result, 100 * i, true);
+	char buff[50];
+	snprintf(buff, 50, "%s %d", name, i);
+	Customer *customer = new_customer(buff, 100 * i, true);
 	stack_push(stack, customer);
-	printf("%s\n", customer_to_string(customer));
+	printf("  %s\n", customer_to_string(customer));
 }
 
 void *s_thread_1_push_function(void *arg)
 {
 	unsigned long tid = (unsigned long)pthread_self();
-	printf("Thread ID: %lu\n", tid);
+	printf("Thread ID: Create: %lu\n", tid);
 	Stack *stack = (Stack *)arg;
 
-	for (char i = 1; i < 4; i++)
+	for (char i = 1; i < 15; i++)
 	{
-		push_customer(stack, i);
+		push_customer(stack, "Tom", i);
 		usleep(1500000);
 	}
 
@@ -64,19 +63,19 @@ void *s_thread_1_push_function(void *arg)
 void *s_thread_2_push_function(void *arg)
 {
 	unsigned long tid = (unsigned long)pthread_self();
-	printf("Thread ID: %lu\n", tid);
+	printf("Thread ID: Create: %lu\n", tid);
 	Stack *stack = (Stack *)arg;
 
-	for (char i = 1; i < 2; i++)
+	for (char i = 1; i < 10; i++)
 	{
-		push_customer(stack, i);
+		push_customer(stack, "Hardy", i);
 		usleep(2000000);
 	}
 
 	printf("Thread:%lu, Stack: Size = %d\n", tid, stack->size);
 
-	Customer *c = stack_peek(stack);
-	printf("Thread:%lu, Stack: Pop = %s\n", tid, customer_to_string(c));
+	Customer *cust = stack_peek(stack);
+	printf("Thread:%lu, Stack: Pop = %s\n", tid, customer_to_string(cust));
 	stack_pop(stack);
 	printf("Thread:%lu, Stack: Size = %d\n", tid, stack->size);
 
@@ -86,7 +85,7 @@ void *s_thread_2_push_function(void *arg)
 int stack_concurrent_demo(void)
 {
 	unsigned long tid = (unsigned long)pthread_self();
-	printf("Thread ID: Start: %lu\n", tid);
+	printf("Thread ID: Create: %lu\n", tid);
 
 	pthread_t thread1, thread2;
 	Stack *stack = stack_create();
@@ -101,7 +100,6 @@ int stack_concurrent_demo(void)
 	pthread_join(thread2, NULL);
 
 	printf("Thread ID: End: %lu\n", tid);
-
 	printf("Thread:%lu, Stack: Size = %d\n", tid, stack->size);
 
 	stack_print(stack, customer_to_string);

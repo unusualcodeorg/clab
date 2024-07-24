@@ -30,5 +30,9 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 clean:
 	rm -rf $(BUILD_DIR) $(BIN_DIR)
 
+# apple silicon debug
+debug: $(TARGET)
+	lldb -o 'run' $(TARGET)
+
 # Phony targets
 .PHONY: all clean

@@ -1,10 +1,9 @@
-#include "dsa/demo.h"
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
 #include <stdio.h>
+#include "dsa/demo.h"
 
 int main()
 {
-	return stack_demo();
+	stack_demo();
+	queue_demo();
+	return 0;
 }

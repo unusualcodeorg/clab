@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #ifndef STACK_H
 #define STACK_H
 
@@ -17,6 +19,7 @@ extern "C"
 	typedef struct
 	{
 		StackNode *top;
+		uint32_t size;
 	} Stack;
 
 	Stack *stack_new();

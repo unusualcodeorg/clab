@@ -11,6 +11,7 @@ Stack *stack_new()
 		exit(EXIT_FAILURE);
 	}
 	stack->top = NULL;
+	stack->size = 0;
 
 	return stack;
 }
@@ -21,37 +22,38 @@ void stack_push(Stack *stack, void *data)
 	node->data = data;
 	node->next = stack->top;
 	stack->top = node;
+	stack->size++;
 }
 
 void stack_pop(Stack *stack)
 {
-	if (stack->top != NULL)
-	{
-		StackNode *node = stack->top;
-		stack->top = stack->top->next;
-		free(node->data);
-		free(node);
-	}
+	if (stack->top == NULL)
+		return;
+
+	StackNode *node = stack->top;
+	stack->top = stack->top->next;
+	stack->size--;
+	free(node->data);
+	free(node);
 }
 
 void *stack_peek(Stack *stack)
 {
-	if (stack->top != NULL)
-	{
-		return stack->top->data;
-	}
-	return NULL;
+	if (stack->top == NULL)
+		return NULL;
+
+	return stack->top->data;
 }
 
 void stack_print(Stack *stack, fn_to_string to_string)
 {
-	printf("Stack: [");
+	printf("Stack: [\n");
 
 	StackNode *top = stack->top;
 	while (top != NULL)
 	{
 		char *data_str = to_string(top->data);
-		printf("%s", data_str);
+		printf("  %s", data_str);
 		free(data_str);
 
 		StackNode *next = top->next;
@@ -59,7 +61,7 @@ void stack_print(Stack *stack, fn_to_string to_string)
 		if (top != NULL)
 			printf(",\n");
 	}
-	printf("]\n");
+	printf("\n]\n");
 }
 
 void stack_destroy(Stack *stack)

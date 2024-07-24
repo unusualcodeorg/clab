@@ -41,7 +41,8 @@ void *execution(void *arg)
 		if (runtime->debug)
 			printf("Runtime - %s: croutine executed.\n", runtime->name);
 	}
-	printf("Runtime - %s: has exited.\n", runtime->name);
+	if (runtime->debug)
+		printf("Runtime - %s: has exited.\n", runtime->name);
 	return NULL;
 }
 

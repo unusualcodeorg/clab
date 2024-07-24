@@ -1,5 +1,5 @@
 #include "runtime.h"
-#include "../dsa/queue.h"
+#include "../dslib/queue.h"
 #include <pthread.h>
 #include <stdlib.h>
 #include <stdbool.h>

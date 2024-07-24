@@ -1,4 +1,4 @@
-#include "../dsa/queue.h"
+#include "../dslib/queue.h"
 #include <pthread.h>
 #include <stdbool.h>
 

@@ -10,7 +10,13 @@ extern "C"
 {
 #endif
 
-	typedef void (*Croutine)(void);
+	typedef void (*Croutine)(void *context);
+
+	typedef struct
+	{
+		Croutine croutine;
+		void *context;
+	} Execution;
 
 	typedef struct
 	{
@@ -27,7 +33,7 @@ extern "C"
 	Runtime *crun_create(char *name, bool debug);
 	void crun_pause(Runtime *runtime);
 	void crun_resume(Runtime *runtime);
-	void crun_exec(Runtime *runtime, Croutine croutine);
+	void crun_exec(Runtime *runtime, Croutine croutine, void *context);
 	void crun_block(Runtime *runtime);
 	int crun_destroy(Runtime *runtime);
 

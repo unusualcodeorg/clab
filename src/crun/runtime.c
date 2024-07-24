@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-void *execution(void *arg)
+void *runner(void *arg)
 {
 	Runtime *runtime = (Runtime *)arg;
 	while (true)
@@ -35,9 +35,15 @@ void *execution(void *arg)
 			continue;
 		}
 
-		Croutine croutine = (void (*)(void))queue_dequeue(runtime->execs);
-		if (croutine != NULL)
-			croutine();
+		Execution *exec = (Execution *)queue_dequeue(runtime->execs);
+		if (exec != NULL)
+		{
+			Croutine croutine = (void (*)(void *))exec->croutine;
+			croutine(exec->context);
+			free(exec->context);
+			free(exec);
+		}
+
 		if (runtime->debug)
 			printf("Runtime - %s: croutine executed.\n", runtime->name);
 	}
@@ -56,7 +62,7 @@ Runtime *crun_create(char *name, bool debug)
 	runtime->exit = false;
 	pthread_mutex_init(&runtime->mutex, NULL);
 	pthread_cond_init(&runtime->cond, NULL);
-	pthread_create(&runtime->thread, NULL, execution, runtime);
+	pthread_create(&runtime->thread, NULL, runner, runtime);
 	if (runtime->debug)
 		printf("Runtime - %s: is created.\n", runtime->name);
 	return runtime;
@@ -86,9 +92,13 @@ void crun_exit(Runtime *runtime)
 	pthread_mutex_unlock(&runtime->mutex);
 }
 
-void crun_exec(Runtime *runtime, Croutine croutine)
+void crun_exec(Runtime *runtime, Croutine croutine, void *context)
 {
-	queue_enqueue(runtime->execs, (void *)croutine);
+	Execution *exec = (Execution *)malloc(sizeof(Execution));
+	exec->croutine = croutine;
+	exec->context = context;
+
+	queue_enqueue(runtime->execs, exec);
 	if (runtime->pause)
 		crun_resume(runtime);
 }

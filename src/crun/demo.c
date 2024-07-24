@@ -7,8 +7,9 @@
 
 /*--------------------RUNTIME DEMO------------------------ */
 
-void work(void)
+void work(void* context)
 {
+	(void)context; // to supress unused variable warning
 	printf("Croutine: started\n");
 	sleep(1);
 	printf("Croutine: completed\n");
@@ -22,7 +23,7 @@ int crun_demo(void)
 	for (int i = 0; i < 3; i++)
 	{
 		printf("work scheduled\n");
-		crun_exec(runtime, work);
+		crun_exec(runtime, work, NULL);
 		sleep(2);
 	}
 

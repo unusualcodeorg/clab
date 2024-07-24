@@ -43,6 +43,7 @@
 		"unistd.h": "c",
 		"demo.h": "c",
 		"pthread.h": "c",
-		"queue.h": "c"
+		"queue.h": "c",
+		"__bit_reference": "c"
 	}
 }

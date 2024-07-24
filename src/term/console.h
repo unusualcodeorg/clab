@@ -10,10 +10,13 @@ extern "C"
 
 	typedef struct cprint
 	{
-		Runtime* runtime;
+		unsigned int ftime;
+		Runtime *runtime;
 	} Console;
 
-	int console_create(void);
+	Console *console_create(unsigned int ftime_mills);
+	void console_print(Console *console, char *text);
+	void console_destroy(Console *console);
 
 #ifdef __cplusplus
 }

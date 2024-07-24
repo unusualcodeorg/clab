@@ -4,14 +4,13 @@ CFLAGS = -Wall -Wextra -g
 
 # Directories
 SRC_DIR = src
-LIB_DIR = libs
 BUILD_DIR = build
 BIN_DIR = bin
 
-# Source and object files
-SRCS = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(LIB_DIR)/*.c)
-OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(wildcard $(SRC_DIR)/*.c)) \
-       $(patsubst $(LIB_DIR)/%.c,$(BUILD_DIR)/%.o,$(wildcard $(LIB_DIR)/*.c))
+# Find all .c files in SRC_DIR and subdirectories
+SRCS = $(shell find $(SRC_DIR) -name '*.c')
+# Create a list of .o files based on the .c files
+OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
 TARGET = $(BIN_DIR)/main
 
 # Default target
@@ -24,11 +23,7 @@ $(TARGET): $(OBJS)
 
 # Compile source files to object files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-$(BUILD_DIR)/%.o: $(LIB_DIR)/%.c
-	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 # Clean up build artifacts

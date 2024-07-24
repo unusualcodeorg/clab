@@ -8,14 +8,20 @@ extern "C"
 {
 #endif
 
-	typedef struct cprint
+	typedef struct
+	{
+		unsigned int ftime;
+		char *text;
+	} Frame;
+
+	typedef struct
 	{
 		unsigned int ftime;
 		Runtime *runtime;
 	} Console;
 
 	Console *console_create(unsigned int ftime_mills);
-	void console_print(Console *console, char *text);
+	void console_render(Console *console, char *text);
 	void console_destroy(Console *console);
 
 #ifdef __cplusplus

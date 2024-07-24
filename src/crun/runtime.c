@@ -40,7 +40,6 @@ void *runner(void *arg)
 		{
 			Croutine croutine = (void (*)(void *))exec->croutine;
 			croutine(exec->context);
-			free(exec->context);
 			free(exec);
 		}
 

@@ -6,8 +6,9 @@ extern "C"
 {
 #endif
 
-	int stack_demo();
-	int queue_demo();
+	int stack_demo(void);
+	int stack_concurrent_demo(void);
+	int queue_demo(void);
 
 #ifdef __cplusplus
 }

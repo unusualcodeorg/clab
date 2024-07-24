@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-Stack *stack_create()
+Stack *stack_create(void)
 {
 	Stack *stack = malloc(sizeof(Stack));
 	if (stack == NULL)

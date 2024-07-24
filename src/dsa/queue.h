@@ -25,7 +25,7 @@ extern "C"
 		pthread_rwlock_t rwlock;
 	} Queue;
 
-	Queue *queue_new();
+	Queue *queue_create(void);
 	void queue_enqueue(Queue *queue, void *data);
 	void queue_dequeue(Queue *queue);
 	void *queue_peek(Queue *queue);

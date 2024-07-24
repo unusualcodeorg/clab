@@ -1,9 +1,9 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include "dsa/demo.h"
 
-int main()
+int main(void)
 {
-	stack_demo();
-	queue_demo();
-	return 0;
+	stack_concurrent_demo();
+	return EXIT_SUCCESS;
 }

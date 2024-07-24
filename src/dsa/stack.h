@@ -24,7 +24,7 @@ extern "C"
 		pthread_rwlock_t rwlock;
 	} Stack;
 
-	Stack *stack_create();
+	Stack *stack_create(void);
 	void stack_push(Stack *stack, void *data);
 	void stack_pop(Stack *stack);
 	void *stack_peek(Stack *stack);

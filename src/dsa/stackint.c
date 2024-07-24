@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-StackInt *stackint_new()
+StackInt *stackint_create(void)
 {
 	StackInt *stack = malloc(sizeof(StackInt));
 	if (stack == NULL)
@@ -41,7 +41,7 @@ int stackint_pop(StackInt *stack)
 	return data;
 }
 
-int stackoint_peek(StackInt *stack)
+int stackint_peek(StackInt *stack)
 {
 	if (stack->top != NULL)
 	{

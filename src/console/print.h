@@ -6,7 +6,7 @@ extern "C"
 {
 #endif
 
-	int print_demo();
+	int print_demo(void);
 
 #ifdef __cplusplus
 }

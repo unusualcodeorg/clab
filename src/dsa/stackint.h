@@ -17,7 +17,7 @@ extern "C"
 		StackIntNode *top;
 	} StackInt;
 
-	StackInt *stackint_new();
+	StackInt *stackint_create(void);
 	void stackint_push(StackInt *stack, int data);
 	int stackint_pop(StackInt *stack);
 	int stackint_peek(StackInt *stack);

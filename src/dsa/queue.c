@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <pthread.h>
 
-Queue *queue_new()
+Queue *queue_create(void)
 {
 	Queue *queue = malloc(sizeof(Queue));
 	if (queue == NULL)

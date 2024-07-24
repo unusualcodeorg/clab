@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <unistd.h> // For usleep function
 
-void clear_console()
+void clear_console(void)
 {
 	// ANSI escape code to clear the screen
 	printf("\033[H\033[J");
@@ -33,7 +33,7 @@ void animate_text(const char *texts[], int count)
 	printf("Animation finished!\n");
 }
 
-int print_demo()
+int print_demo(void)
 {
 	const char *texts[] = {
 			"First frame of text.",

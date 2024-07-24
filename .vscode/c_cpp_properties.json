@@ -10,7 +10,15 @@
           "compilerPath": "/usr/bin/clang",
           "cStandard": "c99",
           "cppStandard": "c++17",
-          "intelliSenseMode": "macos-clang-arm64"
+          "intelliSenseMode": "macos-clang-arm64",
+          "compilerArgs": [
+            "-g",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-Wpedantic",
+            "-pthread"
+          ]
         }
     ],
     "version": 4

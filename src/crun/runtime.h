@@ -19,7 +19,8 @@ extern "C"
 		pthread_mutex_t mutex;
 		pthread_cond_t cond;
 		pthread_t thread;
-		bool paused;
+		bool exit;
+		bool pause;
 		bool debug;
 	} Runtime;
 
@@ -27,6 +28,7 @@ extern "C"
 	void crun_pause(Runtime *runtime);
 	void crun_resume(Runtime *runtime);
 	void crun_exec(Runtime *runtime, Croutine croutine);
+	void crun_block(Runtime *runtime);
 	int crun_destroy(Runtime *runtime);
 
 #ifdef __cplusplus

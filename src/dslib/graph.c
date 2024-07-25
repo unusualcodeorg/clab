@@ -185,7 +185,7 @@ void graph_print_node(GraphNode *node, void *arg)
 	DataToString tostring = (DataToString)arg;
 
 	char *str = tostring(node->data);
-	printf(" [%d]:%s -", node->id, str);
+	printf(" [%d]%s -->", node->id, str);
 	free(str);
 
 	for (unsigned short i = 0; i < node->esize; i++)
@@ -195,11 +195,8 @@ void graph_print_node(GraphNode *node, void *arg)
 			continue;
 
 		char *s = tostring(edge->end->data);
-		printf(" [%d]:%s", edge->end->id, s);
+		printf(" [%d]%s", edge->end->id, s);
 		free(s);
-
-		if (i < node->esize - 1)
-			printf(",");
 	}
 	printf(",\n");
 }

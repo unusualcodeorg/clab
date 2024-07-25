@@ -31,9 +31,9 @@ extern "C"
 
 	typedef struct
 	{
-		void *p1;
-		void *p2;
-		void *p3;
+		bool debug;
+		unsigned int counter;
+		void *lambda;
 	} GraphCallbackArg;
 
 	typedef void (*GraphCallback)(GraphNode *, GraphCallbackArg *arg);

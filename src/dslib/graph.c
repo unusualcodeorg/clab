@@ -19,23 +19,19 @@ Graph *graph_create(bool autofree)
 
 void traversal_callback(GraphNode *node, GraphCallbackArg *arg)
 {
-	(void)arg;
-	bool debug = *(bool *)arg->p3;
-	if (debug == true)
-	{
+	if (arg->debug == true)
 		printf("[%u]->", node->id);
-	}
 }
 
 GraphNode *graph_node_find(GraphNode *node, unsigned int nodeid, GraphNode **visited_nodes, GraphCallback callback, GraphCallbackArg *arg)
 {
-	unsigned int *counter = (unsigned int *)arg->p1;
-	*counter = *counter + 1;
+	if (arg->debug == true)
+		arg->counter++;
 
 	if (node == NULL || visited_nodes[node->id] == node)
 		return NULL;
 
-	if (callback != NULL)
+	if (arg->debug == true && callback != NULL)
 		callback(node, arg);
 
 	visited_nodes[node->id] = node;
@@ -68,18 +64,16 @@ GraphNode *graph_find(Graph *graph, unsigned int nodeid)
 		printf("\n");
 
 	GraphCallbackArg *arg = (GraphCallbackArg *)malloc(sizeof(GraphCallbackArg));
-	unsigned int *counter = calloc(1, sizeof(unsigned int));
-	arg->p1 = counter;
-	arg->p3 = &graph->debug;
+	arg->counter = 0;
+	arg->debug = graph->debug;
 
 	GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
 	GraphNode *node = graph_node_find(graph->root, nodeid, visited_nodes, traversal_callback, arg);
 
 	if (graph->debug == true)
-		printf("\nGraph: Find Traversal = %u\n", *counter);
+		printf("\nGraph: Find Traversal = %u\n", arg->counter);
 
 	free(visited_nodes);
-	free(counter);
 	free(arg);
 	pthread_rwlock_unlock(&graph->rwlock);
 	return node;
@@ -191,8 +185,8 @@ int graph_remove(Graph *graph, unsigned int nodeid)
 
 void graph_traverse(GraphNode *node, GraphNode **visited_nodes, GraphCallback callback, GraphCallbackArg *arg)
 {
-	unsigned int *counter = (unsigned int *)arg->p1;
-	*counter = *counter + 1;
+	if (arg->debug == true)
+		arg->counter++;
 
 	if (node == NULL || visited_nodes[node->id] == node)
 		return;
@@ -207,7 +201,7 @@ void graph_traverse(GraphNode *node, GraphNode **visited_nodes, GraphCallback ca
 		graph_traverse(edge->end, visited_nodes, callback, arg);
 	}
 
-	if (callback != NULL)
+	if (arg->debug == true && callback != NULL)
 		callback(node, arg);
 }
 
@@ -216,9 +210,10 @@ void graph_print_node(GraphNode *node, GraphCallbackArg *arg)
 	if (node == NULL)
 		return;
 
-	unsigned int *counter = (unsigned int *)arg->p1;
-	*counter = *counter + 1;
-	DataToString tostring = (DataToString)arg->p2;
+	if (arg->debug == true)
+		arg->counter++;
+
+	DataToString tostring = (DataToString)arg->lambda;
 
 	char *str = tostring(node->data);
 	printf(" [%d]%s -->", node->id, str);
@@ -244,19 +239,17 @@ void graph_print(Graph *graph, DataToString tostring)
 	if (graph->root != NULL)
 	{
 		GraphCallbackArg *arg = (GraphCallbackArg *)malloc(sizeof(GraphCallbackArg));
-		unsigned int *counter = (unsigned int *)calloc(1, sizeof(unsigned int));
-		arg->p1 = counter;
-		arg->p2 = (void *)tostring;
-		arg->p3 = &graph->debug;
+		arg->debug = graph->debug;
+		arg->counter = 0;
+		arg->lambda = (void *)tostring;
 
 		GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
 		graph_traverse(graph->root, visited_nodes, graph_print_node, arg);
 
 		if (graph->debug == true)
-			printf("\nGraph: Print Traversal = %u\n", *counter);
+			printf("\nGraph: Print Traversal = %u\n", arg->counter);
 
 		free(visited_nodes);
-		free(counter);
 		free(arg);
 	}
 	printf("]\n");
@@ -290,9 +283,8 @@ void graph_destroy(Graph *graph)
 		printf("\n");
 
 	GraphCallbackArg *arg = (GraphCallbackArg *)malloc(sizeof(GraphCallbackArg));
-	unsigned int *counter = calloc(1, sizeof(unsigned int));
-	arg->p1 = counter;
-	arg->p3 = &graph->debug;
+	arg->counter = 0;
+	arg->debug = graph->debug;
 
 	GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
 	graph_traverse(graph->root, visited_nodes, traversal_callback, arg);
@@ -304,10 +296,9 @@ void graph_destroy(Graph *graph)
 	}
 
 	if (graph->debug == true)
-		printf("\nGraph: Destroy Traversal = %u\n", *counter);
+		printf("\nGraph: Destroy Traversal = %u\n", arg->counter);
 
 	free(visited_nodes);
-	free(counter);
 	free(arg);
 	pthread_rwlock_unlock(&graph->rwlock);
 	pthread_rwlock_destroy(&graph->rwlock);

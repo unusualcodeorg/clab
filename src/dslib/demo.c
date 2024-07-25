@@ -253,15 +253,15 @@ int graph_demo(void)
 {
 	Graph *graph = graph_create(true, true);
 
-	graph_add(graph, "A", NULL, 0);
-	graph_add(graph, "B", (unsigned int[]){0}, 1);
-	graph_add(graph, "C", (unsigned int[]){1}, 1);
-	graph_add(graph, "D", (unsigned int[]){2}, 1);
-	graph_add(graph, "E", (unsigned int[]){1, 3}, 2);
-	graph_add(graph, "F", (unsigned int[]){0, 4}, 2);
-	graph_add(graph, "G", (unsigned int[]){5}, 1);
-	graph_add(graph, "H", (unsigned int[]){4, 6}, 2);
-	graph_add(graph, "I", (unsigned int[]){3, 7}, 2);
+	graph_add(graph, "A", 0);
+	graph_add(graph, "B", 1, 0);
+	graph_add(graph, "C", 1, 1);
+	graph_add(graph, "D", 1, 2);
+	graph_add(graph, "E", 2, 1, 3);
+	graph_add(graph, "F", 2, 0, 4);
+	graph_add(graph, "G", 1, 5);
+	graph_add(graph, "H", 2, 4, 6);
+	graph_add(graph, "I", 2, 3, 7);
 
 	graph_print(graph, graph_data_to_string);
 	return EXIT_SUCCESS;

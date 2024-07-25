@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdarg.h>
 
 #ifndef DS_LIB_GRAPH_H
 #define DS_LIB_GRAPH_H
@@ -43,7 +44,7 @@ extern "C"
 	Graph *graph_create(bool autofree, bool debug);
 	GraphNode *graph_find(Graph *graph, unsigned int nodeid);
 	void *graph_get(Graph *graph, unsigned int nodeid);
-	int graph_add(Graph *graph, void *data, unsigned int nodeids[], unsigned short nodeids_size);
+	int graph_add(Graph *graph, void *data, unsigned int linkcount, ...);
 	int graph_remove(Graph *graph, unsigned int nodeid);
 	void graph_print(Graph *graph, DataToString tostring);
 	void graph_destroy(Graph *graph);

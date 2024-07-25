@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <inttypes.h>
+#include <stdarg.h>
 
 Graph *graph_create(bool autofree, bool debug)
 {
@@ -70,17 +71,22 @@ int graph_add_root(Graph *graph, void *data)
 	return node->id;
 }
 
-int graph_add(Graph *graph, void *data, unsigned int nodeids[], unsigned short nodeids_size)
+int graph_add(Graph *graph, void *data, unsigned int linkcount, ...)
 {
 	if (graph->root == NULL)
 		return graph_add_root(graph, data);
 
-	if (nodeids == NULL)
+	if (linkcount == 0)
 		return GRAPH_ERROR;
 
-	unsigned short esize = nodeids_size;
-	if (esize == 0)
-		return GRAPH_ERROR;
+	unsigned short nodeids[linkcount];
+	va_list args;
+	va_start(args, linkcount);
+
+	for (unsigned int i = 0; i < linkcount; i++)
+		nodeids[i] = va_arg(args, unsigned int);
+
+	unsigned short esize = linkcount;
 
 	GraphNode *node = (GraphNode *)malloc(sizeof(GraphNode));
 	node->id = graph->size++;
@@ -107,6 +113,7 @@ int graph_add(Graph *graph, void *data, unsigned int nodeids[], unsigned short n
 		}
 	}
 
+	va_end(args);
 	return node->id;
 }
 

@@ -42,7 +42,8 @@
         "-Wextra",
         "-Werror",
         "-Wpedantic",
-        "-pthread"
+        "-pthread",
+				"-std=c18"
       ],
       "options": {
         "cwd": "${fileDirname}"

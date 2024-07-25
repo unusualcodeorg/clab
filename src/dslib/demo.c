@@ -254,30 +254,14 @@ int graph_demo(void)
 	Graph *graph = graph_create(true, true);
 
 	graph_add(graph, "A", NULL, 0);
-
-	unsigned int ids_1[1] = {0};
-	graph_add(graph, "B", ids_1, 1);
-
-	unsigned int ids_2[1] = {1};
-	graph_add(graph, "C", ids_2, 1);
-
-	unsigned int ids_3[1] = {2};
-	graph_add(graph, "D", ids_3, 1);
-
-	unsigned int ids_4[2] = {1, 3};
-	graph_add(graph, "E", ids_4, 2);
-
-	unsigned int ids_5[2] = {0, 4};
-	graph_add(graph, "F", ids_5, 2);
-
-	unsigned int ids_6[1] = {5};
-	graph_add(graph, "G", ids_6, 1);
-
-	unsigned int ids_7[2] = {4, 6};
-	graph_add(graph, "H", ids_7, 2);
-
-	unsigned int ids_8[2] = {3, 7};
-	graph_add(graph, "I", ids_8, 2);
+	graph_add(graph, "B", (unsigned int[]){0}, 1);
+	graph_add(graph, "C", (unsigned int[]){1}, 1);
+	graph_add(graph, "D", (unsigned int[]){2}, 1);
+	graph_add(graph, "E", (unsigned int[]){1, 3}, 2);
+	graph_add(graph, "F", (unsigned int[]){0, 4}, 2);
+	graph_add(graph, "G", (unsigned int[]){5}, 1);
+	graph_add(graph, "H", (unsigned int[]){4, 6}, 2);
+	graph_add(graph, "I", (unsigned int[]){3, 7}, 2);
 
 	graph_print(graph, graph_data_to_string);
 	return EXIT_SUCCESS;

@@ -17,11 +17,26 @@ Graph *graph_create(bool autofree)
 	return graph;
 }
 
-GraphNode *graph_node_find(GraphNode *node, unsigned int nodeid, GraphNode **visited_nodes, unsigned int *counter)
+void traversal_callback(GraphNode *node, GraphCallbackArg *arg)
 {
+	(void)arg;
+	bool debug = *(bool *)arg->p3;
+	if (debug == true)
+	{
+		printf("[%u]->", node->id);
+	}
+}
+
+GraphNode *graph_node_find(GraphNode *node, unsigned int nodeid, GraphNode **visited_nodes, GraphCallback callback, GraphCallbackArg *arg)
+{
+	unsigned int *counter = (unsigned int *)arg->p1;
 	*counter = *counter + 1;
+
 	if (node == NULL || visited_nodes[node->id] == node)
 		return NULL;
+
+	if (callback != NULL)
+		callback(node, arg);
 
 	visited_nodes[node->id] = node;
 
@@ -36,7 +51,7 @@ GraphNode *graph_node_find(GraphNode *node, unsigned int nodeid, GraphNode **vis
 		if (edge->end->id == nodeid)
 			return edge->end;
 
-		GraphNode *nd = graph_node_find(edge->end, nodeid, visited_nodes, counter);
+		GraphNode *nd = graph_node_find(edge->end, nodeid, visited_nodes, callback, arg);
 		if (nd != NULL)
 			return nd;
 	}
@@ -49,15 +64,23 @@ GraphNode *graph_find(Graph *graph, unsigned int nodeid)
 	if (graph->root == NULL)
 		return NULL;
 
+	if (graph->debug == true)
+		printf("\n");
+
+	GraphCallbackArg *arg = (GraphCallbackArg *)malloc(sizeof(GraphCallbackArg));
 	unsigned int *counter = calloc(1, sizeof(unsigned int));
+	arg->p1 = counter;
+	arg->p3 = &graph->debug;
+
 	GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
-	GraphNode *node = graph_node_find(graph->root, nodeid, visited_nodes, counter);
+	GraphNode *node = graph_node_find(graph->root, nodeid, visited_nodes, traversal_callback, arg);
 
 	if (graph->debug == true)
 		printf("\nGraph: Find Traversal = %u\n", *counter);
 
 	free(visited_nodes);
 	free(counter);
+	free(arg);
 	pthread_rwlock_unlock(&graph->rwlock);
 	return node;
 }
@@ -164,16 +187,6 @@ int graph_remove(Graph *graph, unsigned int nodeid)
 	free(node);
 	pthread_rwlock_unlock(&graph->rwlock);
 	return nodeid;
-}
-
-void traversal_callback(GraphNode *node, GraphCallbackArg *arg)
-{
-	(void)arg;
-	bool debug = *(bool *)arg->p3;
-	if (debug == true)
-	{
-		printf("[%u]->", node->id);
-	}
 }
 
 void graph_traverse(GraphNode *node, GraphNode **visited_nodes, GraphCallback callback, GraphCallbackArg *arg)

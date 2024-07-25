@@ -43,7 +43,7 @@ extern "C"
 	Graph *graph_create(bool autofree, bool debug);
 	GraphNode *graph_find(Graph *graph, unsigned int nodeid);
 	void *graph_get(Graph *graph, unsigned int nodeid);
-	int graph_add(Graph *graph, void *data, unsigned int nodeids[]);
+	int graph_add(Graph *graph, void *data, unsigned int nodeids[], unsigned short nodeids_size);
 	int graph_remove(Graph *graph, unsigned int nodeid);
 	void graph_print(Graph *graph, DataToString tostring);
 	void graph_destroy(Graph *graph);

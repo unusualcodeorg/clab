@@ -219,6 +219,28 @@ int queue_concurrent_demo(void)
 
 /*-----------------------GRAPH DEMO--------------------- */
 
+/*
+[0]A----[1]B----[2]C
+	 |       |       |
+	 |       |       |
+[5]F----[4]E----[3]D
+	 |       |       |
+	 |       |       |
+[6]G----[7]H----[8]I
+
+Graph[
+ [8]:I - [3]:D, [7]:H,
+ [7]:H - [4]:E, [6]:G, [8]:I,
+ [6]:G - [5]:F, [7]:H,
+ [5]:F - [0]:A, [4]:E, [6]:G,
+ [4]:E - [1]:B, [3]:D, [5]:F, [7]:H,
+ [3]:D - [2]:C, [4]:E, [8]:I,
+ [2]:C - [1]:B, [3]:D,
+ [1]:B - [0]:A, [2]:C, [4]:E,
+ [0]:A - [1]:B, [5]:F,
+]
+ */
+
 char *graph_data_to_string(void *arg)
 {
 	char *data = (char *)arg;
@@ -231,13 +253,31 @@ int graph_demo(void)
 {
 	Graph *graph = graph_create(true, true);
 
-	graph_add(graph, "A", NULL);
+	graph_add(graph, "A", NULL, 0);
 
 	unsigned int ids_1[1] = {0};
-	graph_add(graph, "B", ids_1);
+	graph_add(graph, "B", ids_1, 1);
 
-	unsigned int ids_2[2] = {0, 1};
-	graph_add(graph, "C", ids_2);
+	unsigned int ids_2[1] = {1};
+	graph_add(graph, "C", ids_2, 1);
+
+	unsigned int ids_3[1] = {2};
+	graph_add(graph, "D", ids_3, 1);
+
+	unsigned int ids_4[2] = {1, 3};
+	graph_add(graph, "E", ids_4, 2);
+
+	unsigned int ids_5[2] = {0, 4};
+	graph_add(graph, "F", ids_5, 2);
+
+	unsigned int ids_6[1] = {5};
+	graph_add(graph, "G", ids_6, 1);
+
+	unsigned int ids_7[2] = {4, 6};
+	graph_add(graph, "H", ids_7, 2);
+
+	unsigned int ids_8[2] = {3, 7};
+	graph_add(graph, "I", ids_8, 2);
 
 	graph_print(graph, graph_data_to_string);
 	return EXIT_SUCCESS;

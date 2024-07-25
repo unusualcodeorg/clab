@@ -17,8 +17,10 @@ Graph *graph_create(bool autofree, bool debug)
 
 GraphNode *graph_node_find(GraphNode *node, unsigned int nodeid, GraphNode **visited_nodes)
 {
-	if (node == NULL || visited_nodes[nodeid] == node)
+	if (node == NULL || visited_nodes[node->id] == node)
 		return NULL;
+
+	visited_nodes[node->id] = node;
 
 	if (node->id == nodeid)
 		return node;
@@ -35,7 +37,6 @@ GraphNode *graph_node_find(GraphNode *node, unsigned int nodeid, GraphNode **vis
 		if (nd != NULL)
 			return nd;
 	}
-	visited_nodes[node->id] = node;
 	return NULL;
 }
 
@@ -69,7 +70,7 @@ int graph_add_root(Graph *graph, void *data)
 	return node->id;
 }
 
-int graph_add(Graph *graph, void *data, unsigned int nodeids[])
+int graph_add(Graph *graph, void *data, unsigned int nodeids[], unsigned short nodeids_size)
 {
 	if (graph->root == NULL)
 		return graph_add_root(graph, data);
@@ -77,7 +78,7 @@ int graph_add(Graph *graph, void *data, unsigned int nodeids[])
 	if (nodeids == NULL)
 		return GRAPH_ERROR;
 
-	unsigned short esize = sizeof(*nodeids) / sizeof(unsigned int);
+	unsigned short esize = nodeids_size;
 	if (esize == 0)
 		return GRAPH_ERROR;
 

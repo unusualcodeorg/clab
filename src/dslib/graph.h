@@ -1,5 +1,4 @@
 #include <stdbool.h>
-#include <stdint.h>
 
 #ifndef DS_LIB_GRAPH_H
 #define DS_LIB_GRAPH_H
@@ -16,15 +15,15 @@ extern "C"
 	// Traversal direction will be opposite to the direction of visit
 	typedef struct
 	{
-		int32_t weight;
+		unsigned short weight;
 		struct GraphNode *end; // Use forward-declared GraphNode
 	} GraphEdge;
 
 	typedef struct GraphNode
 	{
-		uint64_t id;
+		unsigned int id;
 		void *data;
-		u_int8_t esize;
+		unsigned short esize;
 		GraphEdge **edges;
 	} GraphNode;
 
@@ -34,7 +33,7 @@ extern "C"
 	typedef struct
 	{
 		bool debug;
-		uint64_t size;
+		unsigned int size;
 		bool autofree; // free data on pop
 		GraphNode *root;
 	} Graph;
@@ -42,10 +41,10 @@ extern "C"
 	typedef void (*GraphTraversalCallback)(GraphNode *, void *arg);
 
 	Graph *graph_create(bool autofree, bool debug);
-	GraphNode *graph_find(Graph *graph, uint64_t nodeid);
-	void *graph_get(Graph *graph, uint64_t nodeid);
-	int graph_add(Graph *graph, void *data, uint64_t nodeids[]);
-	int graph_remove(Graph *graph, uint64_t nodeid);
+	GraphNode *graph_find(Graph *graph, unsigned int nodeid);
+	void *graph_get(Graph *graph, unsigned int nodeid);
+	int graph_add(Graph *graph, void *data, unsigned int nodeids[]);
+	int graph_remove(Graph *graph, unsigned int nodeid);
 	void graph_print(Graph *graph, DataToString tostring);
 	void graph_destroy(Graph *graph);
 

@@ -222,8 +222,8 @@ int queue_concurrent_demo(void)
 char *graph_data_to_string(void *arg)
 {
 	char *data = (char *)arg;
-	char *buffer = malloc(strlen(data));
-	snprintf(buffer, strlen(data), "%s", data);
+	char *buffer = malloc(100);
+	snprintf(buffer, 100, "%s", data);
 	return buffer;
 }
 

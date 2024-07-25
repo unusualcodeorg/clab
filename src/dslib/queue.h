@@ -1,4 +1,3 @@
-#include <stdint.h>
 #include <pthread.h>
 #include <stdbool.h>
 
@@ -22,7 +21,7 @@ extern "C"
 	{
 		QueueNode *start;
 		QueueNode *end;
-		uint32_t size;
+		unsigned int size;
 		bool autofree; // free data on pop
 		pthread_rwlock_t rwlock;
 	} Queue;

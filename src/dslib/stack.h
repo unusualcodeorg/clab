@@ -1,4 +1,3 @@
-#include <stdint.h>
 #include <pthread.h>
 #include <stdbool.h>
 
@@ -21,7 +20,7 @@ extern "C"
 	typedef struct
 	{
 		StackNode *top;
-		uint32_t size;
+		unsigned int size;
 		bool autofree; // free data on pop
 		pthread_rwlock_t rwlock;
 	} Stack;

@@ -6,11 +6,11 @@
 #include <inttypes.h>
 #include <stdarg.h>
 
-Graph *graph_create(bool autofree, bool debug)
+Graph *graph_create(bool autofree)
 {
 	Graph *graph = (Graph *)malloc(sizeof(Graph));
 	graph->autofree = autofree;
-	graph->debug = debug;
+	graph->debug = false;
 	graph->root = NULL;
 	graph->size = 1;
 	return graph;
@@ -207,16 +207,14 @@ void graph_print(Graph *graph, DataToString tostring)
 	printf("]\n");
 }
 
-void graph_node_destroy(GraphNode *node, void *arg)
+void graph_node_destroy(GraphNode *node, bool autofree)
 {
 	if (node == NULL)
 		return;
 
-	bool autofree = *(bool *)arg;
-
 	for (unsigned short i = 0; i < node->esize; i++)
 	{
-		GraphEdge *edge = node->edges[0];
+		GraphEdge *edge = node->edges[i];
 		if (edge != NULL)
 			free(edge);
 	}
@@ -231,7 +229,14 @@ void graph_node_destroy(GraphNode *node, void *arg)
 void graph_destroy(Graph *graph)
 {
 	GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
-	graph_traverse(graph->root, visited_nodes, graph_node_destroy, &graph->autofree);
+	graph_traverse(graph->root, visited_nodes, NULL, &graph->autofree);
+
+	for (unsigned int i = 0; i < graph->size; i++)
+	{
+		GraphNode *node = visited_nodes[i];
+		graph_node_destroy(node, graph->autofree);
+	}
+
 	free(visited_nodes);
 	free(graph);
 }

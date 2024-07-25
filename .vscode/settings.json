@@ -47,6 +47,7 @@
 		"__bit_reference": "c",
 		"stdint.h": "c",
 		"ratio": "c",
-		"model.h": "c"
+		"model.h": "c",
+		"inttypes.h": "c"
 	}
 }

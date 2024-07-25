@@ -251,7 +251,7 @@ char *graph_data_to_string(void *arg)
 
 int graph_demo(void)
 {
-	Graph *graph = graph_create(true, true);
+	Graph *graph = graph_create(false);
 
 	graph_add(graph, "A", 0);
 	graph_add(graph, "B", 1, 0);
@@ -264,7 +264,47 @@ int graph_demo(void)
 	graph_add(graph, "I", 2, 3, 7);
 
 	graph_print(graph, graph_data_to_string);
+	graph_destroy(graph);
 	return EXIT_SUCCESS;
 }
 
 /*-----------------------GRAPH DEMO--------------------- */
+
+/*-----------------------GRAPH 2D ARR DEMO-------------- */
+char *graph_maze_data_to_string(void *arg)
+{
+	char data = *(char *)arg;
+	char *buffer = malloc(50);
+	snprintf(buffer, 50, "%c", data);
+	return buffer;
+}
+
+int graph_2d_arr_demo(void)
+{
+	const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
+
+	int rows = 7;
+	int cols = 9;
+	char **arr = malloc(rows * sizeof(char *));
+	for (int i = 0; i < rows; i++)
+		arr[i] = malloc(cols * sizeof(char));
+
+	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < cols; j++)
+		{
+			char data = maze[i * cols + j];
+			arr[i][j] = data;
+			printf("%c", data);
+		}
+		printf("\n");
+	}
+
+	Graph *graph = graph_from_2d_arr(arr, rows, cols, false);
+	graph_print(graph, graph_maze_data_to_string);
+
+	graph_destroy(graph);
+	free(arr);
+	return EXIT_SUCCESS;
+}
+/*-----------------------GRAPH 2D ARR DEMO-------------- */

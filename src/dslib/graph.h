@@ -41,13 +41,16 @@ extern "C"
 
 	typedef void (*GraphTraversalCallback)(GraphNode *, void *arg);
 
-	Graph *graph_create(bool autofree, bool debug);
+	Graph *graph_create(bool autofree);
 	GraphNode *graph_find(Graph *graph, unsigned int nodeid);
 	void *graph_get(Graph *graph, unsigned int nodeid);
 	int graph_add(Graph *graph, void *data, unsigned int linkcount, ...);
 	int graph_remove(Graph *graph, unsigned int nodeid);
 	void graph_print(Graph *graph, DataToString tostring);
 	void graph_destroy(Graph *graph);
+
+	// utils
+	Graph *graph_from_2d_arr(char **arr, int rows, int cols, bool autofree);
 
 #ifdef __cplusplus
 }

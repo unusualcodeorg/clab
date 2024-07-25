@@ -59,14 +59,14 @@ void *stack_peek(Stack *stack)
 	return data;
 }
 
-void stack_print(Stack *stack, fn_to_string to_string)
+void stack_print(Stack *stack, DataToString tostring)
 {
 	pthread_rwlock_rdlock(&stack->rwlock);
 	printf("Stack: [\n");
 	StackNode *top = stack->top;
 	while (top != NULL)
 	{
-		char *data_str = to_string(top->data);
+		char *data_str = tostring(top->data);
 		printf("  %s", data_str);
 		free(data_str);
 

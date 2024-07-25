@@ -10,7 +10,7 @@ extern "C"
 {
 #endif
 
-	typedef char *(*fn_to_string)(void *);
+	typedef char *(*DataToString)(void *);
 
 	typedef struct StackNode
 	{
@@ -30,7 +30,7 @@ extern "C"
 	void stack_push(Stack *stack, void *data);
 	void *stack_pop(Stack *stack);
 	void *stack_peek(Stack *stack);
-	void stack_print(Stack *stack, fn_to_string to_string);
+	void stack_print(Stack *stack, DataToString tostring);
 	void stack_destroy(Stack *stack);
 
 #ifdef __cplusplus

@@ -10,7 +10,7 @@ extern "C"
 {
 #endif
 
-	typedef char *(*fn_to_string)(void *);
+	typedef char *(*DataToString)(void *);
 
 	typedef struct QueueNode
 	{
@@ -31,7 +31,7 @@ extern "C"
 	void queue_enqueue(Queue *queue, void *data);
 	void *queue_dequeue(Queue *queue);
 	void *queue_peek(Queue *queue);
-	void queue_print(Queue *queue, fn_to_string to_string);
+	void queue_print(Queue *queue, DataToString tostring);
 	void queue_destroy(Queue *queue);
 
 #ifdef __cplusplus

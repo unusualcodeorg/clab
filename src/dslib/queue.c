@@ -78,14 +78,14 @@ void *queue_peek(Queue *queue)
 	return data;
 }
 
-void queue_print(Queue *queue, fn_to_string to_string)
+void queue_print(Queue *queue, DataToString tostring)
 {
 	pthread_rwlock_rdlock(&queue->rwlock);
 	printf("Queue: [\n");
 	QueueNode *start = queue->start;
 	while (start != NULL)
 	{
-		char *str = to_string(start->data);
+		char *str = tostring(start->data);
 		printf("  %s", str);
 		free(str);
 

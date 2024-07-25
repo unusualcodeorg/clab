@@ -23,7 +23,7 @@ extern "C"
 		QueueNode *start;
 		QueueNode *end;
 		uint32_t size;
-		bool autofree;
+		bool autofree; // free data on pop
 		pthread_rwlock_t rwlock;
 	} Queue;
 

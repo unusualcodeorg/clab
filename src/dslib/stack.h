@@ -22,7 +22,7 @@ extern "C"
 	{
 		StackNode *top;
 		uint32_t size;
-		bool autofree;
+		bool autofree; // free data on pop
 		pthread_rwlock_t rwlock;
 	} Stack;
 

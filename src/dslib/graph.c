@@ -146,6 +146,8 @@ void graph_traverse(GraphNode *node, GraphNode **visited_nodes, GraphTraversalCa
 	if (node == NULL || visited_nodes[node->id] == node)
 		return;
 
+	visited_nodes[node->id] = node;
+
 	for (unsigned short i = 0; i < node->esize; i++)
 	{
 		GraphEdge *edge = node->edges[i];
@@ -156,8 +158,6 @@ void graph_traverse(GraphNode *node, GraphNode **visited_nodes, GraphTraversalCa
 
 	if (lambda != NULL)
 		lambda(node, arg);
-
-	visited_nodes[node->id] = node;
 }
 
 void graph_print_node(GraphNode *node, void *arg)
@@ -168,7 +168,7 @@ void graph_print_node(GraphNode *node, void *arg)
 	DataToString tostring = (DataToString)arg;
 
 	char *str = tostring(node->data);
-	printf("{[%d]:%s-> ", node->id, str);
+	printf(" [%d]:%s -", node->id, str);
 	free(str);
 
 	for (unsigned short i = 0; i < node->esize; i++)
@@ -178,13 +178,13 @@ void graph_print_node(GraphNode *node, void *arg)
 			continue;
 
 		char *s = tostring(edge->end->data);
-		printf("[%d]{%s}-> ", edge->end->id, s);
+		printf(" [%d]:%s", edge->end->id, s);
 		free(s);
 
-		if (i < node->esize)
+		if (i < node->esize - 1)
 			printf(",");
 	}
-	printf("},\n");
+	printf(",\n");
 }
 
 void graph_print(Graph *graph, DataToString tostring)
@@ -196,7 +196,7 @@ void graph_print(Graph *graph, DataToString tostring)
 		graph_traverse(graph->root, visited_nodes, graph_print_node, (void *)tostring);
 		free(visited_nodes);
 	}
-	printf("\n]\n");
+	printf("]\n");
 }
 
 void graph_node_destroy(GraphNode *node, void *arg)

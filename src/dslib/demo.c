@@ -230,7 +230,15 @@ char *graph_data_to_string(void *arg)
 int graph_demo(void)
 {
 	Graph *graph = graph_create(true, true);
+
 	graph_add(graph, "A", NULL);
+
+	unsigned int ids_1[1] = {0};
+	graph_add(graph, "B", ids_1);
+
+	unsigned int ids_2[2] = {0, 1};
+	graph_add(graph, "C", ids_2);
+
 	graph_print(graph, graph_data_to_string);
 	return EXIT_SUCCESS;
 }

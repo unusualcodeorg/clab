@@ -29,6 +29,15 @@ extern "C"
 		GraphEdge **edges;
 	} GraphNode;
 
+	typedef struct
+	{
+		void *p1;
+		void *p2;
+		void *p3;
+	} GraphCallbackArg;
+
+	typedef void (*GraphCallback)(GraphNode *, GraphCallbackArg *arg);
+
 	/**
 	 * Think as if a 1D array of nodes, in which a node can connect with other nodes via connections
 	 */
@@ -40,8 +49,6 @@ extern "C"
 		GraphNode *root;
 		pthread_rwlock_t rwlock;
 	} Graph;
-
-	typedef void (*GraphTraversalCallback)(GraphNode *, void *arg);
 
 	Graph *graph_create(bool autofree);
 	GraphNode *graph_find(Graph *graph, unsigned int nodeid);

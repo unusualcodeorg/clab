@@ -50,6 +50,8 @@
 		"model.h": "c",
 		"inttypes.h": "c",
 		"mutex": "c",
-		"version": "c"
+		"version": "c",
+		"complex": "c",
+		"stdarg.h": "c"
 	}
 }

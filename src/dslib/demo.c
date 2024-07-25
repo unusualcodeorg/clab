@@ -301,7 +301,14 @@ int graph_2d_arr_demo(void)
 	}
 
 	Graph *graph = graph_from_2d_arr(arr, rows, cols, false);
+	graph->debug = true;
 	graph_print(graph, graph_maze_data_to_string);
+
+	char *data = (char *)graph_get(graph, 40);
+	printf("Graph found id %d : %c\n", 40, *data);
+
+	data = (char *)graph_get(graph, 24);
+	printf("Graph found id %d : %c\n", 24, *data);
 
 	graph_destroy(graph);
 	free(arr);

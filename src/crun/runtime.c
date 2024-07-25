@@ -13,21 +13,21 @@ void *runner(void *arg)
 		pthread_mutex_lock(&runtime->mutex);
 		while (runtime->pause)
 		{
-			if (runtime->debug)
+			if (runtime->debug == true)
 				printf("Runtime - %s: has paused.\n", runtime->name);
 
 			pthread_cond_wait(&runtime->cond, &runtime->mutex);
 
-			if (runtime->debug)
+			if (runtime->debug == true)
 				printf("Runtime - %s: has resumed.\n", runtime->name);
 		}
 		pthread_mutex_unlock(&runtime->mutex);
 
 		if (runtime->execs->size == 0)
 		{
-			if (runtime->exit == true)
+			if (runtime->exit)
 			{
-				if (runtime->debug)
+				if (runtime->debug == true)
 					printf("Runtime - %s: will exit.\n", runtime->name);
 				break;
 			}
@@ -43,10 +43,10 @@ void *runner(void *arg)
 			free(exec);
 		}
 
-		if (runtime->debug)
+		if (runtime->debug == true)
 			printf("Runtime - %s: croutine executed.\n", runtime->name);
 	}
-	if (runtime->debug)
+	if (runtime->debug == true)
 		printf("Runtime - %s: has exited.\n", runtime->name);
 	return NULL;
 }
@@ -62,7 +62,7 @@ Runtime *crun_create(char *name, bool debug)
 	pthread_mutex_init(&runtime->mutex, NULL);
 	pthread_cond_init(&runtime->cond, NULL);
 	pthread_create(&runtime->thread, NULL, runner, runtime);
-	if (runtime->debug)
+	if (runtime->debug == true)
 		printf("Runtime - %s: is created.\n", runtime->name);
 	return runtime;
 }
@@ -110,7 +110,7 @@ int crun_destroy(Runtime *runtime)
 	pthread_mutex_destroy(&runtime->mutex);
 	pthread_cond_destroy(&runtime->cond);
 	pthread_cancel(runtime->thread);
-	if (runtime->debug)
+	if (runtime->debug == true)
 		printf("Runtime - %s: has destroyed.\n", runtime->name);
 	free(runtime);
 	return EXIT_SUCCESS;

@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdarg.h>
+#include <pthread.h>
 
 #ifndef DS_LIB_GRAPH_H
 #define DS_LIB_GRAPH_H
@@ -34,9 +35,10 @@ extern "C"
 	typedef struct
 	{
 		bool debug;
-		unsigned int size;
 		bool autofree; // free data on pop
+		unsigned int size;
 		GraphNode *root;
+		pthread_rwlock_t rwlock;
 	} Graph;
 
 	typedef void (*GraphTraversalCallback)(GraphNode *, void *arg);

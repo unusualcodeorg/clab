@@ -13,6 +13,7 @@ Graph *graph_create(bool autofree)
 	graph->debug = false;
 	graph->root = NULL;
 	graph->size = 1;
+	pthread_rwlock_init(&graph->rwlock, NULL);
 	return graph;
 }
 
@@ -43,23 +44,27 @@ GraphNode *graph_node_find(GraphNode *node, unsigned int nodeid, GraphNode **vis
 
 GraphNode *graph_find(Graph *graph, unsigned int nodeid)
 {
+	pthread_rwlock_rdlock(&graph->rwlock);
 	if (graph->root == NULL)
 		return NULL;
 	GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
 	GraphNode *node = graph_node_find(graph->root, nodeid, visited_nodes);
 	free(visited_nodes);
+	pthread_rwlock_unlock(&graph->rwlock);
 	return node;
 }
 
 void *graph_get(Graph *graph, unsigned int nodeid)
 {
+	pthread_rwlock_rdlock(&graph->rwlock);
 	GraphNode *node = graph_find(graph, nodeid);
 	if (node == NULL)
 		return NULL;
-
+	pthread_rwlock_unlock(&graph->rwlock);
 	return node->data;
 }
 
+// rwlock is not enterant, causes deadlock if tries to acquire the lock again
 int graph_add_root(Graph *graph, void *data)
 {
 	GraphNode *node = (GraphNode *)malloc(sizeof(GraphNode));
@@ -73,6 +78,7 @@ int graph_add_root(Graph *graph, void *data)
 
 int graph_add(Graph *graph, void *data, unsigned int linkcount, ...)
 {
+	pthread_rwlock_wrlock(&graph->rwlock);
 	if (graph->root == NULL)
 		return graph_add_root(graph, data);
 
@@ -114,11 +120,13 @@ int graph_add(Graph *graph, void *data, unsigned int linkcount, ...)
 	}
 
 	va_end(args);
+	pthread_rwlock_unlock(&graph->rwlock);
 	return node->id;
 }
 
 int graph_remove(Graph *graph, unsigned int nodeid)
 {
+	pthread_rwlock_wrlock(&graph->rwlock);
 	GraphNode *node = graph_find(graph, nodeid);
 	if (node == NULL)
 		return GRAPH_NODE_NULL_ID;
@@ -146,6 +154,7 @@ int graph_remove(Graph *graph, unsigned int nodeid)
 	}
 
 	free(node);
+	pthread_rwlock_unlock(&graph->rwlock);
 	return nodeid;
 }
 
@@ -197,6 +206,7 @@ void graph_print_node(GraphNode *node, void *arg)
 
 void graph_print(Graph *graph, DataToString tostring)
 {
+	pthread_rwlock_rdlock(&graph->rwlock);
 	printf("Graph[\n");
 	if (graph->root != NULL)
 	{
@@ -205,6 +215,7 @@ void graph_print(Graph *graph, DataToString tostring)
 		free(visited_nodes);
 	}
 	printf("]\n");
+	pthread_rwlock_unlock(&graph->rwlock);
 }
 
 void graph_node_destroy(GraphNode *node, bool autofree)
@@ -228,6 +239,7 @@ void graph_node_destroy(GraphNode *node, bool autofree)
 
 void graph_destroy(Graph *graph)
 {
+	pthread_rwlock_wrlock(&graph->rwlock);
 	GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
 	graph_traverse(graph->root, visited_nodes, NULL, &graph->autofree);
 
@@ -238,5 +250,7 @@ void graph_destroy(Graph *graph)
 	}
 
 	free(visited_nodes);
+	pthread_rwlock_unlock(&graph->rwlock);
+	pthread_rwlock_destroy(&graph->rwlock);
 	free(graph);
 }

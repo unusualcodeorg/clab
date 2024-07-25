@@ -48,6 +48,8 @@
 		"stdint.h": "c",
 		"ratio": "c",
 		"model.h": "c",
-		"inttypes.h": "c"
+		"inttypes.h": "c",
+		"mutex": "c",
+		"version": "c"
 	}
 }

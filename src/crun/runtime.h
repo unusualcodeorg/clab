@@ -22,7 +22,7 @@ extern "C"
 	{
 		char *name;
 		Queue *execs;
-		pthread_mutex_t mutex;
+		pthread_mutex_t mutex; // can acquire lock again, which rwlock does not provide
 		pthread_cond_t cond;
 		pthread_t thread;
 		bool exit;

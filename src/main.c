@@ -12,6 +12,7 @@ int main(void)
 	// queue_demo();
 	// queue_concurrent_demo();
 	// crun_demo();
-	console_demo();
+	// console_demo();
+	graph_demo();
 	return EXIT_SUCCESS;
 }

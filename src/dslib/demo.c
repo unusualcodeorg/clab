@@ -2,6 +2,7 @@
 #include "stack.h"
 #include "queue.h"
 #include "model.h"
+#include "graph.h"
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -215,3 +216,23 @@ int queue_concurrent_demo(void)
 }
 
 /*--------------------QUEUE CUNCURRENT DEMO------------- */
+
+/*-----------------------GRAPH DEMO--------------------- */
+
+char *graph_data_to_string(void *arg)
+{
+	char *data = (char *)arg;
+	char *buffer = malloc(strlen(data));
+	snprintf(buffer, strlen(data), "%s", data);
+	return buffer;
+}
+
+int graph_demo(void)
+{
+	Graph *graph = graph_create(true, true);
+	graph_add(graph, "A", NULL);
+	graph_print(graph, graph_data_to_string);
+	return EXIT_SUCCESS;
+}
+
+/*-----------------------GRAPH DEMO--------------------- */

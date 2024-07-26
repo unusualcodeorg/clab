@@ -82,9 +82,10 @@ GraphNode *graph_node_find(GraphNode *start, unsigned int nodeid, GraphNode **vi
 
 GraphNode *graph_find(Graph *graph, unsigned int nodeid)
 {
-	pthread_rwlock_rdlock(&graph->rwlock);
 	if (graph->root == NULL || nodeid >= graph->size)
 		return NULL;
+
+	pthread_rwlock_rdlock(&graph->rwlock);
 
 	if (graph->debug == true)
 		printf("\n");

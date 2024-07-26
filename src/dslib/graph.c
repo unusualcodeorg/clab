@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <pthread.h>
-#include <inttypes.h>
 #include <stdarg.h>
 
 Graph *graph_create(bool autofree)
@@ -13,7 +12,7 @@ Graph *graph_create(bool autofree)
 	graph->autofree = autofree;
 	graph->debug = false;
 	graph->root = NULL;
-	graph->size = 1;
+	graph->size = 0;
 	pthread_rwlock_init(&graph->rwlock, NULL);
 	return graph;
 }
@@ -117,6 +116,7 @@ int graph_add_root(Graph *graph, void *data)
 	node->esize = 0;
 	node->edges = NULL;
 	graph->root = node;
+	graph->size = 1;
 	return node->id;
 }
 
@@ -225,7 +225,7 @@ void graph_traverse(GraphNode *start, GraphNode **visited_nodes, GraphCallback c
 			stack_push(stack, edge->end);
 		}
 
-		if (arg->debug == true && callback != NULL)
+		if (callback != NULL)
 			callback(node, arg);
 	}
 

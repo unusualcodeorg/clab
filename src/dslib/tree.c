@@ -97,6 +97,9 @@ TreeNode *tree_find(Tree *tree, unsigned int nodeid)
 
 int tree_add_root(Tree *tree, void *data)
 {
+	if (tree->root != NULL)
+		return TREE_ERROR;
+
 	TreeNode *node = (TreeNode *)malloc(sizeof(TreeNode));
 	node->id = 0;
 	node->data = data;
@@ -117,12 +120,6 @@ void *tree_get(Tree *tree, unsigned int nodeid)
 
 int tree_add(Tree *tree, void *data, unsigned int parentid)
 {
-	if (tree->root == NULL)
-	{
-		unsigned int id = tree_add_root(tree, data);
-		return id;
-	}
-
 	TreeNode *parent = tree_find(tree, parentid);
 	if (parent == NULL)
 		return TREE_ERROR;

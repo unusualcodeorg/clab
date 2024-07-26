@@ -13,7 +13,8 @@ int main(void)
 	// queue_concurrent_demo();
 	// crun_demo();
 	// graph_demo();
-	graph_2d_arr_demo();
+	// graph_2d_arr_demo();
+	tree_demo();
 	// console_demo();
 	return EXIT_SUCCESS;
 }

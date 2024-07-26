@@ -12,6 +12,7 @@ extern "C"
 	int queue_concurrent_demo(void);
 	int graph_demo(void);
 	int graph_2d_arr_demo(void);
+	int tree_demo(void);
 
 #ifdef __cplusplus
 }

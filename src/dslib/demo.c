@@ -3,6 +3,7 @@
 #include "queue.h"
 #include "model.h"
 #include "graph.h"
+#include "tree.h"
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -259,15 +260,16 @@ int graph_demo(void)
 {
 	Graph *graph = graph_create(false);
 
-	graph_add(graph, "A", 0);
-	graph_add(graph, "B", 1, 0);
-	graph_add(graph, "C", 1, 1);
-	graph_add(graph, "D", 1, 2);
-	graph_add(graph, "E", 2, 1, 3);
-	graph_add(graph, "F", 2, 0, 4);
-	graph_add(graph, "G", 1, 5);
-	graph_add(graph, "H", 2, 4, 6);
-	graph_add(graph, "I", 2, 3, 7);
+	unsigned int id_A = graph_add(graph, "A", 0);
+	unsigned int id_B = graph_add(graph, "B", 1, id_A);
+	unsigned int id_C = graph_add(graph, "C", 1, id_B);
+	unsigned int id_D = graph_add(graph, "D", 1, id_C);
+	unsigned int id_E = graph_add(graph, "E", 2, id_B, id_D);
+	unsigned int id_F = graph_add(graph, "F", 2, id_A, id_E);
+	unsigned int id_G = graph_add(graph, "G", 1, id_F);
+	unsigned int id_H = graph_add(graph, "H", 2, id_E, id_G);
+	unsigned int id_I = graph_add(graph, "I", 2, id_D, id_H);
+	(void)id_I; // suppress unused warning
 
 	graph_print(graph, graph_data_to_string);
 	graph_destroy(graph);
@@ -321,3 +323,37 @@ int graph_2d_arr_demo(void)
 	return EXIT_SUCCESS;
 }
 /*-----------------------GRAPH 2D ARR DEMO-------------- */
+
+/*------------------------TREE DEMO-------------------- */
+char *tree_data_to_string(void *arg)
+{
+	char data = *(char *)arg;
+	char *buffer = malloc(50);
+	snprintf(buffer, 50, "%c", data);
+	return buffer;
+}
+int tree_demo(void)
+{
+	Tree *tree = tree_create(true);
+	unsigned int id_A = tree_add_root(tree, "A");
+	unsigned int id_B = tree_add(tree, "B", id_A);
+	unsigned int id_C = tree_add(tree, "C", id_A);
+	unsigned int id_D = tree_add(tree, "D", id_A);
+	tree_add(tree, "E", id_B);
+	tree_add(tree, "F", id_B);
+	tree_add(tree, "G", id_C);
+	tree_add(tree, "H", id_C);
+	tree_add(tree, "I", id_D);
+
+	tree_print(tree, tree_data_to_string);
+
+	char *data = tree_get(tree, id_C);
+	printf("\nTree: Get - id %d = %s\n", id_C, data);
+
+	tree_remove(tree, id_C);
+	printf("\nTree: Remove - id %d = %s", id_D, data);
+	tree_print(tree, tree_data_to_string);
+
+	return EXIT_FAILURE;
+}
+/*------------------------TREE DEMO-------------------- */

@@ -87,9 +87,6 @@ GraphNode *graph_find(Graph *graph, unsigned int nodeid)
 
 	pthread_rwlock_rdlock(&graph->rwlock);
 
-	if (graph->debug == true)
-		printf("\n");
-
 	GraphCallbackArg *arg = graph_default_callback_arg(graph->debug);
 	GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
 	GraphNode *node = graph_node_find(graph->root, nodeid, visited_nodes, graph_traversal_callback, arg);
@@ -129,6 +126,9 @@ int graph_add_root(Graph *graph, void *data)
 int graph_add(Graph *graph, void *data, unsigned int linkcount, ...)
 {
 	pthread_rwlock_wrlock(&graph->rwlock);
+	if (graph->debug == true)
+		printf("\nGraph: Add To %u Node\n", linkcount);
+
 	if (graph->root == NULL)
 	{
 		unsigned int id = graph_add_root(graph, data);
@@ -272,6 +272,7 @@ void graph_print_node(GraphNode *node, GraphCallbackArg *arg)
 void graph_print(Graph *graph, DataToString tostring)
 {
 	pthread_rwlock_rdlock(&graph->rwlock);
+	unsigned int counter = 0;
 	printf("\nGraph[\n");
 	if (graph->root != NULL)
 	{
@@ -280,14 +281,14 @@ void graph_print(Graph *graph, DataToString tostring)
 
 		GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
 		graph_traverse(graph->root, visited_nodes, graph_print_node, arg);
-
-		if (graph->debug == true)
-			printf("\nGraph: Print Traversal = %u\n", arg->counter);
-
+		counter = arg->counter;
 		free(visited_nodes);
 		free(arg);
 	}
 	printf("]\n");
+
+	if (graph->debug == true)
+		printf("Graph: Print Traversal = %u\n\n", counter);
 	pthread_rwlock_unlock(&graph->rwlock);
 }
 

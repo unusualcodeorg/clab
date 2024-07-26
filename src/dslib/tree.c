@@ -85,9 +85,6 @@ TreeNode *tree_find(Tree *tree, unsigned int nodeid)
 
 	pthread_rwlock_rdlock(&tree->rwlock);
 
-	if (tree->debug == true)
-		printf("\n");
-
 	TreeCallbackArg *arg = tree_default_callback_arg(tree->debug);
 	TreeNode *node = tree_node_find(tree->root, nodeid, tree_traversal_callback, arg);
 
@@ -126,6 +123,9 @@ void *tree_get(Tree *tree, unsigned int nodeid)
 
 int tree_add(Tree *tree, void *data, unsigned int parentid)
 {
+	if (tree->debug == true)
+		printf("\nTree: Add To = %u\n", parentid);
+
 	TreeNode *parent = tree_find(tree, parentid);
 	if (parent == NULL)
 		return TREE_ERROR;
@@ -205,19 +205,20 @@ void tree_print_node(TreeNode *node, TreeCallbackArg *arg)
 void tree_print(Tree *tree, DataToString tostring)
 {
 	pthread_rwlock_rdlock(&tree->rwlock);
+	unsigned int counter = 0;
 	printf("\nTree[\n");
 	if (tree->root != NULL)
 	{
 		TreeCallbackArg *arg = tree_default_callback_arg(tree->debug);
 		arg->lambda = (void *)tostring;
 		tree_traverse(tree->root, tree_print_node, arg);
-
-		if (tree->debug == true)
-			printf("\nTree: Print Traversal = %u\n", arg->counter);
-
+		counter = arg->counter;
 		free(arg);
 	}
 	printf("]\n");
+
+	if (tree->debug == true)
+		printf("Tree: Print Traversal = %u\n\n", counter);
 	pthread_rwlock_unlock(&tree->rwlock);
 }
 

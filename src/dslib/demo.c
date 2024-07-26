@@ -259,6 +259,7 @@ char *graph_data_to_string(void *arg)
 int graph_demo(void)
 {
 	Graph *graph = graph_create(false);
+	graph->debug = true;
 
 	unsigned int id_A = graph_add(graph, "A", 0);
 	unsigned int id_B = graph_add(graph, "B", 1, id_A);
@@ -335,15 +336,20 @@ char *tree_data_to_string(void *arg)
 int tree_demo(void)
 {
 	Tree *tree = tree_create(true);
+	tree->debug = true;
+
 	unsigned int id_A = tree_add_root(tree, "A");
 	unsigned int id_B = tree_add(tree, "B", id_A);
 	unsigned int id_C = tree_add(tree, "C", id_A);
 	unsigned int id_D = tree_add(tree, "D", id_A);
-	tree_add(tree, "E", id_B);
+	unsigned int id_E = tree_add(tree, "E", id_B);
 	tree_add(tree, "F", id_B);
 	tree_add(tree, "G", id_C);
 	tree_add(tree, "H", id_C);
 	tree_add(tree, "I", id_D);
+	tree_add(tree, "J", id_E);
+	tree_add(tree, "K", id_E);
+	tree_add(tree, "L", id_E);
 
 	tree_print(tree, tree_data_to_string);
 

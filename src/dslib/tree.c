@@ -12,7 +12,9 @@ Tree *tree_create(bool autofree)
 	tree->autofree = autofree;
 	tree->size = 0;
 	tree->root = NULL;
-	pthread_rwlock_init(&tree->rwlock, NULL);
+	pthread_mutexattr_init(&tree->mutexattr);
+	pthread_mutexattr_settype(&tree->mutexattr, PTHREAD_MUTEX_RECURSIVE);
+	pthread_mutex_init(&tree->mutex, &tree->mutexattr);
 	return tree;
 }
 
@@ -83,7 +85,7 @@ TreeNode *tree_find(Tree *tree, unsigned int nodeid)
 	if (tree->root == NULL || nodeid >= tree->size)
 		return NULL;
 
-	pthread_rwlock_rdlock(&tree->rwlock);
+	pthread_mutex_lock(&tree->mutex);
 
 	TreeCallbackArg *arg = tree_default_callback_arg(tree->debug);
 	TreeNode *node = tree_node_find(tree->root, nodeid, tree_traversal_callback, arg);
@@ -92,7 +94,7 @@ TreeNode *tree_find(Tree *tree, unsigned int nodeid)
 		printf("\nTree: Find Traversal = %u\n", arg->counter);
 
 	free(arg);
-	pthread_rwlock_unlock(&tree->rwlock);
+	pthread_mutex_unlock(&tree->mutex);
 	return node;
 }
 
@@ -101,7 +103,7 @@ int tree_add_root(Tree *tree, void *data)
 	if (tree->root != NULL)
 		return TREE_ERROR;
 
-	pthread_rwlock_wrlock(&tree->rwlock);
+	pthread_mutex_lock(&tree->mutex);
 	TreeNode *node = (TreeNode *)malloc(sizeof(TreeNode));
 	node->id = 0;
 	node->data = data;
@@ -109,7 +111,7 @@ int tree_add_root(Tree *tree, void *data)
 	node->children = NULL;
 	tree->root = node;
 	tree->size = 1;
-	pthread_rwlock_unlock(&tree->rwlock);
+	pthread_mutex_unlock(&tree->mutex);
 	return node->id;
 }
 
@@ -130,7 +132,7 @@ int tree_add(Tree *tree, void *data, unsigned int parentid)
 	if (parent == NULL)
 		return TREE_ERROR;
 
-	pthread_rwlock_wrlock(&tree->rwlock);
+	pthread_mutex_lock(&tree->mutex);
 	TreeNode *node = (TreeNode *)malloc(sizeof(TreeNode));
 	node->id = tree->size++;
 	node->data = data;
@@ -142,7 +144,7 @@ int tree_add(Tree *tree, void *data, unsigned int parentid)
 	parent->children = (TreeNode **)realloc(parent->children, parent->csize * sizeof(TreeNode *));
 	parent->children[parent->csize - 1] = node;
 
-	pthread_rwlock_unlock(&tree->rwlock);
+	pthread_mutex_unlock(&tree->mutex);
 	return node->id;
 }
 
@@ -204,7 +206,7 @@ void tree_print_node(TreeNode *node, TreeCallbackArg *arg)
 
 void tree_print(Tree *tree, DataToString tostring)
 {
-	pthread_rwlock_rdlock(&tree->rwlock);
+	pthread_mutex_lock(&tree->mutex);
 	unsigned int counter = 0;
 	printf("\nTree[\n");
 	if (tree->root != NULL)
@@ -219,7 +221,7 @@ void tree_print(Tree *tree, DataToString tostring)
 
 	if (tree->debug == true)
 		printf("Tree: Print Traversal = %u\n\n", counter);
-	pthread_rwlock_unlock(&tree->rwlock);
+	pthread_mutex_unlock(&tree->mutex);
 }
 
 void tree_node_destroy(TreeNode *node, bool autofree, TreeCallback callback, TreeCallbackArg *arg)
@@ -271,10 +273,13 @@ void tree_node_destroy(TreeNode *node, bool autofree, TreeCallback callback, Tre
 
 int tree_remove(Tree *tree, unsigned int nodeid)
 {
-	pthread_rwlock_wrlock(&tree->rwlock);
+	pthread_mutex_lock(&tree->mutex);
 	TreeNode *node = tree_find(tree, nodeid);
 	if (node == NULL)
+	{
+		pthread_mutex_unlock(&tree->mutex);
 		return TREE_NODE_NULL_ID;
+	}
 
 	TreeCallbackArg *arg = tree_default_callback_arg(tree->debug);
 
@@ -302,13 +307,13 @@ int tree_remove(Tree *tree, unsigned int nodeid)
 	}
 
 	tree_node_destroy(node, tree->autofree, tree_traversal_callback, arg);
-	pthread_rwlock_unlock(&tree->rwlock);
+	pthread_mutex_unlock(&tree->mutex);
 	return nodeid;
 }
 
 void tree_destroy(Tree *tree)
 {
-	pthread_rwlock_wrlock(&tree->rwlock);
+	pthread_mutex_lock(&tree->mutex);
 	if (tree->debug == true)
 		printf("\n");
 
@@ -319,6 +324,8 @@ void tree_destroy(Tree *tree)
 		printf("\nTree: Destroy Traversal = %u\n", arg->counter);
 
 	free(arg);
+	pthread_mutex_unlock(&tree->mutex);
+	pthread_mutex_destroy(&tree->mutex);
+	pthread_mutexattr_destroy(&tree->mutexattr);
 	free(tree);
-	pthread_rwlock_unlock(&tree->rwlock);
 }

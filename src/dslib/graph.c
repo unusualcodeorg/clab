@@ -13,7 +13,9 @@ Graph *graph_create(bool autofree)
 	graph->debug = false;
 	graph->root = NULL;
 	graph->size = 0;
-	pthread_rwlock_init(&graph->rwlock, NULL);
+	pthread_mutexattr_init(&graph->mutexattr);
+	pthread_mutexattr_settype(&graph->mutexattr, PTHREAD_MUTEX_RECURSIVE);
+	pthread_mutex_init(&graph->mutex, &graph->mutexattr);
 	return graph;
 }
 
@@ -85,7 +87,7 @@ GraphNode *graph_find(Graph *graph, unsigned int nodeid)
 	if (graph->root == NULL || nodeid >= graph->size)
 		return NULL;
 
-	pthread_rwlock_rdlock(&graph->rwlock);
+	pthread_mutex_lock(&graph->mutex);
 
 	GraphCallbackArg *arg = graph_default_callback_arg(graph->debug);
 	GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
@@ -96,23 +98,25 @@ GraphNode *graph_find(Graph *graph, unsigned int nodeid)
 
 	free(visited_nodes);
 	free(arg);
-	pthread_rwlock_unlock(&graph->rwlock);
+	pthread_mutex_unlock(&graph->mutex);
 	return node;
 }
 
 void *graph_get(Graph *graph, unsigned int nodeid)
 {
-	pthread_rwlock_rdlock(&graph->rwlock);
+	pthread_mutex_lock(&graph->mutex);
 	GraphNode *node = graph_find(graph, nodeid);
-	if (node == NULL)
-		return NULL;
-	pthread_rwlock_unlock(&graph->rwlock);
-	return node->data;
+	pthread_mutex_unlock(&graph->mutex);
+	return node != NULL ? node->data : NULL;
 }
 
 // rwlock is not enterant, causes deadlock if tries to acquire the lock again
 int graph_add_root(Graph *graph, void *data)
 {
+	if (graph->root != NULL)
+		return GRAPH_ERROR;
+
+	pthread_mutex_lock(&graph->mutex);
 	GraphNode *node = (GraphNode *)malloc(sizeof(GraphNode));
 	node->id = 0;
 	node->data = data;
@@ -120,24 +124,28 @@ int graph_add_root(Graph *graph, void *data)
 	node->edges = NULL;
 	graph->root = node;
 	graph->size = 1;
+	pthread_mutex_unlock(&graph->mutex);
 	return node->id;
 }
 
 int graph_add(Graph *graph, void *data, unsigned int linkcount, ...)
 {
-	pthread_rwlock_wrlock(&graph->rwlock);
+	pthread_mutex_lock(&graph->mutex);
 	if (graph->debug == true)
 		printf("\nGraph: Add To %u Node\n", linkcount);
 
 	if (graph->root == NULL)
 	{
 		unsigned int id = graph_add_root(graph, data);
-		pthread_rwlock_unlock(&graph->rwlock);
+		pthread_mutex_unlock(&graph->mutex);
 		return id;
 	}
 
 	if (linkcount == 0)
+	{
+		pthread_mutex_unlock(&graph->mutex);
 		return GRAPH_ERROR;
+	}
 
 	unsigned short nodeids[linkcount];
 	va_list args;
@@ -174,16 +182,19 @@ int graph_add(Graph *graph, void *data, unsigned int linkcount, ...)
 	}
 
 	va_end(args);
-	pthread_rwlock_unlock(&graph->rwlock);
+	pthread_mutex_unlock(&graph->mutex);
 	return node->id;
 }
 
 int graph_remove(Graph *graph, unsigned int nodeid)
 {
-	pthread_rwlock_wrlock(&graph->rwlock);
+	pthread_mutex_lock(&graph->mutex);
 	GraphNode *node = graph_find(graph, nodeid);
 	if (node == NULL)
+	{
+		pthread_mutex_unlock(&graph->mutex);
 		return GRAPH_NODE_NULL_ID;
+	}
 
 	for (unsigned short i = 0; i < node->esize; i++)
 	{
@@ -208,7 +219,7 @@ int graph_remove(Graph *graph, unsigned int nodeid)
 	}
 
 	free(node);
-	pthread_rwlock_unlock(&graph->rwlock);
+	pthread_mutex_unlock(&graph->mutex);
 	return nodeid;
 }
 
@@ -271,7 +282,7 @@ void graph_print_node(GraphNode *node, GraphCallbackArg *arg)
 
 void graph_print(Graph *graph, DataToString tostring)
 {
-	pthread_rwlock_rdlock(&graph->rwlock);
+	pthread_mutex_lock(&graph->mutex);
 	unsigned int counter = 0;
 	printf("\nGraph[\n");
 	if (graph->root != NULL)
@@ -289,7 +300,7 @@ void graph_print(Graph *graph, DataToString tostring)
 
 	if (graph->debug == true)
 		printf("Graph: Print Traversal = %u\n\n", counter);
-	pthread_rwlock_unlock(&graph->rwlock);
+	pthread_mutex_unlock(&graph->mutex);
 }
 
 void graph_node_destroy(GraphNode *node, bool autofree)
@@ -313,7 +324,7 @@ void graph_node_destroy(GraphNode *node, bool autofree)
 
 void graph_destroy(Graph *graph)
 {
-	pthread_rwlock_wrlock(&graph->rwlock);
+	pthread_mutex_lock(&graph->mutex);
 
 	if (graph->debug == true)
 		printf("\n");
@@ -333,7 +344,8 @@ void graph_destroy(Graph *graph)
 
 	free(visited_nodes);
 	free(arg);
-	pthread_rwlock_unlock(&graph->rwlock);
-	pthread_rwlock_destroy(&graph->rwlock);
+	pthread_mutex_unlock(&graph->mutex);
+	pthread_mutex_destroy(&graph->mutex);
+	pthread_mutexattr_destroy(&graph->mutexattr);
 	free(graph);
 }

@@ -52,6 +52,7 @@
 		"mutex": "c",
 		"version": "c",
 		"complex": "c",
-		"stdarg.h": "c"
+		"stdarg.h": "c",
+		"_types.h": "c"
 	}
 }

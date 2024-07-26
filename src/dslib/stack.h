@@ -22,7 +22,8 @@ extern "C"
 		StackNode *top;
 		unsigned int size;
 		bool autofree; // free data on pop
-		pthread_rwlock_t rwlock;
+		pthread_mutexattr_t mutexattr;
+		pthread_mutex_t mutex;
 	} Stack;
 
 	Stack *stack_create(bool autofree);

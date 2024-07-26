@@ -4,6 +4,7 @@
 #include "model.h"
 #include "graph.h"
 #include "tree.h"
+#include "../crun/runtime.h"
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -258,6 +259,7 @@ char *graph_data_to_string(void *arg)
 
 int graph_demo(void)
 {
+	printf("\n---------------GRAPH DEMO----------------\n");
 	Graph *graph = graph_create(false);
 	graph->debug = true;
 
@@ -274,10 +276,100 @@ int graph_demo(void)
 
 	graph_print(graph, graph_data_to_string);
 	graph_destroy(graph);
+	printf("\n---------------GRAPH DEMO----------------\n");
 	return EXIT_SUCCESS;
 }
 
 /*-----------------------GRAPH DEMO--------------------- */
+
+/*-----------------------GRAPH CONCURRENT DEMO-----------*/
+
+void croutine1(void *arg)
+{
+	unsigned long tid = (unsigned long)pthread_self();
+	printf("Thread ID: croutine1: %lu\n", tid);
+
+	Graph *graph = arg;
+	unsigned int id_A = 0;
+	unsigned int id_B = graph_add(graph, "B", 1, id_A);
+
+	usleep(1250000);
+	printf("Thread ID: croutine1: %lu\n", tid);
+	unsigned int id_C = graph_add(graph, "C", 1, id_B);
+
+	usleep(2250000);
+	printf("Thread ID: croutine1: %lu\n", tid);
+	unsigned int id_D = graph_add(graph, "D", 1, id_C);
+
+	usleep(550000);
+	printf("Thread ID: croutine1: %lu\n", tid);
+	unsigned int id_E = graph_add(graph, "E", 2, id_B, id_D);
+
+	usleep(1500000);
+	printf("Thread ID: croutine1: %lu\n", tid);
+	unsigned int id_F = graph_add(graph, "F", 2, id_A, id_E);
+
+	usleep(100000);
+	printf("Thread ID: croutine1: %lu\n", tid);
+	unsigned int id_G = graph_add(graph, "G", 1, id_F);
+
+	usleep(300000);
+	printf("Thread ID: croutine1: %lu\n", tid);
+	unsigned int id_H = graph_add(graph, "H", 2, id_E, id_G);
+
+	usleep(1000000);
+	printf("Thread ID: croutine1: %lu\n", tid);
+	unsigned int id_I = graph_add(graph, "I", 2, id_D, id_H);
+
+	(void)id_I; // suppress unused warning
+	usleep(2000000);
+}
+
+void croutine2(void *arg)
+{
+	unsigned long tid = (unsigned long)pthread_self();
+	printf("Thread ID: croutine2: %lu\n", tid);
+
+	Graph *graph = arg;
+	usleep(2000000);
+	printf("Thread ID: croutine2: %lu\n", tid);
+	char *data = (char *)graph_get(graph, 5);
+	printf("Graph found id %d : %s\n", 40, data);
+
+	usleep(2200000);
+	printf("Thread ID: croutine2: %lu\n", tid);
+	data = (char *)graph_get(graph, 2);
+	printf("Graph found id %d : %s\n", 40, data);
+}
+
+int graph_concurrent_demo(void)
+{
+	printf("\n---------------GRAPH CONCURRENT DEMO----------------\n");
+	Runtime *r1 = runtime_create("Runtime1", true);
+	Runtime *r2 = runtime_create("Runtime2", true);
+
+	unsigned long tid = (unsigned long)pthread_self();
+	printf("Thread ID: main: %lu\n", tid);
+
+	Graph *graph = graph_create(false);
+	graph->debug = true;
+	graph_add(graph, "A", 0);
+
+	runtime_exec(r1, croutine1, graph);
+	runtime_exec(r2, croutine2, graph);
+
+	graph_print(graph, graph_data_to_string);
+
+	runtime_destroy(r1);
+	runtime_destroy(r2);
+
+	printf("Thread ID: main: %lu\n", tid);
+	graph_print(graph, graph_data_to_string);
+	graph_destroy(graph);
+	printf("\n---------------GRAPH CONCURRENT DEMO----------------\n");
+	return EXIT_SUCCESS;
+}
+/*-----------------------GRAPH CONCURRENT DEMO-----------*/
 
 /*-----------------------GRAPH 2D ARR DEMO-------------- */
 char *graph_maze_data_to_string(void *arg)
@@ -290,6 +382,7 @@ char *graph_maze_data_to_string(void *arg)
 
 int graph_2d_arr_demo(void)
 {
+	printf("\n---------------GRAPH 2D ARR DEMO----------------\n");
 	const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
 
 	int rows = 7;
@@ -321,6 +414,7 @@ int graph_2d_arr_demo(void)
 
 	graph_destroy(graph);
 	free(arr);
+	printf("\n---------------GRAPH 2D ARR DEMO----------------\n");
 	return EXIT_SUCCESS;
 }
 /*-----------------------GRAPH 2D ARR DEMO-------------- */
@@ -335,6 +429,7 @@ char *tree_data_to_string(void *arg)
 }
 int tree_demo(void)
 {
+	printf("\n---------------TREE DEMO----------------\n");
 	Tree *tree = tree_create(true);
 	tree->debug = true;
 
@@ -360,6 +455,7 @@ int tree_demo(void)
 	printf("\nTree: Remove - id %d = %s", id_D, data);
 	tree_print(tree, tree_data_to_string);
 
+	printf("\n---------------TREE DEMO----------------\n");
 	return EXIT_FAILURE;
 }
 /*------------------------TREE DEMO-------------------- */

@@ -47,7 +47,8 @@ extern "C"
 		bool autofree; // free data on pop
 		unsigned int size;
 		GraphNode *root;
-		pthread_rwlock_t rwlock;
+		pthread_mutexattr_t mutexattr;
+		pthread_mutex_t mutex;
 	} Graph;
 
 	Graph *graph_create(bool autofree);

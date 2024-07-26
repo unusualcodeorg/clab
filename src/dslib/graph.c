@@ -1,4 +1,5 @@
 #include "graph.h"
+#include "stack.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -183,7 +184,8 @@ int graph_remove(Graph *graph, unsigned int nodeid)
 	return nodeid;
 }
 
-void graph_traverse(GraphNode *node, GraphNode **visited_nodes, GraphCallback callback, GraphCallbackArg *arg)
+// can lead to stackoverflow for large graphs
+void graph_traverse_recursive(GraphNode *node, GraphNode **visited_nodes, GraphCallback callback, GraphCallbackArg *arg)
 {
 	if (arg->debug == true)
 		arg->counter++;
@@ -198,11 +200,41 @@ void graph_traverse(GraphNode *node, GraphNode **visited_nodes, GraphCallback ca
 		GraphEdge *edge = node->edges[i];
 		if (edge == NULL || edge->end == NULL)
 			continue;
-		graph_traverse(edge->end, visited_nodes, callback, arg);
+		graph_traverse_recursive(edge->end, visited_nodes, callback, arg);
 	}
 
 	if (arg->debug == true && callback != NULL)
 		callback(node, arg);
+}
+
+void graph_traverse(GraphNode *start, GraphNode **visited_nodes, GraphCallback callback, GraphCallbackArg *arg)
+{
+	Stack *stack = stack_create(false);
+	stack_push(stack, start);
+
+	while (stack->size > 0)
+	{
+		if (arg->debug == true)
+			arg->counter++;
+
+		GraphNode *node = stack_pop(stack);
+		if (node == NULL || visited_nodes[node->id] == node)
+			continue;
+		visited_nodes[node->id] = node;
+
+		for (unsigned short i = 0; i < node->esize; i++)
+		{
+			GraphEdge *edge = node->edges[i];
+			if (edge == NULL || edge->end == NULL)
+				continue;
+			stack_push(stack, edge->end);
+		}
+
+		if (arg->debug == true && callback != NULL)
+			callback(node, arg);
+	}
+
+	stack_destroy(stack);
 }
 
 void graph_print_node(GraphNode *node, GraphCallbackArg *arg)

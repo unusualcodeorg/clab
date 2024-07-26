@@ -29,6 +29,7 @@ extern "C"
 	void stack_push(Stack *stack, void *data);
 	void *stack_pop(Stack *stack);
 	void *stack_peek(Stack *stack);
+	void *stack_get(Stack *stack, unsigned int position);
 	void stack_print(Stack *stack, DataToString tostring);
 	void stack_destroy(Stack *stack);
 

@@ -23,8 +23,11 @@ int stack_demo(void)
 
 	printf("Stack: Size = %d\n", stack->size);
 
+	char *data = stack_get(stack, 2);
+	printf("Stack: Get - Position 2 = %s\n", data);
+
 	stack_pop(stack);
-	printf("Stack Pop: Size = %d\n", stack->size);
+	printf("Stack: Pop - Size = %d\n", stack->size);
 
 	Customer *customer = stack_peek(stack);
 	printf("Stack: Peek = %s\n", customer_to_string(customer));
@@ -126,6 +129,9 @@ int queue_demo(void)
 	queue_enqueue(queue, new_customer("Janishar Ali 4", 87, true));
 
 	printf("Queue: Size = %d\n", queue->size);
+
+	char *data = queue_get(queue, 2);
+	printf("Queue: Get - Position 2 = %s\n", data);
 
 	queue_dequeue(queue);
 	printf("Queue Dequeue: Size = %d\n", queue->size);

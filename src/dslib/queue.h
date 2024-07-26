@@ -30,6 +30,7 @@ extern "C"
 	void queue_enqueue(Queue *queue, void *data);
 	void *queue_dequeue(Queue *queue);
 	void *queue_peek(Queue *queue);
+	void *queue_get(Queue *queue, unsigned int position);
 	void queue_print(Queue *queue, DataToString tostring);
 	void queue_destroy(Queue *queue);
 

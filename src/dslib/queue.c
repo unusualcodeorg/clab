@@ -78,6 +78,29 @@ void *queue_peek(Queue *queue)
 	return data;
 }
 
+void *queue_get(Queue *queue, unsigned int position)
+{
+	if (position >= queue->size)
+		return NULL;
+
+	pthread_rwlock_rdlock(&queue->rwlock);
+	QueueNode *node = queue->start;
+	unsigned int counter = 1;
+
+	while (node != NULL)
+	{
+		if (counter > position)
+			break;
+		node = node->next;
+		counter++;
+	}
+
+	pthread_rwlock_unlock(&queue->rwlock);
+	if (node == NULL)
+		return NULL;
+	return node->data;
+}
+
 void queue_print(Queue *queue, DataToString tostring)
 {
 	pthread_rwlock_rdlock(&queue->rwlock);

@@ -59,6 +59,29 @@ void *stack_peek(Stack *stack)
 	return data;
 }
 
+void *stack_get(Stack *stack, unsigned int position)
+{
+	if (position >= stack->size)
+		return NULL;
+
+	pthread_rwlock_rdlock(&stack->rwlock);
+	StackNode *node = stack->top;
+	unsigned int counter = 1;
+
+	while (node != NULL)
+	{
+		if (counter > position)
+			break;
+		node = node->next;
+		counter++;
+	}
+
+	pthread_rwlock_unlock(&stack->rwlock);
+	if (node == NULL)
+		return NULL;
+	return node->data;
+}
+
 void stack_print(Stack *stack, DataToString tostring)
 {
 	pthread_rwlock_rdlock(&stack->rwlock);

@@ -33,7 +33,7 @@ void render(void *context)
 
 Console *console_create(unsigned int ftime_mills)
 {
-	Runtime *runtime = crun_create("Console", false);
+	Runtime *runtime = runtime_create("Console", false);
 	Console *console = (Console *)malloc(sizeof(Console));
 	console->runtime = runtime;
 	console->ftime = ftime_mills;
@@ -45,11 +45,11 @@ void console_render(Console *console, char *text)
 	Frame *frame = (Frame *)malloc(sizeof(Frame));
 	frame->ftime = console->ftime;
 	frame->text = text;
-	crun_exec(console->runtime, render, frame);
+	runtime_exec(console->runtime, render, frame);
 }
 
 void console_destroy(Console *console)
 {
-	crun_destroy(console->runtime);
+	runtime_destroy(console->runtime);
 	free(console);
 }

@@ -30,11 +30,11 @@ extern "C"
 		bool debug;
 	} Runtime;
 
-	Runtime *crun_create(char *name, bool debug);
-	void crun_pause(Runtime *runtime);
-	void crun_resume(Runtime *runtime);
-	void crun_exec(Runtime *runtime, Croutine croutine, void *context);
-	int crun_destroy(Runtime *runtime);
+	Runtime *runtime_create(char *name, bool debug);
+	void runtime_pause(Runtime *runtime);
+	void runtime_resume(Runtime *runtime);
+	void runtime_exec(Runtime *runtime, Croutine croutine, void *context);
+	int runtime_destroy(Runtime *runtime);
 
 #ifdef __cplusplus
 }

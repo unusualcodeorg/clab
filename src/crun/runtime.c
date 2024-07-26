@@ -31,7 +31,7 @@ void *runner(void *arg)
 					printf("Runtime - %s: will exit.\n", runtime->name);
 				break;
 			}
-			crun_pause(runtime);
+			runtime_pause(runtime);
 			continue;
 		}
 
@@ -51,7 +51,7 @@ void *runner(void *arg)
 	return NULL;
 }
 
-Runtime *crun_create(char *name, bool debug)
+Runtime *runtime_create(char *name, bool debug)
 {
 	Runtime *runtime = malloc(sizeof(Runtime));
 	runtime->name = name;
@@ -67,14 +67,14 @@ Runtime *crun_create(char *name, bool debug)
 	return runtime;
 }
 
-void crun_pause(Runtime *runtime)
+void runtime_pause(Runtime *runtime)
 {
 	pthread_mutex_lock(&runtime->mutex);
 	runtime->pause = true;
 	pthread_mutex_unlock(&runtime->mutex);
 }
 
-void crun_resume(Runtime *runtime)
+void runtime_resume(Runtime *runtime)
 {
 	pthread_mutex_lock(&runtime->mutex);
 	runtime->pause = false;
@@ -82,7 +82,7 @@ void crun_resume(Runtime *runtime)
 	pthread_mutex_unlock(&runtime->mutex);
 }
 
-void crun_exit(Runtime *runtime)
+void runtime_exit(Runtime *runtime)
 {
 	pthread_mutex_lock(&runtime->mutex);
 	runtime->pause = false;
@@ -91,7 +91,7 @@ void crun_exit(Runtime *runtime)
 	pthread_mutex_unlock(&runtime->mutex);
 }
 
-void crun_exec(Runtime *runtime, Croutine croutine, void *context)
+void runtime_exec(Runtime *runtime, Croutine croutine, void *context)
 {
 	Execution *exec = (Execution *)malloc(sizeof(Execution));
 	exec->croutine = croutine;
@@ -99,12 +99,12 @@ void crun_exec(Runtime *runtime, Croutine croutine, void *context)
 
 	queue_enqueue(runtime->execs, exec);
 	if (runtime->pause)
-		crun_resume(runtime);
+		runtime_resume(runtime);
 }
 
-int crun_destroy(Runtime *runtime)
+int runtime_destroy(Runtime *runtime)
 {
-	crun_exit(runtime);
+	runtime_exit(runtime);
 	pthread_join(runtime->thread, NULL);
 	queue_destroy(runtime->execs);
 	pthread_mutex_destroy(&runtime->mutex);

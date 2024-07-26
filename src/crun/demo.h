@@ -5,7 +5,7 @@
 extern "C"
 {
 #endif
-	int crun_demo(void);
+	int runtime_demo(void);
 
 #ifdef __cplusplus
 }

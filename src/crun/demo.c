@@ -15,19 +15,19 @@ void work(void* context)
 	printf("Croutine: completed\n");
 }
 
-int crun_demo(void)
+int runtime_demo(void)
 {
 	printf("\n--------------RUNTIME DEMO----------------\n");
-	Runtime *runtime = crun_create("Demo", true);
+	Runtime *runtime = runtime_create("Demo", true);
 
 	for (int i = 0; i < 3; i++)
 	{
 		printf("work scheduled\n");
-		crun_exec(runtime, work, NULL);
+		runtime_exec(runtime, work, NULL);
 		sleep(2);
 	}
 
-	crun_destroy(runtime);
+	runtime_destroy(runtime);
 	printf("--------------RUNTIME DEMO----------------\n");
 	return EXIT_SUCCESS;
 }

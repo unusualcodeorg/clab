@@ -24,35 +24,53 @@ void traversal_callback(GraphNode *node, GraphCallbackArg *arg)
 		printf("[%u]->", node->id);
 }
 
-GraphNode *graph_node_find(GraphNode *node, unsigned int nodeid, GraphNode **visited_nodes, GraphCallback callback, GraphCallbackArg *arg)
+GraphNode *graph_node_find(GraphNode *start, unsigned int nodeid, GraphNode **visited_nodes, GraphCallback callback, GraphCallbackArg *arg)
 {
-	if (arg->debug == true)
-		arg->counter++;
+	GraphNode *found = NULL;
 
-	if (node == NULL || visited_nodes[node->id] == node)
-		return NULL;
+	Stack *stack = stack_create(false);
+	stack_push(stack, start);
 
-	if (arg->debug == true && callback != NULL)
-		callback(node, arg);
-
-	visited_nodes[node->id] = node;
-
-	if (node->id == nodeid)
-		return node;
-
-	for (unsigned short i = 0; i < node->esize; i++)
+	while (stack->size > 0)
 	{
-		GraphEdge *edge = node->edges[i];
-		if (edge == NULL || edge->end == NULL)
-			continue;
-		if (edge->end->id == nodeid)
-			return edge->end;
+		if (arg->debug == true)
+			arg->counter++;
 
-		GraphNode *nd = graph_node_find(edge->end, nodeid, visited_nodes, callback, arg);
-		if (nd != NULL)
-			return nd;
+		GraphNode *node = stack_pop(stack);
+		if (node == NULL || visited_nodes[node->id] == node)
+			continue;
+		visited_nodes[node->id] = node;
+
+		if (arg->debug == true && callback != NULL)
+			callback(node, arg);
+
+		if (node->id == nodeid)
+		{
+			found = node;
+			break;
+		}
+
+		for (unsigned short i = 0; i < node->esize; i++)
+		{
+			GraphEdge *edge = node->edges[i];
+			if (edge == NULL || edge->end == NULL)
+				continue;
+
+			if (edge->end->id == nodeid)
+			{
+				found = edge->end;
+				break;
+			}
+
+			stack_push(stack, edge->end);
+		}
+
+		if (found != NULL)
+			break;
 	}
-	return NULL;
+
+	stack_destroy(stack);
+	return found;
 }
 
 GraphNode *graph_find(Graph *graph, unsigned int nodeid)

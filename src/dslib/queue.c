@@ -55,7 +55,7 @@ void *queue_dequeue(Queue *queue)
 		QueueNode *node = queue->start;
 		queue->start = node->next;
 		queue->size--;
-		if (queue->autofree)
+		if (queue->autofree == true)
 			free(node->data);
 		else
 			data = node->data;
@@ -105,7 +105,8 @@ void queue_destroy(Queue *queue)
 	while (start != NULL)
 	{
 		QueueNode *next = start->next;
-		free(start->data);
+		if (queue->autofree == true)
+			free(start->data);
 		free(start);
 		start = next;
 	}

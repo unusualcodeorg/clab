@@ -38,7 +38,7 @@ void *stack_pop(Stack *stack)
 		StackNode *node = stack->top;
 		stack->top = stack->top->next;
 		stack->size--;
-		if (stack->autofree)
+		if (stack->autofree == true)
 			free(node->data);
 		else
 			data = node->data;
@@ -86,7 +86,8 @@ void stack_destroy(Stack *stack)
 	while (top != NULL)
 	{
 		StackNode *next = top->next;
-		free(top->data);
+		if (stack->autofree == true)
+			free(top->data);
 		free(top);
 		top = next;
 	}

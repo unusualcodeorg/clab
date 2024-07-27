@@ -318,12 +318,20 @@ void tree_print_pretty(Tree *tree, DataToString tostring)
 			}
 		}
 
+		char *str = tostring(node->data);
 		for (int i = 0; i < depth; i++)
 			printf("   ");
-		char *str = tostring(node->data);
-		char *link = depth > 0 ? "└──" : "";
-		printf("%s[%d]%s\n", link, node->id, str);
-		free(str);
+
+		TreeNode *next = stack_peek(stack);
+		if (next != NULL && next->parent == node->parent)
+		{
+			printf("%s[%d]%s\n", "├──", node->id, str);
+		}
+		else
+		{
+			char *link = depth > 0 ? "└──" : "";
+			printf("%s[%d]%s\n", link, node->id, str);
+		}
 
 		if (node->csize > 0) // not leaf node
 		{
@@ -336,6 +344,7 @@ void tree_print_pretty(Tree *tree, DataToString tostring)
 			TreeNode *child = node->children[i];
 			stack_push(stack, child);
 		}
+		free(str);
 	}
 
 	stack_destroy(stack);

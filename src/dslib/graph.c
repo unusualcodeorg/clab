@@ -317,9 +317,6 @@ void graph_node_destroy(GraphNode *node, bool autofree)
 
 void graph_destroy(Graph *graph)
 {
-	if (graph == NULL)
-		return;
-
 	pthread_rwlock_trywrlock(&graph->rwlock); // thread will return if lock in not available
 
 	if (graph->debug == true)

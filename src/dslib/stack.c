@@ -101,9 +101,6 @@ void stack_print(Stack *stack, DataToString tostring)
 
 void stack_destroy(Stack *stack)
 {
-	if (stack == NULL)
-		return;
-
 	pthread_rwlock_trywrlock(&stack->rwlock);
 
 	StackNode *top = stack->top;

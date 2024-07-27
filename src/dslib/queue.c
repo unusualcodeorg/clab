@@ -118,9 +118,6 @@ void queue_print(Queue *queue, DataToString tostring)
 
 void queue_destroy(Queue *queue)
 {
-	if (queue == NULL)
-		return;
-
 	pthread_rwlock_trywrlock(&queue->rwlock);
 
 	QueueNode *start = queue->start;

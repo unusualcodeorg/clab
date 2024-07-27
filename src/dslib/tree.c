@@ -307,9 +307,6 @@ int tree_remove(Tree *tree, unsigned int nodeid)
 
 void tree_destroy(Tree *tree)
 {
-	if (tree == NULL)
-		return;
-
 	pthread_rwlock_trywrlock(&tree->rwlock);
 
 	if (tree->debug == true)

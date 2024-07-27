@@ -52,7 +52,8 @@ extern "C"
 	} Graph;
 
 	Graph *graph_create(bool autofree);
-	GraphNode *graph_find(Graph *graph, unsigned int nodeid);
+	GraphNode *graph_find_bfs(Graph *graph, unsigned int nodeid);
+	GraphNode *graph_find_dfs(Graph *graph, unsigned int nodeid);
 	void *graph_get(Graph *graph, unsigned int nodeid);
 	int graph_add(Graph *graph, void *data, unsigned int linkcount, ...); // var arg for node ids to link with
 	int graph_remove(Graph *graph, unsigned int nodeid);

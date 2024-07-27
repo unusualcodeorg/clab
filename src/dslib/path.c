@@ -32,7 +32,7 @@ Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid, unsigned int
 {
 	Stack *stack = stack_create(true);
 
-	GraphNode *start = graph_find(graph, srcnodeid);
+	GraphNode *start = graph_find_bfs(graph, srcnodeid);
 	if (start == NULL)
 		return stack;
 

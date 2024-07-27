@@ -350,7 +350,7 @@ void tree_print(Tree *tree, DataToString tostring)
 	}
 
 	if (tree->debug == true)
-		printf("Tree: Print DFS Traversal = %u\n\n", counter);
+		printf("Tree: Print DFS Traversal = %u\n", counter);
 
 	stack_destroy(stack);
 	pthread_rwlock_unlock(&tree->rwlock);
@@ -437,9 +437,6 @@ int tree_remove(Tree *tree, unsigned int nodeid)
 void tree_destroy(Tree *tree)
 {
 	pthread_rwlock_trywrlock(&tree->rwlock);
-
-	if (tree->debug == true)
-		printf("\n");
 
 	TreeCallbackArg *arg = tree_default_callback_arg(tree);
 	tree_node_destroy(tree->root, tree->autofree, tree_traversal_callback, arg);

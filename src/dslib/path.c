@@ -27,6 +27,7 @@ Location *location_from_graph_node(GraphNode *node)
 /**
  * Queue help is traversing nebouring nodes before its linked nodes,
  * Stack holds the backtracked path,
+ * Traversal algo don't allow to go back and up
  */
 Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid)
 {
@@ -68,22 +69,29 @@ Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid, unsigned int
 			if (edge == NULL || edge->end == NULL)
 				continue;
 
-			if (edge->end == node)
-				continue;
+			if (tnode->parent != NULL)
+			{
+				GraphNode *back = (GraphNode *)tnode->parent->data;
+				if (edge->end == back) // don't go back
+					continue;
+			}
 
 			TreeNode *cnode = tree_add_node(tree, edge->end, tnode);
 			queue_enqueue(queue, cnode);
 		}
 	}
 
+	// backtrack from the destination to source
 	while (found != NULL)
 	{
 		stack_push(stack, location_from_graph_node(found->data));
 		found = found->parent;
 	}
 
-	if (graph->debug)
+	if (graph->debug){
+		tree_print_raw(tree, path_tree_data_to_string);
 		tree_print(tree, path_tree_data_to_string);
+	}
 
 	tree_destroy(tree);
 	queue_destroy(queue);

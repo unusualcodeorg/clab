@@ -24,12 +24,17 @@ Location *location_from_graph_node(GraphNode *node)
 	return location;
 }
 
+Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid)
+{
+	return path_shortest_nw_graph_vis(graph, srcnodeid, dstnodeid, path_tree_data_to_string);
+}
+
 /**
  * Queue help is traversing nebouring nodes before its linked nodes,
  * Stack holds the backtracked path,
  * Traversal algo don't allow to go back and up
  */
-Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid)
+Stack *path_shortest_nw_graph_vis(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid, DataToString tostring)
 {
 	Stack *stack = stack_create(true);
 
@@ -88,10 +93,8 @@ Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid, unsigned int
 		found = found->parent;
 	}
 
-	if (graph->debug){
-		tree_print_raw(tree, path_tree_data_to_string);
-		tree_print(tree, path_tree_data_to_string);
-	}
+	if (graph->debug)
+		tree_print_raw(tree, tostring);
 
 	tree_destroy(tree);
 	queue_destroy(queue);

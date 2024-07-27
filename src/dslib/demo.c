@@ -502,6 +502,15 @@ char *location_to_string(void *arg)
 	return buffer;
 }
 
+char *path_graph_data_to_string(void *arg)
+{
+	GraphNode *node = (GraphNode *)arg;
+	char data = *(char *)node->data;
+	char *buffer = malloc(50);
+	snprintf(buffer, 50, "%c", data);
+	return buffer;
+}
+
 int path_shortest_nw_graph_demo(void)
 {
 	printf("\n-----SHORTEST PATH NON WEIGHTED GRAPH DEMO-----\n");
@@ -519,7 +528,7 @@ int path_shortest_nw_graph_demo(void)
 
 	graph_print(graph, graph_sd_data_to_string);
 
-	Stack *stack = path_shortest_nw_graph(graph, 6, 18); // G->S
+	Stack *stack = path_shortest_nw_graph_vis(graph, 6, 18, path_graph_data_to_string); // G->S
 	stack_print(stack, location_to_string);
 
 	stack_destroy(stack);

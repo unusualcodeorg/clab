@@ -286,7 +286,7 @@ void tree_print_raw(Tree *tree, DataToString tostring)
 	printf("]\n");
 
 	if (tree->debug == true)
-		printf("Tree: Raw Print BFS Traversal = %u\n\n", counter);
+		printf("Tree: Raw Print BFS Traversal = %u\n", counter);
 	pthread_rwlock_unlock(&tree->rwlock);
 }
 

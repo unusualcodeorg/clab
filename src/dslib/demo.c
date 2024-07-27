@@ -452,6 +452,9 @@ int tree_demo(void)
 	char *data = tree_get(tree, id_C);
 	printf("\nTree: Get - id %d = %s\n", id_C, data);
 
+	int maxdepth = tree_max_depth(tree);
+	printf("\nTree: Max Depth = %d\n", maxdepth);
+
 	tree_remove(tree, id_C);
 	printf("\nTree: Remove - id %d = %s", id_D, data);
 	tree_print(tree, tree_data_to_string);

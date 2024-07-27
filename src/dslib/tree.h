@@ -50,6 +50,7 @@ extern "C"
 	TreeNode *tree_add_node(Tree *tree, void *data, TreeNode *parent);
 	int tree_add(Tree *tree, void *data, unsigned int parentid);
 	int tree_remove(Tree *tree, unsigned int nodeid);
+	int tree_max_depth(Tree *tree);
 	void tree_print(Tree *tree, DataToString tostring);
 	void tree_destroy(Tree *tree);
 

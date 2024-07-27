@@ -46,8 +46,6 @@ TreeNode *tree_node_find_bfs(TreeNode *start, unsigned int nodeid, TreeCallback 
 			arg->counter++;
 
 		TreeNode *node = queue_dequeue(queue);
-		if (node == NULL)
-			continue;
 
 		if (callback != NULL)
 			callback(node, arg);
@@ -61,15 +59,11 @@ TreeNode *tree_node_find_bfs(TreeNode *start, unsigned int nodeid, TreeCallback 
 		for (unsigned short i = 0; i < node->csize; i++)
 		{
 			TreeNode *child = node->children[i];
-			if (child == NULL)
-				continue;
-
 			if (child->id == nodeid)
 			{
 				found = child;
 				break;
 			}
-
 			queue_enqueue(queue, child);
 		}
 
@@ -96,8 +90,6 @@ TreeNode *tree_node_find_dfs(TreeNode *start, long nodeid, TreeCallback callback
 			arg->counter++;
 
 		TreeNode *node = stack_pop(stack);
-		if (node == NULL)
-			continue;
 
 		if (callback != NULL)
 			callback(node, arg);
@@ -111,15 +103,11 @@ TreeNode *tree_node_find_dfs(TreeNode *start, long nodeid, TreeCallback callback
 		for (unsigned short i = 0; i < node->csize; i++)
 		{
 			TreeNode *child = node->children[i];
-			if (child == NULL)
-				continue;
-
 			if (child->id == nodeid)
 			{
 				found = child;
 				break;
 			}
-
 			stack_push(stack, child);
 		}
 
@@ -216,6 +204,48 @@ int tree_add(Tree *tree, void *data, unsigned int parentid)
 	return node != NULL ? node->id : TREE_NODE_NULL_ID;
 }
 
+int tree_max_depth(Tree *tree)
+{
+	if (tree == NULL)
+		return TREE_ERROR;
+
+	if (tree->size == 0)
+		return 0;
+
+	pthread_rwlock_rdlock(&tree->rwlock);
+
+	Stack *stack = stack_create(false);
+	stack_push(stack, tree->root);
+
+	int maxdepth = 0;
+	int depth = 0;
+
+	while (stack->size > 0)
+	{
+		if (depth > maxdepth)
+			maxdepth = depth;
+
+		TreeNode *node = stack_pop(stack);
+		if (node->csize == 0)
+		{
+			depth = 0;
+			continue;
+		}
+
+		for (unsigned short i = 0; i < node->csize; i++)
+		{
+			TreeNode *child = node->children[i];
+			stack_push(stack, child);
+		}
+
+		depth++;
+	}
+
+	stack_destroy(stack);
+	pthread_rwlock_unlock(&tree->rwlock);
+	return maxdepth;
+}
+
 void tree_print_node(TreeNode *node, TreeCallbackArg *arg)
 {
 	if (node == NULL)
@@ -233,9 +263,6 @@ void tree_print_node(TreeNode *node, TreeCallbackArg *arg)
 	for (unsigned short i = 0; i < node->csize; i++)
 	{
 		TreeNode *child = node->children[i];
-		if (child == NULL)
-			continue;
-
 		char *s = tostring(child->data);
 		printf(" [%d]%s", child->id, s);
 		free(s);
@@ -275,16 +302,11 @@ void tree_node_destroy(TreeNode *node, bool autofree, TreeCallback callback, Tre
 			arg->counter++;
 
 		TreeNode *node = stack_pop(stack);
-		if (node == NULL)
-			continue;
-
 		stack_push(history, node);
 
 		for (unsigned short i = 0; i < node->csize; i++)
 		{
 			TreeNode *child = node->children[i];
-			if (child == NULL)
-				continue;
 			stack_push(stack, child);
 		}
 	}
@@ -295,8 +317,6 @@ void tree_node_destroy(TreeNode *node, bool autofree, TreeCallback callback, Tre
 			arg->counter++;
 
 		TreeNode *n = stack_pop(stack);
-		if (n == NULL)
-			continue;
 
 		if (callback != NULL)
 			callback(n, arg);

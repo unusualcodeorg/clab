@@ -270,7 +270,7 @@ void tree_print_node(TreeNode *node, TreeCallbackArg *arg)
 	printf(",\n");
 }
 
-void tree_print(Tree *tree, DataToString tostring)
+void tree_print_raw(Tree *tree, DataToString tostring)
 {
 	pthread_rwlock_rdlock(&tree->rwlock);
 	unsigned int counter = 0;
@@ -286,11 +286,11 @@ void tree_print(Tree *tree, DataToString tostring)
 	printf("]\n");
 
 	if (tree->debug == true)
-		printf("Tree: Print BFS Traversal = %u\n\n", counter);
+		printf("Tree: Raw Print BFS Traversal = %u\n\n", counter);
 	pthread_rwlock_unlock(&tree->rwlock);
 }
 
-void tree_print_pretty(Tree *tree, DataToString tostring)
+void tree_print(Tree *tree, DataToString tostring)
 {
 	if (tree == NULL || tree->size == 0)
 		return;
@@ -300,11 +300,13 @@ void tree_print_pretty(Tree *tree, DataToString tostring)
 	Stack *stack = stack_create(false);
 	stack_push(stack, tree->root);
 
+	unsigned int counter = 0;
 	int depth = 0;
 	TreeNode *parent = tree->root;
 
 	while (stack->size > 0)
 	{
+		counter++;
 		TreeNode *node = stack_pop(stack);
 
 		// backtracks to the last known parent
@@ -346,6 +348,9 @@ void tree_print_pretty(Tree *tree, DataToString tostring)
 		}
 		free(str);
 	}
+
+	if (tree->debug == true)
+		printf("Tree: Print DFS Traversal = %u\n\n", counter);
 
 	stack_destroy(stack);
 	pthread_rwlock_unlock(&tree->rwlock);

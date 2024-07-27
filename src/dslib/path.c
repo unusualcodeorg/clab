@@ -8,9 +8,9 @@
 
 char *path_tree_data_to_string(void *arg)
 {
-	char data = *(char *)arg;
+	GraphNode *node = (GraphNode *)arg;
 	char *buffer = malloc(50);
-	snprintf(buffer, 50, "%c", data);
+	snprintf(buffer, 50, "[%d]", node->id);
 	return buffer;
 }
 

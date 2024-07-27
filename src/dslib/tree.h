@@ -46,6 +46,7 @@ extern "C"
 	TreeNode *tree_find(Tree *tree, unsigned int nodeid);
 	void *tree_get(Tree *tree, unsigned int nodeid);
 	int tree_add_root(Tree *tree, void *data);
+	TreeNode *tree_add_node(Tree *tree, void *data, TreeNode *parent);
 	int tree_add(Tree *tree, void *data, unsigned int parentid);
 	int tree_remove(Tree *tree, unsigned int nodeid);
 	void tree_print(Tree *tree, DataToString tostring);

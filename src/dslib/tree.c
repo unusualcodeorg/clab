@@ -106,6 +106,7 @@ int tree_add_root(Tree *tree, void *data)
 	node->id = 0;
 	node->data = data;
 	node->csize = 0;
+	node->parent = NULL;
 	node->children = NULL;
 	tree->root = node;
 	tree->size = 1;
@@ -119,14 +120,10 @@ void *tree_get(Tree *tree, unsigned int nodeid)
 	return node != NULL ? node->data : NULL;
 }
 
-int tree_add(Tree *tree, void *data, unsigned int parentid)
+TreeNode *tree_add_node(Tree *tree, void *data, TreeNode *parent)
 {
-	if (tree->debug == true)
-		printf("\nTree: Add To = %u\n", parentid);
-
-	TreeNode *parent = tree_find(tree, parentid);
 	if (parent == NULL)
-		return TREE_ERROR;
+		return NULL;
 
 	pthread_rwlock_wrlock(&tree->rwlock);
 	TreeNode *node = (TreeNode *)malloc(sizeof(TreeNode));
@@ -141,7 +138,14 @@ int tree_add(Tree *tree, void *data, unsigned int parentid)
 	parent->children[parent->csize - 1] = node;
 
 	pthread_rwlock_unlock(&tree->rwlock);
-	return node->id;
+	return node;
+}
+
+int tree_add(Tree *tree, void *data, unsigned int parentid)
+{
+	TreeNode *parent = tree_find(tree, parentid);
+	TreeNode *node = tree_add_node(tree, data, parent);
+	return node != NULL ? node->id : TREE_NODE_NULL_ID;
 }
 
 void tree_traverse(TreeNode *start, TreeCallback callback, TreeCallbackArg *arg)

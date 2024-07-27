@@ -495,7 +495,7 @@ int path_shortest_nw_graph_demo(void)
 
 	for (int i = 0; i < rows; i++)
 		for (int j = 0; j < cols; j++)
-			arr[i][j] = 32 + i * cols + j;
+			arr[i][j] = 65 + i * cols + j;
 
 	Graph *graph = util_graph_from_2d_arr(arr, rows, cols, false); // cannot auto free arr[i][j] since arr[i] is a continous memory
 	graph->debug = true;

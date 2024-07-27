@@ -8,7 +8,9 @@ extern "C"
 {
 #endif
 
-	Graph *graph_from_2d_arr(char **arr, int rows, int cols, bool autofree);
+	void **util_create_2d_pt_arr(int rows, int cols, unsigned long elemsize);
+	void util_free_2d_pt_arr(void **arr, int rows);
+	Graph *util_graph_from_2d_arr(char **arr, int rows, int cols, bool autofree);
 
 #ifdef __cplusplus
 }

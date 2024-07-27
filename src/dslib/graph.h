@@ -59,11 +59,6 @@ extern "C"
 	void graph_print(Graph *graph, DataToString tostring);
 	void graph_destroy(Graph *graph);
 
-	// utility functions : graphutil.c
-	Graph *graph_from_2d_arr(char **arr, int rows, int cols, bool autofree);
-
-	// algorithms functions : graphalgo.c
-
 #ifdef __cplusplus
 }
 #endif

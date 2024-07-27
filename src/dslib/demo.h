@@ -14,6 +14,7 @@ extern "C"
 	int graph_concurrent_demo(void);
 	int graph_2d_arr_demo(void);
 	int tree_demo(void);
+	int path_shortest_nw_graph_demo(void);
 
 #ifdef __cplusplus
 }

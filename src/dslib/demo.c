@@ -389,9 +389,7 @@ int graph_2d_arr_demo(void)
 
 	int rows = 7;
 	int cols = 9;
-	char **arr = malloc(rows * sizeof(char *));
-	for (int i = 0; i < rows; i++)
-		arr[i] = malloc(cols * sizeof(char));
+	char **arr = (char **)util_create_2d_pt_arr(rows, cols, sizeof(char));
 
 	for (int i = 0; i < rows; i++)
 	{
@@ -404,7 +402,7 @@ int graph_2d_arr_demo(void)
 		printf("\n");
 	}
 
-	Graph *graph = graph_from_2d_arr(arr, rows, cols, false);
+	Graph *graph = util_graph_from_2d_arr(arr, rows, cols, false); // cannot auto free arr[i][j] since arr[i] is a continous memory
 	graph->debug = true;
 	graph_print(graph, graph_maze_data_to_string);
 
@@ -415,7 +413,8 @@ int graph_2d_arr_demo(void)
 	printf("Graph found id %d : %c\n", 24, *data);
 
 	graph_destroy(graph);
-	free(arr);
+	util_free_2d_pt_arr((void **)arr, rows);
+
 	printf("\n---------------GRAPH 2D ARR DEMO----------------\n");
 	return EXIT_SUCCESS;
 }
@@ -458,6 +457,54 @@ int tree_demo(void)
 	tree_print(tree, tree_data_to_string);
 
 	printf("\n---------------TREE DEMO----------------\n");
-	return EXIT_FAILURE;
+	return EXIT_SUCCESS;
 }
 /*------------------------TREE DEMO-------------------- */
+
+/*
+ [0]A-----[1]B-----[2]C-----[3]D-----[4]E
+		|        |        |        |        |
+		|        |        |        |        |
+ [5]F-----[6]G-----[7]H-----[8]I-----[9]J
+		|        |        |        |        |
+		|        |        |        |        |
+ 10]K----[11]L----[12]M----[13]N----[14]O
+		|        |        |        |        |
+		|        |        |        |        |
+[15]P----[16]Q----[17]R----[18]S----[19]T
+		|        |        |        |        |
+		|        |        |        |        |
+[20]U----[21]V----[22]W----[23]X----[24]Y
+ */
+/*-------SHORTEST PATH NON WEIGHTED GRAPH DEMO--------- */
+char *graph_sd_data_to_string(void *arg)
+{
+	char data = *(char *)arg;
+	char *buffer = malloc(50);
+	snprintf(buffer, 50, "%c", data);
+	return buffer;
+}
+
+int path_shortest_nw_graph_demo(void)
+{
+	printf("\n-----SHORTEST PATH NON WEIGHTED GRAPH DEMO-----\n");
+
+	int rows = 5;
+	int cols = 5;
+	char **arr = (char **)util_create_2d_pt_arr(rows, cols, sizeof(char));
+
+	for (int i = 0; i < rows; i++)
+		for (int j = 0; j < cols; j++)
+			arr[i][j] = 32 + i * cols + j;
+
+	Graph *graph = util_graph_from_2d_arr(arr, rows, cols, false); // cannot auto free arr[i][j] since arr[i] is a continous memory
+	graph->debug = true;
+
+	graph_print(graph, graph_sd_data_to_string);
+	graph_destroy(graph);
+	util_free_2d_pt_arr((void **)arr, rows);
+
+	printf("\n-----SHORTEST PATH NON WEIGHTED GRAPH DEMO-----\n");
+	return EXIT_SUCCESS;
+}
+/*-------SHORTEST PATH NON WEIGHTED GRAPH DEMO--------- */

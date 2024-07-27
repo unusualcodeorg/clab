@@ -15,8 +15,9 @@ int main(void)
 	// runpool_demo();
 	// graph_demo();
 	// graph_concurrent_demo();
-	graph_2d_arr_demo();
+	// graph_2d_arr_demo();
 	// tree_demo();
+	path_shortest_nw_graph_demo();
 	// console_demo();
 	return EXIT_SUCCESS;
 }

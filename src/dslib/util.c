@@ -8,7 +8,7 @@
 4->5->6->7
 .........
  */
-Graph *graph_from_2d_arr(char **arr, int rows, int cols, bool autofree)
+Graph *util_graph_from_2d_arr(char **arr, int rows, int cols, bool autofree)
 {
 	if (arr == NULL)
 		return NULL;
@@ -19,7 +19,7 @@ Graph *graph_from_2d_arr(char **arr, int rows, int cols, bool autofree)
 	{
 		for (int j = 0; j < cols; j++)
 		{
-			void *data = &arr[i][j];
+			char *data = &arr[i][j];
 
 			int id = i * cols + j;
 			int upid = id - cols;
@@ -37,4 +37,19 @@ Graph *graph_from_2d_arr(char **arr, int rows, int cols, bool autofree)
 	}
 
 	return graph;
+}
+
+void **util_create_2d_pt_arr(int rows, int cols, unsigned long elemsize)
+{
+	void **arr = malloc(rows * sizeof(void *));
+	for (int i = 0; i < rows; i++)
+		arr[i] = malloc(cols * elemsize);
+	return arr;
+}
+
+void util_free_2d_pt_arr(void **arr, int rows)
+{
+	for (int i = 0; i < rows; i++)
+		free(arr[i]);
+	free(arr);
 }

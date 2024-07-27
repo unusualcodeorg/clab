@@ -55,6 +55,10 @@ void *queue_dequeue(Queue *queue)
 		QueueNode *node = queue->start;
 		queue->start = node->next;
 		queue->size--;
+
+		if (queue->start == queue->end)
+			queue->end = NULL;
+
 		if (queue->autofree == true)
 			free(node->data);
 		else
@@ -129,7 +133,7 @@ void queue_destroy(Queue *queue)
 		free(start);
 		start = next;
 	}
-	
+
 	pthread_rwlock_unlock(&queue->rwlock);
 	pthread_rwlock_destroy(&queue->rwlock);
 	free(queue);

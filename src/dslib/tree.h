@@ -43,7 +43,8 @@ extern "C"
 	} Tree;
 
 	Tree *tree_create(bool autofree);
-	TreeNode *tree_find(Tree *tree, unsigned int nodeid);
+	TreeNode *tree_find_dfs(Tree *tree, unsigned int nodeid);
+	TreeNode *tree_find_bfs(Tree *tree, unsigned int nodeid);
 	void *tree_get(Tree *tree, unsigned int nodeid);
 	int tree_add_root(Tree *tree, void *data);
 	TreeNode *tree_add_node(Tree *tree, void *data, TreeNode *parent);

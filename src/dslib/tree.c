@@ -1,5 +1,6 @@
 #include "tree.h"
 #include "stack.h"
+#include "queue.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -31,7 +32,57 @@ void tree_traversal_callback(TreeNode *node, TreeCallbackArg *arg)
 		printf("[%u]->", node->id);
 }
 
-TreeNode *tree_node_find(TreeNode *start, unsigned int nodeid, TreeCallback callback, TreeCallbackArg *arg)
+TreeNode *tree_node_find_bfs(TreeNode *start, unsigned int nodeid, TreeCallback callback, TreeCallbackArg *arg)
+{
+	pthread_rwlock_rdlock(&arg->rwlock);
+	TreeNode *found = NULL;
+
+	Queue *queue = queue_create(false);
+	queue_enqueue(queue, start);
+
+	while (queue->size > 0)
+	{
+		if (arg->debug == true)
+			arg->counter++;
+
+		TreeNode *node = queue_dequeue(queue);
+		if (node == NULL)
+			continue;
+
+		if (callback != NULL)
+			callback(node, arg);
+
+		if (node->id == nodeid)
+		{
+			found = node;
+			break;
+		}
+
+		for (unsigned short i = 0; i < node->csize; i++)
+		{
+			TreeNode *child = node->children[i];
+			if (child == NULL)
+				continue;
+
+			if (child->id == nodeid)
+			{
+				found = child;
+				break;
+			}
+
+			queue_enqueue(queue, child);
+		}
+
+		if (found != NULL)
+			break;
+	}
+
+	queue_destroy(queue);
+	pthread_rwlock_unlock(&arg->rwlock);
+	return found;
+}
+
+TreeNode *tree_node_find_dfs(TreeNode *start, long nodeid, TreeCallback callback, TreeCallbackArg *arg)
 {
 	pthread_rwlock_rdlock(&arg->rwlock);
 	TreeNode *found = NULL;
@@ -48,7 +99,7 @@ TreeNode *tree_node_find(TreeNode *start, unsigned int nodeid, TreeCallback call
 		if (node == NULL)
 			continue;
 
-		if (arg->debug == true && callback != NULL)
+		if (callback != NULL)
 			callback(node, arg);
 
 		if (node->id == nodeid)
@@ -81,16 +132,33 @@ TreeNode *tree_node_find(TreeNode *start, unsigned int nodeid, TreeCallback call
 	return found;
 }
 
-TreeNode *tree_find(Tree *tree, unsigned int nodeid)
+//  BFS explores all neighbors at the present depth level before moving on to nodes at the next depth level.
+TreeNode *tree_find_bfs(Tree *tree, unsigned int nodeid)
 {
 	if (tree->root == NULL || nodeid >= tree->size)
 		return NULL;
 
 	TreeCallbackArg *arg = tree_default_callback_arg(tree);
-	TreeNode *node = tree_node_find(tree->root, nodeid, tree_traversal_callback, arg);
+	TreeNode *node = tree_node_find_bfs(tree->root, nodeid, tree_traversal_callback, arg);
 
 	if (tree->debug == true)
-		printf("\nTree: Find Traversal = %u\n", arg->counter);
+		printf("\nTree: Find BFS Traversal = %u\n", arg->counter);
+
+	free(arg);
+	return node;
+}
+
+//  DFS explores as far down a branch as possible before backtracking
+TreeNode *tree_find_dfs(Tree *tree, unsigned int nodeid)
+{
+	if (tree->root == NULL || nodeid >= tree->size)
+		return NULL;
+
+	TreeCallbackArg *arg = tree_default_callback_arg(tree);
+	TreeNode *node = tree_node_find_dfs(tree->root, nodeid, tree_traversal_callback, arg);
+
+	if (tree->debug == true)
+		printf("\nTree: Find DFS Traversal = %u\n", arg->counter);
 
 	free(arg);
 	return node;
@@ -116,7 +184,7 @@ int tree_add_root(Tree *tree, void *data)
 
 void *tree_get(Tree *tree, unsigned int nodeid)
 {
-	TreeNode *node = tree_find(tree, nodeid);
+	TreeNode *node = tree_find_dfs(tree, nodeid);
 	return node != NULL ? node->data : NULL;
 }
 
@@ -143,38 +211,9 @@ TreeNode *tree_add_node(Tree *tree, void *data, TreeNode *parent)
 
 int tree_add(Tree *tree, void *data, unsigned int parentid)
 {
-	TreeNode *parent = tree_find(tree, parentid);
+	TreeNode *parent = tree_find_dfs(tree, parentid);
 	TreeNode *node = tree_add_node(tree, data, parent);
 	return node != NULL ? node->id : TREE_NODE_NULL_ID;
-}
-
-void tree_traverse(TreeNode *start, TreeCallback callback, TreeCallbackArg *arg)
-{
-	Stack *stack = stack_create(false);
-	stack_push(stack, start);
-
-	while (stack->size > 0)
-	{
-		if (arg->debug == true)
-			arg->counter++;
-
-		TreeNode *node = stack_pop(stack);
-		if (node == NULL)
-			continue;
-
-		for (unsigned short i = 0; i < node->csize; i++)
-		{
-			TreeNode *child = node->children[i];
-			if (child == NULL)
-				continue;
-			stack_push(stack, child);
-		}
-
-		if (callback != NULL)
-			callback(node, arg);
-	}
-
-	stack_destroy(stack);
 }
 
 void tree_print_node(TreeNode *node, TreeCallbackArg *arg)
@@ -213,7 +252,7 @@ void tree_print(Tree *tree, DataToString tostring)
 	{
 		TreeCallbackArg *arg = tree_default_callback_arg(tree);
 		arg->lambda = (void *)tostring;
-		tree_traverse(tree->root, tree_print_node, arg);
+		tree_node_find_dfs(tree->root, -1, tree_print_node, arg);
 		counter = arg->counter;
 		free(arg);
 	}
@@ -273,7 +312,7 @@ void tree_node_destroy(TreeNode *node, bool autofree, TreeCallback callback, Tre
 
 int tree_remove(Tree *tree, unsigned int nodeid)
 {
-	TreeNode *node = tree_find(tree, nodeid);
+	TreeNode *node = tree_find_dfs(tree, nodeid);
 	if (node == NULL)
 
 		return TREE_NODE_NULL_ID;

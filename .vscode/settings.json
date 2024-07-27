@@ -54,6 +54,7 @@
 		"complex": "c",
 		"stdarg.h": "c",
 		"_types.h": "c",
-		"path.h": "c"
+		"path.h": "c",
+		"graph.h": "c"
 	}
 }

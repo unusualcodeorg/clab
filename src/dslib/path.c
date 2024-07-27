@@ -14,13 +14,23 @@ char *path_tree_data_to_string(void *arg)
 	return buffer;
 }
 
+Location *location_from_graph_node(GraphNode *node)
+{
+	if (node == NULL)
+		return NULL;
+	Location *location = (Location *)malloc(sizeof(Location));
+	location->id = node->id;
+	location->data = node->data;
+	return location;
+}
+
 /**
  * Queue help is traversing nebouring nodes before its linked nodes,
  * Stack holds the backtracked path,
  */
 Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid)
 {
-	Stack *stack = stack_create(false);
+	Stack *stack = stack_create(true);
 
 	GraphNode *start = graph_find(graph, srcnodeid);
 	if (start == NULL)
@@ -28,7 +38,7 @@ Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid, unsigned int
 
 	if (srcnodeid == dstnodeid)
 	{
-		stack_push(stack, start);
+		stack_push(stack, location_from_graph_node(start));
 		return stack;
 	}
 
@@ -68,7 +78,7 @@ Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid, unsigned int
 
 	while (found != NULL)
 	{
-		stack_push(stack, found);
+		stack_push(stack, location_from_graph_node(found->data));
 		found = found->parent;
 	}
 

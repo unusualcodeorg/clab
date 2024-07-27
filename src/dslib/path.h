@@ -9,6 +9,12 @@ extern "C"
 {
 #endif
 
+	typedef struct
+	{
+		unsigned int id;
+		void *data;
+	} Location;
+
 	Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid); // non weighted graph
 
 #ifdef __cplusplus

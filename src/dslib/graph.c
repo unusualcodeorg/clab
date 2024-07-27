@@ -40,7 +40,7 @@ GraphNode *graph_node_find(GraphNode *start, unsigned int nodeid, GraphNode **vi
 	Stack *stack = stack_create(false);
 	stack_push(stack, start);
 
-	while (stack->top != NULL)
+	while (stack->size > 0)
 	{
 		if (arg->debug == true)
 			arg->counter++;
@@ -221,7 +221,7 @@ void graph_traverse(GraphNode *start, GraphNode **visited_nodes, GraphCallback c
 	Stack *stack = stack_create(false);
 	stack_push(stack, start);
 
-	while (stack->top != NULL)
+	while (stack->size > 0)
 	{
 		if (arg->debug == true)
 			arg->counter++;

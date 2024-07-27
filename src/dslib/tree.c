@@ -39,7 +39,7 @@ TreeNode *tree_node_find(TreeNode *start, unsigned int nodeid, TreeCallback call
 	Stack *stack = stack_create(false);
 	stack_push(stack, start);
 
-	while (stack->top != NULL)
+	while (stack->size > 0)
 	{
 		if (arg->debug == true)
 			arg->counter++;
@@ -149,7 +149,7 @@ void tree_traverse(TreeNode *start, TreeCallback callback, TreeCallbackArg *arg)
 	Stack *stack = stack_create(false);
 	stack_push(stack, start);
 
-	while (stack->top != NULL)
+	while (stack->size > 0)
 	{
 		if (arg->debug == true)
 			arg->counter++;
@@ -226,7 +226,7 @@ void tree_node_destroy(TreeNode *node, bool autofree, TreeCallback callback, Tre
 	Stack *stack = stack_create(false);
 	stack_push(stack, node);
 
-	while (stack->top != NULL)
+	while (stack->size > 0)
 	{
 		if (arg->debug == true)
 			arg->counter++;
@@ -246,7 +246,7 @@ void tree_node_destroy(TreeNode *node, bool autofree, TreeCallback callback, Tre
 		}
 	}
 
-	while (stack->top != NULL)
+	while (stack->size > 0)
 	{
 		if (arg->debug == true)
 			arg->counter++;

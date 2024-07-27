@@ -1,5 +1,5 @@
-#include "stack.h"
 #include "graph.h"
+#include "stack.h"
 
 #ifndef PATH_DEMO_H
 #define PATH_DEMO_H

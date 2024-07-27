@@ -6,6 +6,7 @@ extern "C"
 {
 #endif
 	int runtime_demo(void);
+	int runpool_demo(void);
 
 #ifdef __cplusplus
 }

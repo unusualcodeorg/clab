@@ -35,7 +35,7 @@ extern "C"
 	void runtime_pause(Runtime *runtime);
 	void runtime_resume(Runtime *runtime);
 	void runtime_exec(Runtime *runtime, Croutine croutine, void *context);
-	int runtime_destroy(Runtime *runtime);
+	void runtime_destroy(Runtime *runtime);
 
 #ifdef __cplusplus
 }

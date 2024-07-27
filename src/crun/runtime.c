@@ -25,7 +25,7 @@ void *runner(void *arg)
 
 		if (runtime->execs->size == 0)
 		{
-			if (runtime->exit)
+			if (runtime->exit == true)
 			{
 				if (runtime->debug == true)
 					printf("Runtime - %s: will exit.\n", runtime->name);
@@ -106,11 +106,8 @@ void runtime_exec(Runtime *runtime, Croutine croutine, void *context)
 		runtime_resume(runtime);
 }
 
-int runtime_destroy(Runtime *runtime)
+void runtime_destroy(Runtime *runtime)
 {
-	if (runtime == NULL)
-		return EXIT_FAILURE;
-
 	runtime_exit(runtime);
 	pthread_join(runtime->thread, NULL);
 	queue_destroy(runtime->execs);
@@ -123,5 +120,4 @@ int runtime_destroy(Runtime *runtime)
 	if (runtime->debug == true)
 		printf("Runtime - %s: has destroyed.\n", runtime->name);
 	free(runtime);
-	return EXIT_SUCCESS;
 }

@@ -88,7 +88,7 @@ void *queue_get(Queue *queue, unsigned int position)
 	QueueNode *node = queue->start;
 	unsigned int counter = 1;
 
-	while (node != NULL)
+	while (node)
 	{
 		if (counter > position)
 			break;
@@ -105,7 +105,7 @@ void queue_print(Queue *queue, DataToString tostring)
 	pthread_rwlock_rdlock(&queue->rwlock);
 	printf("Queue: [\n");
 	QueueNode *start = queue->start;
-	while (start != NULL)
+	while (start)
 	{
 		char *str = tostring(start->data);
 		printf("  %s", str);
@@ -125,7 +125,7 @@ void queue_destroy(Queue *queue)
 	pthread_rwlock_trywrlock(&queue->rwlock);
 
 	QueueNode *start = queue->start;
-	while (start != NULL)
+	while (start)
 	{
 		QueueNode *next = start->next;
 		if (queue->autofree == true)

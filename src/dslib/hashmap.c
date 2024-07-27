@@ -1,7 +1,7 @@
 #include "hashmap.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h> 
+#include <stdint.h>
 
 unsigned int hash_function(void *key, unsigned int size)
 {
@@ -33,12 +33,10 @@ void *hashmap_find(HashMap *map, void *key)
 	while (node)
 	{
 		if (node->key == key)
-		{
 			return node->value;
-		}
 		node = node->next;
 	}
-	return NULL; 
+	return NULL;
 }
 
 void hashmap_delete(HashMap *map, void *key)
@@ -51,13 +49,9 @@ void hashmap_delete(HashMap *map, void *key)
 		if (node->key == key)
 		{
 			if (prev)
-			{
 				prev->next = node->next;
-			}
 			else
-			{
 				map->buckets[index] = node->next;
-			}
 			free(node);
 			return;
 		}

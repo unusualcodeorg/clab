@@ -67,7 +67,7 @@ void *stack_get(Stack *stack, unsigned int position)
 	StackNode *node = stack->top;
 	unsigned int counter = 1;
 
-	while (node != NULL)
+	while (node)
 	{
 		if (counter > position)
 			break;
@@ -84,7 +84,7 @@ void stack_print(Stack *stack, DataToString tostring)
 	pthread_rwlock_rdlock(&stack->rwlock);
 	printf("Stack: [\n");
 	StackNode *top = stack->top;
-	while (top != NULL)
+	while (top)
 	{
 		char *data_str = tostring(top->data);
 		printf("  %s", data_str);
@@ -104,7 +104,7 @@ void stack_destroy(Stack *stack)
 	pthread_rwlock_trywrlock(&stack->rwlock);
 
 	StackNode *top = stack->top;
-	while (top != NULL)
+	while (top)
 	{
 		StackNode *next = top->next;
 		if (stack->autofree == true)

@@ -47,7 +47,7 @@ GraphNode *graph_node_find_bfs(GraphNode *start, long nodeid, GraphNode **visite
 			arg->counter++;
 
 		GraphNode *node = queue_dequeue(queue);
-		if (node == NULL || visited_nodes[node->id] == node)
+		if (visited_nodes[node->id] == node)
 			continue;
 		visited_nodes[node->id] = node;
 
@@ -98,7 +98,7 @@ GraphNode *graph_node_find_dfs(GraphNode *start, long nodeid, GraphNode **visite
 			arg->counter++;
 
 		GraphNode *node = stack_pop(stack);
-		if (node == NULL || visited_nodes[node->id] == node)
+		if (visited_nodes[node->id] == node)
 			continue;
 		visited_nodes[node->id] = node;
 

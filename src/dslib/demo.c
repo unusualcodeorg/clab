@@ -3,7 +3,9 @@
 #include "queue.h"
 #include "model.h"
 #include "graph.h"
+#include "util.h"
 #include "tree.h"
+#include "path.h"
 #include "../crun/runtime.h"
 #include <stdlib.h>
 #include <stdbool.h>

@@ -59,9 +59,13 @@ Runtime *runtime_create(char *name, bool debug)
 	runtime->execs = queue_create(false);
 	runtime->pause = true;
 	runtime->exit = false;
-	pthread_mutex_init(&runtime->mutex, NULL);
+
+	pthread_mutexattr_init(&runtime->mutexattr);
+	pthread_mutexattr_settype(&runtime->mutexattr, PTHREAD_MUTEX_RECURSIVE);
+	pthread_mutex_init(&runtime->mutex, &runtime->mutexattr);
 	pthread_cond_init(&runtime->cond, NULL);
 	pthread_create(&runtime->thread, NULL, runner, runtime);
+
 	if (runtime->debug == true)
 		printf("Runtime - %s: is created.\n", runtime->name);
 	return runtime;
@@ -104,12 +108,18 @@ void runtime_exec(Runtime *runtime, Croutine croutine, void *context)
 
 int runtime_destroy(Runtime *runtime)
 {
+	if (runtime == NULL)
+		return EXIT_FAILURE;
+
 	runtime_exit(runtime);
 	pthread_join(runtime->thread, NULL);
 	queue_destroy(runtime->execs);
+
 	pthread_mutex_destroy(&runtime->mutex);
+	pthread_mutexattr_destroy(&runtime->mutexattr);
 	pthread_cond_destroy(&runtime->cond);
 	pthread_cancel(runtime->thread);
+
 	if (runtime->debug == true)
 		printf("Runtime - %s: has destroyed.\n", runtime->name);
 	free(runtime);

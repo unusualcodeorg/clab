@@ -52,6 +52,7 @@ extern "C"
 	int tree_remove(Tree *tree, unsigned int nodeid);
 	int tree_max_depth(Tree *tree);
 	void tree_print(Tree *tree, DataToString tostring);
+	void tree_print_pretty(Tree *tree, DataToString tostring);
 	void tree_destroy(Tree *tree);
 
 #ifdef __cplusplus

@@ -458,6 +458,7 @@ int tree_demo(void)
 	tree_remove(tree, id_C);
 	printf("\nTree: Remove - id %d = %s", id_D, data);
 	tree_print(tree, tree_data_to_string);
+	tree_print_pretty(tree, tree_data_to_string);
 
 	printf("\n---------------TREE DEMO----------------\n");
 	return EXIT_SUCCESS;

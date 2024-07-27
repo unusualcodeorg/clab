@@ -290,6 +290,58 @@ void tree_print(Tree *tree, DataToString tostring)
 	pthread_rwlock_unlock(&tree->rwlock);
 }
 
+void tree_print_pretty(Tree *tree, DataToString tostring)
+{
+	if (tree == NULL || tree->size == 0)
+		return;
+
+	pthread_rwlock_rdlock(&tree->rwlock);
+
+	Stack *stack = stack_create(false);
+	stack_push(stack, tree->root);
+
+	int depth = 0;
+	TreeNode *parent = tree->root;
+
+	while (stack->size > 0)
+	{
+		TreeNode *node = stack_pop(stack);
+
+		// backtracks to the last known parent
+		if (node->parent != NULL && parent != node->parent)
+		{
+			TreeNode *backparent = node->parent;
+			while (backparent != NULL && backparent != parent)
+			{
+				backparent = backparent->parent;
+				depth--;
+			}
+		}
+
+		for (int i = 0; i < depth; i++)
+			printf("   ");
+		char *str = tostring(node->data);
+		char *link = depth > 0 ? "└──" : "";
+		printf("%s[%d]%s\n", link, node->id, str);
+		free(str);
+
+		if (node->csize > 0) // not leaf node
+		{
+			parent = node; // set self as parent for stack backtrack
+			depth++;
+		}
+
+		for (unsigned short i = 0; i < node->csize; i++)
+		{
+			TreeNode *child = node->children[i];
+			stack_push(stack, child);
+		}
+	}
+
+	stack_destroy(stack);
+	pthread_rwlock_unlock(&tree->rwlock);
+}
+
 void tree_node_destroy(TreeNode *node, bool autofree, TreeCallback callback, TreeCallbackArg *arg)
 {
 	Stack *history = stack_create(false);

@@ -33,6 +33,7 @@ extern "C"
 	{
 		bool debug;
 		unsigned int counter;
+		pthread_rwlock_t rwlock;
 		void *lambda;
 	} GraphCallbackArg;
 
@@ -47,8 +48,7 @@ extern "C"
 		bool autofree; // free data on pop
 		unsigned int size;
 		GraphNode *root;
-		pthread_mutexattr_t mutexattr;
-		pthread_mutex_t mutex;
+		pthread_rwlock_t rwlock;
 	} Graph;
 
 	Graph *graph_create(bool autofree);
@@ -63,7 +63,6 @@ extern "C"
 	Graph *graph_from_2d_arr(char **arr, int rows, int cols, bool autofree);
 
 	// algorithms functions : graphalgo.c
-	
 
 #ifdef __cplusplus
 }

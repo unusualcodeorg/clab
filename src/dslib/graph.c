@@ -13,17 +13,16 @@ Graph *graph_create(bool autofree)
 	graph->debug = false;
 	graph->root = NULL;
 	graph->size = 0;
-	pthread_mutexattr_init(&graph->mutexattr);
-	pthread_mutexattr_settype(&graph->mutexattr, PTHREAD_MUTEX_RECURSIVE);
-	pthread_mutex_init(&graph->mutex, &graph->mutexattr);
+	pthread_rwlock_init(&graph->rwlock, NULL);
 	return graph;
 }
 
-GraphCallbackArg *graph_default_callback_arg(bool debug)
+GraphCallbackArg *graph_default_callback_arg(Graph *graph)
 {
 	GraphCallbackArg *arg = (GraphCallbackArg *)malloc(sizeof(GraphCallbackArg));
 	arg->counter = 0;
-	arg->debug = debug;
+	arg->debug = graph->debug;
+	arg->rwlock = graph->rwlock;
 	return arg;
 }
 
@@ -35,6 +34,7 @@ void graph_traversal_callback(GraphNode *node, GraphCallbackArg *arg)
 
 GraphNode *graph_node_find(GraphNode *start, unsigned int nodeid, GraphNode **visited_nodes, GraphCallback callback, GraphCallbackArg *arg)
 {
+	pthread_rwlock_rdlock(&arg->rwlock);
 	GraphNode *found = NULL;
 
 	Stack *stack = stack_create(false);
@@ -79,6 +79,7 @@ GraphNode *graph_node_find(GraphNode *start, unsigned int nodeid, GraphNode **vi
 	}
 
 	stack_destroy(stack);
+	pthread_rwlock_unlock(&arg->rwlock);
 	return found;
 }
 
@@ -87,9 +88,7 @@ GraphNode *graph_find(Graph *graph, unsigned int nodeid)
 	if (graph->root == NULL || nodeid >= graph->size)
 		return NULL;
 
-	pthread_mutex_lock(&graph->mutex);
-
-	GraphCallbackArg *arg = graph_default_callback_arg(graph->debug);
+	GraphCallbackArg *arg = graph_default_callback_arg(graph);
 	GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
 	GraphNode *node = graph_node_find(graph->root, nodeid, visited_nodes, graph_traversal_callback, arg);
 
@@ -98,25 +97,20 @@ GraphNode *graph_find(Graph *graph, unsigned int nodeid)
 
 	free(visited_nodes);
 	free(arg);
-	pthread_mutex_unlock(&graph->mutex);
 	return node;
 }
 
 void *graph_get(Graph *graph, unsigned int nodeid)
 {
-	pthread_mutex_lock(&graph->mutex);
 	GraphNode *node = graph_find(graph, nodeid);
-	pthread_mutex_unlock(&graph->mutex);
 	return node != NULL ? node->data : NULL;
 }
 
-// rwlock is not enterant, causes deadlock if tries to acquire the lock again
 int graph_add_root(Graph *graph, void *data)
 {
 	if (graph->root != NULL)
 		return GRAPH_ERROR;
 
-	pthread_mutex_lock(&graph->mutex);
 	GraphNode *node = (GraphNode *)malloc(sizeof(GraphNode));
 	node->id = 0;
 	node->data = data;
@@ -124,26 +118,25 @@ int graph_add_root(Graph *graph, void *data)
 	node->edges = NULL;
 	graph->root = node;
 	graph->size = 1;
-	pthread_mutex_unlock(&graph->mutex);
 	return node->id;
 }
 
 int graph_add(Graph *graph, void *data, unsigned int linkcount, ...)
 {
-	pthread_mutex_lock(&graph->mutex);
+	pthread_rwlock_wrlock(&graph->rwlock);
 	if (graph->debug == true)
 		printf("\nGraph: Add To %u Node\n", linkcount);
 
 	if (graph->root == NULL)
 	{
 		unsigned int id = graph_add_root(graph, data);
-		pthread_mutex_unlock(&graph->mutex);
+		pthread_rwlock_unlock(&graph->rwlock);
 		return id;
 	}
 
 	if (linkcount == 0)
 	{
-		pthread_mutex_unlock(&graph->mutex);
+		pthread_rwlock_unlock(&graph->rwlock);
 		return GRAPH_ERROR;
 	}
 
@@ -182,17 +175,17 @@ int graph_add(Graph *graph, void *data, unsigned int linkcount, ...)
 	}
 
 	va_end(args);
-	pthread_mutex_unlock(&graph->mutex);
+	pthread_rwlock_unlock(&graph->rwlock);
 	return node->id;
 }
 
 int graph_remove(Graph *graph, unsigned int nodeid)
 {
-	pthread_mutex_lock(&graph->mutex);
+	pthread_rwlock_wrlock(&graph->rwlock);
 	GraphNode *node = graph_find(graph, nodeid);
 	if (node == NULL)
 	{
-		pthread_mutex_unlock(&graph->mutex);
+		pthread_rwlock_unlock(&graph->rwlock);
 		return GRAPH_NODE_NULL_ID;
 	}
 
@@ -219,7 +212,7 @@ int graph_remove(Graph *graph, unsigned int nodeid)
 	}
 
 	free(node);
-	pthread_mutex_unlock(&graph->mutex);
+	pthread_rwlock_unlock(&graph->rwlock);
 	return nodeid;
 }
 
@@ -282,12 +275,12 @@ void graph_print_node(GraphNode *node, GraphCallbackArg *arg)
 
 void graph_print(Graph *graph, DataToString tostring)
 {
-	pthread_mutex_lock(&graph->mutex);
+	pthread_rwlock_rdlock(&graph->rwlock);
 	unsigned int counter = 0;
 	printf("\nGraph[\n");
 	if (graph->root != NULL)
 	{
-		GraphCallbackArg *arg = graph_default_callback_arg(graph->debug);
+		GraphCallbackArg *arg = graph_default_callback_arg(graph);
 		arg->lambda = (void *)tostring;
 
 		GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
@@ -300,7 +293,7 @@ void graph_print(Graph *graph, DataToString tostring)
 
 	if (graph->debug == true)
 		printf("Graph: Print Traversal = %u\n\n", counter);
-	pthread_mutex_unlock(&graph->mutex);
+	pthread_rwlock_unlock(&graph->rwlock);
 }
 
 void graph_node_destroy(GraphNode *node, bool autofree)
@@ -324,12 +317,15 @@ void graph_node_destroy(GraphNode *node, bool autofree)
 
 void graph_destroy(Graph *graph)
 {
-	pthread_mutex_lock(&graph->mutex);
+	if (graph == NULL)
+		return;
+
+	pthread_rwlock_trywrlock(&graph->rwlock); // thread will return if lock in not available
 
 	if (graph->debug == true)
 		printf("\n");
 
-	GraphCallbackArg *arg = graph_default_callback_arg(graph->debug);
+	GraphCallbackArg *arg = graph_default_callback_arg(graph);
 	GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
 	graph_traverse(graph->root, visited_nodes, graph_traversal_callback, arg);
 
@@ -344,8 +340,7 @@ void graph_destroy(Graph *graph)
 
 	free(visited_nodes);
 	free(arg);
-	pthread_mutex_unlock(&graph->mutex);
-	pthread_mutex_destroy(&graph->mutex);
-	pthread_mutexattr_destroy(&graph->mutexattr);
+	pthread_rwlock_unlock(&graph->rwlock);
+	pthread_rwlock_destroy(&graph->rwlock);
 	free(graph);
 }

@@ -251,7 +251,7 @@ int graph_add(Graph *graph, void *data, unsigned int linkcount, ...)
 int graph_remove(Graph *graph, unsigned int nodeid)
 {
 	pthread_rwlock_wrlock(&graph->rwlock);
-	GraphNode *node = graph_find_bfs(graph, nodeid);
+	GraphNode *node = graph_find_dfs(graph, nodeid);
 	if (node == NULL)
 	{
 		pthread_rwlock_unlock(&graph->rwlock);
@@ -331,7 +331,7 @@ void graph_print(Graph *graph, DataToString tostring)
 	printf("]\n");
 
 	if (graph->debug == true)
-		printf("Graph: Print Traversal = %u\n\n", counter);
+		printf("Graph: Print BFS Traversal = %u\n\n", counter);
 	pthread_rwlock_unlock(&graph->rwlock);
 }
 
@@ -363,16 +363,17 @@ void graph_destroy(Graph *graph)
 
 	GraphCallbackArg *arg = graph_default_callback_arg(graph);
 	GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
-	graph_node_find_bfs(graph->root, -1, visited_nodes, graph_traversal_callback, arg);
+	graph_node_find_dfs(graph->root, -1, visited_nodes, graph_traversal_callback, arg);
 
 	for (unsigned int i = 0; i < graph->size; i++)
 	{
 		GraphNode *node = visited_nodes[i];
 		graph_node_destroy(node, graph->autofree);
+		arg->counter++;
 	}
 
 	if (graph->debug == true)
-		printf("\nGraph: Destroy Traversal = %u\n", arg->counter);
+		printf("\nGraph: Destroy DFS Traversal = %u\n", arg->counter);
 
 	free(visited_nodes);
 	free(arg);

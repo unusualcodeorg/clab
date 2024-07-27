@@ -184,7 +184,7 @@ int tree_add_root(Tree *tree, void *data)
 
 void *tree_get(Tree *tree, unsigned int nodeid)
 {
-	TreeNode *node = tree_find_dfs(tree, nodeid);
+	TreeNode *node = tree_find_bfs(tree, nodeid);
 	return node != NULL ? node->data : NULL;
 }
 
@@ -211,7 +211,7 @@ TreeNode *tree_add_node(Tree *tree, void *data, TreeNode *parent)
 
 int tree_add(Tree *tree, void *data, unsigned int parentid)
 {
-	TreeNode *parent = tree_find_dfs(tree, parentid);
+	TreeNode *parent = tree_find_bfs(tree, parentid);
 	TreeNode *node = tree_add_node(tree, data, parent);
 	return node != NULL ? node->id : TREE_NODE_NULL_ID;
 }
@@ -252,14 +252,14 @@ void tree_print(Tree *tree, DataToString tostring)
 	{
 		TreeCallbackArg *arg = tree_default_callback_arg(tree);
 		arg->lambda = (void *)tostring;
-		tree_node_find_dfs(tree->root, -1, tree_print_node, arg);
+		tree_node_find_bfs(tree->root, -1, tree_print_node, arg);
 		counter = arg->counter;
 		free(arg);
 	}
 	printf("]\n");
 
 	if (tree->debug == true)
-		printf("Tree: Print Traversal = %u\n\n", counter);
+		printf("Tree: Print BFS Traversal = %u\n\n", counter);
 	pthread_rwlock_unlock(&tree->rwlock);
 }
 
@@ -359,7 +359,7 @@ void tree_destroy(Tree *tree)
 	tree_node_destroy(tree->root, tree->autofree, tree_traversal_callback, arg);
 
 	if (tree->debug == true)
-		printf("\nTree: Destroy Traversal = %u\n", arg->counter);
+		printf("\nTree: Destroy DFS Traversal = %u\n", arg->counter);
 
 	free(arg);
 	pthread_rwlock_unlock(&tree->rwlock);

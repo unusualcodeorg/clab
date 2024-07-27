@@ -52,7 +52,7 @@ Stack *path_shortest_nw_graph_vis(Graph *graph, unsigned int srcnodeid, unsigned
 
 	Tree *tree = tree_create(false);
 	tree->debug = graph->debug;
-	tree_add_root(tree, start);
+	tree_insert_root(tree, start);
 
 	Queue *queue = queue_create(false);
 	queue_enqueue(queue, tree->root);
@@ -81,7 +81,7 @@ Stack *path_shortest_nw_graph_vis(Graph *graph, unsigned int srcnodeid, unsigned
 					continue;
 			}
 
-			TreeNode *cnode = tree_add_node(tree, edge->end, tnode);
+			TreeNode *cnode = tree_insert_node(tree, edge->end, tnode);
 			queue_enqueue(queue, cnode);
 		}
 	}

@@ -152,7 +152,7 @@ TreeNode *tree_find_dfs(Tree *tree, unsigned int nodeid)
 	return node;
 }
 
-int tree_add_root(Tree *tree, void *data)
+int tree_insert_root(Tree *tree, void *data)
 {
 	if (tree->root != NULL)
 		return TREE_ERROR;
@@ -176,7 +176,7 @@ void *tree_get(Tree *tree, unsigned int nodeid)
 	return node != NULL ? node->data : NULL;
 }
 
-TreeNode *tree_add_node(Tree *tree, void *data, TreeNode *parent)
+TreeNode *tree_insert_node(Tree *tree, void *data, TreeNode *parent)
 {
 	if (parent == NULL)
 		return NULL;
@@ -197,10 +197,10 @@ TreeNode *tree_add_node(Tree *tree, void *data, TreeNode *parent)
 	return node;
 }
 
-int tree_add(Tree *tree, void *data, unsigned int parentid)
+int tree_insert(Tree *tree, void *data, unsigned int parentid)
 {
 	TreeNode *parent = tree_find_bfs(tree, parentid);
-	TreeNode *node = tree_add_node(tree, data, parent);
+	TreeNode *node = tree_insert_node(tree, data, parent);
 	return node != NULL ? node->id : TREE_NODE_NULL_ID;
 }
 
@@ -396,7 +396,7 @@ void tree_node_destroy(TreeNode *node, bool autofree, TreeCallback callback, Tre
 	stack_destroy(stack);
 }
 
-int tree_remove(Tree *tree, unsigned int nodeid)
+int tree_delete(Tree *tree, unsigned int nodeid)
 {
 	TreeNode *node = tree_find_dfs(tree, nodeid);
 	if (node == NULL)

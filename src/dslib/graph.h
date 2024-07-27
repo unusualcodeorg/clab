@@ -55,8 +55,8 @@ extern "C"
 	GraphNode *graph_find_bfs(Graph *graph, unsigned int nodeid);
 	GraphNode *graph_find_dfs(Graph *graph, unsigned int nodeid);
 	void *graph_get(Graph *graph, unsigned int nodeid);
-	int graph_add(Graph *graph, void *data, unsigned int linkcount, ...); // var arg for node ids to link with
-	int graph_remove(Graph *graph, unsigned int nodeid);
+	int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...); // var arg for node ids to link with
+	int graph_delete(Graph *graph, unsigned int nodeid);
 	void graph_print(Graph *graph, DataToString tostring);
 	void graph_destroy(Graph *graph);
 

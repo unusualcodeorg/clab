@@ -265,15 +265,15 @@ int graph_demo(void)
 	Graph *graph = graph_create(false);
 	graph->debug = true;
 
-	unsigned int id_A = graph_add(graph, "A", 0);
-	unsigned int id_B = graph_add(graph, "B", 1, id_A);
-	unsigned int id_C = graph_add(graph, "C", 1, id_B);
-	unsigned int id_D = graph_add(graph, "D", 1, id_C);
-	unsigned int id_E = graph_add(graph, "E", 2, id_B, id_D);
-	unsigned int id_F = graph_add(graph, "F", 2, id_A, id_E);
-	unsigned int id_G = graph_add(graph, "G", 1, id_F);
-	unsigned int id_H = graph_add(graph, "H", 2, id_E, id_G);
-	unsigned int id_I = graph_add(graph, "I", 2, id_D, id_H);
+	unsigned int id_A = graph_insert(graph, "A", 0);
+	unsigned int id_B = graph_insert(graph, "B", 1, id_A);
+	unsigned int id_C = graph_insert(graph, "C", 1, id_B);
+	unsigned int id_D = graph_insert(graph, "D", 1, id_C);
+	unsigned int id_E = graph_insert(graph, "E", 2, id_B, id_D);
+	unsigned int id_F = graph_insert(graph, "F", 2, id_A, id_E);
+	unsigned int id_G = graph_insert(graph, "G", 1, id_F);
+	unsigned int id_H = graph_insert(graph, "H", 2, id_E, id_G);
+	unsigned int id_I = graph_insert(graph, "I", 2, id_D, id_H);
 	(void)id_I; // suppress unused warning
 
 	graph_print(graph, graph_data_to_string);
@@ -293,35 +293,35 @@ void croutine1(void *arg)
 
 	Graph *graph = arg;
 	unsigned int id_A = 0;
-	unsigned int id_B = graph_add(graph, "B", 1, id_A);
+	unsigned int id_B = graph_insert(graph, "B", 1, id_A);
 
 	usleep(1250000);
 	printf("Thread ID: croutine1: %lu\n", tid);
-	unsigned int id_C = graph_add(graph, "C", 1, id_B);
+	unsigned int id_C = graph_insert(graph, "C", 1, id_B);
 
 	usleep(2250000);
 	printf("Thread ID: croutine1: %lu\n", tid);
-	unsigned int id_D = graph_add(graph, "D", 1, id_C);
+	unsigned int id_D = graph_insert(graph, "D", 1, id_C);
 
 	usleep(550000);
 	printf("Thread ID: croutine1: %lu\n", tid);
-	unsigned int id_E = graph_add(graph, "E", 2, id_B, id_D);
+	unsigned int id_E = graph_insert(graph, "E", 2, id_B, id_D);
 
 	usleep(1500000);
 	printf("Thread ID: croutine1: %lu\n", tid);
-	unsigned int id_F = graph_add(graph, "F", 2, id_A, id_E);
+	unsigned int id_F = graph_insert(graph, "F", 2, id_A, id_E);
 
 	usleep(100000);
 	printf("Thread ID: croutine1: %lu\n", tid);
-	unsigned int id_G = graph_add(graph, "G", 1, id_F);
+	unsigned int id_G = graph_insert(graph, "G", 1, id_F);
 
 	usleep(300000);
 	printf("Thread ID: croutine1: %lu\n", tid);
-	unsigned int id_H = graph_add(graph, "H", 2, id_E, id_G);
+	unsigned int id_H = graph_insert(graph, "H", 2, id_E, id_G);
 
 	usleep(1000000);
 	printf("Thread ID: croutine1: %lu\n", tid);
-	unsigned int id_I = graph_add(graph, "I", 2, id_D, id_H);
+	unsigned int id_I = graph_insert(graph, "I", 2, id_D, id_H);
 
 	(void)id_I; // suppress unused warning
 	usleep(2000000);
@@ -355,7 +355,7 @@ int graph_concurrent_demo(void)
 
 	Graph *graph = graph_create(false);
 	graph->debug = true;
-	graph_add(graph, "A", 0);
+	graph_insert(graph, "A", 0);
 
 	runtime_exec(r1, croutine1, graph);
 	runtime_exec(r2, croutine2, graph);
@@ -434,22 +434,22 @@ int tree_demo(void)
 	Tree *tree = tree_create(true);
 	tree->debug = true;
 
-	unsigned int id_A = tree_add_root(tree, "A");
-	unsigned int id_B = tree_add(tree, "B", id_A);
-	unsigned int id_C = tree_add(tree, "C", id_A);
-	unsigned int id_D = tree_add(tree, "D", id_A);
-	unsigned int id_E = tree_add(tree, "E", id_B);
-	tree_add(tree, "F", id_B);
-	tree_add(tree, "G", id_C);
-	tree_add(tree, "H", id_C);
-	tree_add(tree, "I", id_D);
-	tree_add(tree, "J", id_E);
-	tree_add(tree, "K", id_E);
-	tree_add(tree, "L", id_E);
-	unsigned int id_M  = tree_add(tree, "M", id_A);
-	tree_add(tree, "N", id_A);
-	tree_add(tree, "O", id_M);
-	tree_add(tree, "P", id_M);
+	unsigned int id_A = tree_insert_root(tree, "A");
+	unsigned int id_B = tree_insert(tree, "B", id_A);
+	unsigned int id_C = tree_insert(tree, "C", id_A);
+	unsigned int id_D = tree_insert(tree, "D", id_A);
+	unsigned int id_E = tree_insert(tree, "E", id_B);
+	tree_insert(tree, "F", id_B);
+	tree_insert(tree, "G", id_C);
+	tree_insert(tree, "H", id_C);
+	tree_insert(tree, "I", id_D);
+	tree_insert(tree, "J", id_E);
+	tree_insert(tree, "K", id_E);
+	tree_insert(tree, "L", id_E);
+	unsigned int id_M  = tree_insert(tree, "M", id_A);
+	tree_insert(tree, "N", id_A);
+	tree_insert(tree, "O", id_M);
+	tree_insert(tree, "P", id_M);
 
 	tree_print(tree, tree_data_to_string);
 
@@ -459,7 +459,7 @@ int tree_demo(void)
 	int maxdepth = tree_max_depth(tree);
 	printf("\nTree: Max Depth = %d\n", maxdepth);
 
-	tree_remove(tree, id_C);
+	tree_delete(tree, id_C);
 	printf("\nTree: Remove - id %d = %s", id_D, data);
 	tree_print_raw(tree, tree_data_to_string);
 	tree_print(tree, tree_data_to_string);

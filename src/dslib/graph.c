@@ -175,7 +175,7 @@ void *graph_get(Graph *graph, unsigned int nodeid)
 	return node != NULL ? node->data : NULL;
 }
 
-int graph_add_root(Graph *graph, void *data)
+int graph_insert_root(Graph *graph, void *data)
 {
 	if (graph->root != NULL)
 		return GRAPH_ERROR;
@@ -190,7 +190,7 @@ int graph_add_root(Graph *graph, void *data)
 	return node->id;
 }
 
-int graph_add(Graph *graph, void *data, unsigned int linkcount, ...)
+int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...)
 {
 	pthread_rwlock_wrlock(&graph->rwlock);
 	if (graph->debug == true)
@@ -198,7 +198,7 @@ int graph_add(Graph *graph, void *data, unsigned int linkcount, ...)
 
 	if (graph->root == NULL)
 	{
-		unsigned int id = graph_add_root(graph, data);
+		unsigned int id = graph_insert_root(graph, data);
 		pthread_rwlock_unlock(&graph->rwlock);
 		return id;
 	}
@@ -248,7 +248,7 @@ int graph_add(Graph *graph, void *data, unsigned int linkcount, ...)
 	return node->id;
 }
 
-int graph_remove(Graph *graph, unsigned int nodeid)
+int graph_delete(Graph *graph, unsigned int nodeid)
 {
 	pthread_rwlock_wrlock(&graph->rwlock);
 	GraphNode *node = graph_find_dfs(graph, nodeid);

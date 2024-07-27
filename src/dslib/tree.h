@@ -46,10 +46,10 @@ extern "C"
 	TreeNode *tree_find_dfs(Tree *tree, unsigned int nodeid);
 	TreeNode *tree_find_bfs(Tree *tree, unsigned int nodeid);
 	void *tree_get(Tree *tree, unsigned int nodeid);
-	int tree_add_root(Tree *tree, void *data);
-	TreeNode *tree_add_node(Tree *tree, void *data, TreeNode *parent);
-	int tree_add(Tree *tree, void *data, unsigned int parentid);
-	int tree_remove(Tree *tree, unsigned int nodeid);
+	int tree_insert_root(Tree *tree, void *data);
+	TreeNode *tree_insert_node(Tree *tree, void *data, TreeNode *parent);
+	int tree_insert(Tree *tree, void *data, unsigned int parentid);
+	int tree_delete(Tree *tree, unsigned int nodeid);
 	int tree_max_depth(Tree *tree);
 	void tree_print_raw(Tree *tree, DataToString tostring);
 	void tree_print(Tree *tree, DataToString tostring);

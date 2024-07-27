@@ -26,13 +26,13 @@ Graph *util_graph_from_2d_arr(char **arr, int rows, int cols, bool autofree)
 			int backid = j > 0 ? id - 1 : -1;
 
 			if (upid < 0 && backid < 0) // can not link to any
-				graph_add(graph, data, 0);
+				graph_insert(graph, data, 0);
 			else if (upid >= 0 && backid < 0) // can link up only
-				graph_add(graph, data, 1, (unsigned int)upid);
+				graph_insert(graph, data, 1, (unsigned int)upid);
 			else if (upid < 0 && backid >= 0) // can link back only
-				graph_add(graph, data, 1, (unsigned int)backid);
+				graph_insert(graph, data, 1, (unsigned int)backid);
 			else // can link up and back
-				graph_add(graph, data, 2, (unsigned int)upid, (unsigned int)backid);
+				graph_insert(graph, data, 2, (unsigned int)upid, (unsigned int)backid);
 		}
 	}
 

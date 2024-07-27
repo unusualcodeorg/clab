@@ -27,6 +27,7 @@ extern "C"
 	{
 		bool debug;
 		unsigned int counter;
+		pthread_rwlock_t rwlock;
 		void *lambda;
 	} TreeCallbackArg;
 
@@ -38,8 +39,7 @@ extern "C"
 		bool autofree; // free data on pop
 		unsigned int size;
 		TreeNode *root;
-		pthread_mutexattr_t mutexattr;
-		pthread_mutex_t mutex;
+		pthread_rwlock_t rwlock;
 	} Tree;
 
 	Tree *tree_create(bool autofree);

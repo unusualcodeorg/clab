@@ -3,6 +3,16 @@
 #include "tree.h"
 #include "queue.h"
 #include "stack.h"
+#include <stdlib.h>
+#include <stdio.h>
+
+char *path_tree_data_to_string(void *arg)
+{
+	char data = *(char *)arg;
+	char *buffer = malloc(50);
+	snprintf(buffer, 50, "%c", data);
+	return buffer;
+}
 
 /**
  * Queue help is traversing nebouring nodes before its linked nodes,
@@ -61,6 +71,12 @@ Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid, unsigned int
 		stack_push(stack, found);
 		found = found->parent;
 	}
+
+	if (graph->debug)
+		tree_print(tree, path_tree_data_to_string);
+
+	tree_destroy(tree);
+	queue_destroy(queue);
 
 	return stack;
 }

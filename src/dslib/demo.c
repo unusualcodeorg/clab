@@ -446,6 +446,10 @@ int tree_demo(void)
 	tree_add(tree, "J", id_E);
 	tree_add(tree, "K", id_E);
 	tree_add(tree, "L", id_E);
+	unsigned int id_M  = tree_add(tree, "M", id_A);
+	tree_add(tree, "N", id_A);
+	tree_add(tree, "O", id_M);
+	tree_add(tree, "P", id_M);
 
 	tree_print(tree, tree_data_to_string);
 

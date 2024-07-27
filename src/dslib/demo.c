@@ -6,6 +6,7 @@
 #include "util.h"
 #include "tree.h"
 #include "path.h"
+#include "hashmap.h"
 #include "../crun/runtime.h"
 #include <stdlib.h>
 #include <stdbool.h>
@@ -446,7 +447,7 @@ int tree_demo(void)
 	tree_insert(tree, "J", id_E);
 	tree_insert(tree, "K", id_E);
 	tree_insert(tree, "L", id_E);
-	unsigned int id_M  = tree_insert(tree, "M", id_A);
+	unsigned int id_M = tree_insert(tree, "M", id_A);
 	tree_insert(tree, "N", id_A);
 	tree_insert(tree, "O", id_M);
 	tree_insert(tree, "P", id_M);
@@ -539,3 +540,30 @@ int path_shortest_nw_graph_demo(void)
 	return EXIT_SUCCESS;
 }
 /*-------SHORTEST PATH NON WEIGHTED GRAPH DEMO--------- */
+/*-------------------HASHMAP DEMO----------------------*/
+
+int hashmap_demo(void)
+{
+	printf("\n------------HASHMAP DEMO------------------\n");
+	HashMap *map = hashmap_create(10);
+	hashmap_put(map, "A", 1);
+	hashmap_put(map, "B", 2);
+	hashmap_put(map, "C", 3);
+	hashmap_put(map, "D", 4);
+	hashmap_put(map, "E", 5);
+	hashmap_put(map, "F", 5);
+	hashmap_put(map, "F", 6);
+	hashmap_put(map, "F", 7);
+	hashmap_put(map, "G", 1);
+	hashmap_print(map);
+
+	printf("\nHashMap Get %s - %ld\n\n", "E", hashmap_get(map, "E"));
+	hashmap_delete(map, "F");
+	hashmap_delete(map, "F");
+	hashmap_print(map);
+
+	hashmap_destroy(map);
+	printf("\n------------HASHMAP DEMO------------------\n");
+	return EXIT_SUCCESS;
+}
+/*-------------------HASHMAP DEMO----------------------*/

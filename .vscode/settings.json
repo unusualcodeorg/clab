@@ -55,6 +55,8 @@
 		"stdarg.h": "c",
 		"_types.h": "c",
 		"path.h": "c",
-		"graph.h": "c"
+		"graph.h": "c",
+		"hashmap.h": "c",
+		"runtime.h": "c"
 	}
 }

@@ -16,15 +16,13 @@ Queue *queue_create(bool autofree)
 	queue->end = NULL;
 	queue->size = 0;
 	queue->autofree = autofree;
-	pthread_mutexattr_init(&queue->mutexattr);
-	pthread_mutexattr_settype(&queue->mutexattr, PTHREAD_MUTEX_RECURSIVE);
-	pthread_mutex_init(&queue->mutex, &queue->mutexattr);
+	pthread_rwlock_init(&queue->rwlock, NULL);
 	return queue;
 }
 
 void queue_enqueue(Queue *queue, void *data)
 {
-	pthread_mutex_lock(&queue->mutex);
+	pthread_rwlock_wrlock(&queue->rwlock);
 	QueueNode *node = malloc(sizeof(QueueNode));
 	node->data = data;
 	node->next = NULL;
@@ -45,12 +43,12 @@ void queue_enqueue(Queue *queue, void *data)
 	}
 
 	queue->size++;
-	pthread_mutex_unlock(&queue->mutex);
+	pthread_rwlock_unlock(&queue->rwlock);
 }
 
 void *queue_dequeue(Queue *queue)
 {
-	pthread_mutex_lock(&queue->mutex);
+	pthread_rwlock_wrlock(&queue->rwlock);
 	void *data = NULL;
 	if (queue->start != NULL)
 	{
@@ -63,18 +61,17 @@ void *queue_dequeue(Queue *queue)
 			data = node->data;
 		free(node);
 	}
-	pthread_mutex_unlock(&queue->mutex);
+	pthread_rwlock_unlock(&queue->rwlock);
 	return data;
 }
 
 void *queue_peek(Queue *queue)
 {
-	pthread_mutex_lock(&queue->mutex);
+	pthread_rwlock_rdlock(&queue->rwlock);
 	void *data = NULL;
 	if (queue->start != NULL)
 		data = queue->start->data;
-
-	pthread_mutex_unlock(&queue->mutex);
+	pthread_rwlock_unlock(&queue->rwlock);
 	return data;
 }
 
@@ -83,7 +80,7 @@ void *queue_get(Queue *queue, unsigned int position)
 	if (position >= queue->size)
 		return NULL;
 
-	pthread_mutex_lock(&queue->mutex);
+	pthread_rwlock_rdlock(&queue->rwlock);
 	QueueNode *node = queue->start;
 	unsigned int counter = 1;
 
@@ -95,13 +92,13 @@ void *queue_get(Queue *queue, unsigned int position)
 		counter++;
 	}
 
-	pthread_mutex_unlock(&queue->mutex);
+	pthread_rwlock_unlock(&queue->rwlock);
 	return node != NULL ? node->data : NULL;
 }
 
 void queue_print(Queue *queue, DataToString tostring)
 {
-	pthread_mutex_lock(&queue->mutex);
+	pthread_rwlock_rdlock(&queue->rwlock);
 	printf("Queue: [\n");
 	QueueNode *start = queue->start;
 	while (start != NULL)
@@ -116,12 +113,16 @@ void queue_print(Queue *queue, DataToString tostring)
 			printf(",\n");
 	}
 	printf("\n]\n");
-	pthread_mutex_unlock(&queue->mutex);
+	pthread_rwlock_unlock(&queue->rwlock);
 }
 
 void queue_destroy(Queue *queue)
 {
-	pthread_mutex_lock(&queue->mutex);
+	if (queue == NULL)
+		return;
+
+	pthread_rwlock_trywrlock(&queue->rwlock);
+
 	QueueNode *start = queue->start;
 	while (start != NULL)
 	{
@@ -131,8 +132,8 @@ void queue_destroy(Queue *queue)
 		free(start);
 		start = next;
 	}
-	pthread_mutex_unlock(&queue->mutex);
-	pthread_mutex_destroy(&queue->mutex);
-	pthread_mutexattr_destroy(&queue->mutexattr);
+	
+	pthread_rwlock_unlock(&queue->rwlock);
+	pthread_rwlock_destroy(&queue->rwlock);
 	free(queue);
 }

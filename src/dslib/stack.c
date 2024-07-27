@@ -14,26 +14,24 @@ Stack *stack_create(bool autofree)
 	stack->top = NULL;
 	stack->size = 0;
 	stack->autofree = autofree;
-	pthread_mutexattr_init(&stack->mutexattr);
-	pthread_mutexattr_settype(&stack->mutexattr, PTHREAD_MUTEX_RECURSIVE);
-	pthread_mutex_init(&stack->mutex, &stack->mutexattr);
+	pthread_rwlock_init(&stack->rwlock, NULL);
 	return stack;
 }
 
 void stack_push(Stack *stack, void *data)
 {
-	pthread_mutex_lock(&stack->mutex);
+	pthread_rwlock_wrlock(&stack->rwlock);
 	StackNode *node = malloc(sizeof(StackNode));
 	node->data = data;
 	node->next = stack->top;
 	stack->top = node;
 	stack->size++;
-	pthread_mutex_unlock(&stack->mutex);
+	pthread_rwlock_unlock(&stack->rwlock);
 }
 
 void *stack_pop(Stack *stack)
 {
-	pthread_mutex_lock(&stack->mutex);
+	pthread_rwlock_wrlock(&stack->rwlock);
 	void *data = NULL;
 	if (stack->top != NULL)
 	{
@@ -46,18 +44,17 @@ void *stack_pop(Stack *stack)
 			data = node->data;
 		free(node);
 	}
-	pthread_mutex_unlock(&stack->mutex);
+	pthread_rwlock_unlock(&stack->rwlock);
 	return data;
 }
 
 void *stack_peek(Stack *stack)
 {
-	pthread_mutex_lock(&stack->mutex);
+	pthread_rwlock_rdlock(&stack->rwlock);
 	void *data = NULL;
 	if (stack->top != NULL)
 		data = stack->top->data;
-
-	pthread_mutex_unlock(&stack->mutex);
+	pthread_rwlock_unlock(&stack->rwlock);
 	return data;
 }
 
@@ -66,7 +63,7 @@ void *stack_get(Stack *stack, unsigned int position)
 	if (position >= stack->size)
 		return NULL;
 
-	pthread_mutex_lock(&stack->mutex);
+	pthread_rwlock_rdlock(&stack->rwlock);
 	StackNode *node = stack->top;
 	unsigned int counter = 1;
 
@@ -78,13 +75,13 @@ void *stack_get(Stack *stack, unsigned int position)
 		counter++;
 	}
 
-	pthread_mutex_unlock(&stack->mutex);
+	pthread_rwlock_unlock(&stack->rwlock);
 	return node != NULL ? node->data : NULL;
 }
 
 void stack_print(Stack *stack, DataToString tostring)
 {
-	pthread_mutex_lock(&stack->mutex);
+	pthread_rwlock_rdlock(&stack->rwlock);
 	printf("Stack: [\n");
 	StackNode *top = stack->top;
 	while (top != NULL)
@@ -99,12 +96,16 @@ void stack_print(Stack *stack, DataToString tostring)
 			printf(",\n");
 	}
 	printf("\n]\n");
-	pthread_mutex_unlock(&stack->mutex);
+	pthread_rwlock_unlock(&stack->rwlock);
 }
 
 void stack_destroy(Stack *stack)
 {
-	pthread_mutex_lock(&stack->mutex);
+	if (stack == NULL)
+		return;
+
+	pthread_rwlock_trywrlock(&stack->rwlock);
+
 	StackNode *top = stack->top;
 	while (top != NULL)
 	{
@@ -114,8 +115,8 @@ void stack_destroy(Stack *stack)
 		free(top);
 		top = next;
 	}
-	pthread_mutex_unlock(&stack->mutex);
-	pthread_mutex_destroy(&stack->mutex);
-	pthread_mutexattr_destroy(&stack->mutexattr);
+	
+	pthread_rwlock_unlock(&stack->rwlock);
+	pthread_rwlock_destroy(&stack->rwlock);
 	free(stack);
 }

@@ -23,8 +23,7 @@ extern "C"
 		QueueNode *end;
 		unsigned int size;
 		bool autofree; // free data on pop
-		pthread_mutexattr_t mutexattr;
-		pthread_mutex_t mutex;
+		pthread_rwlock_t rwlock;
 	} Queue;
 
 	Queue *queue_create(bool autofree);

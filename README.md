@@ -23,14 +23,22 @@ make release
 To run the dev binary, run:
 ```bash
 make runclabdev cmd=stack
-#or
+# or 
+make runclabdev cmd1=debug cmd2=maze_shortest_distance
+# or
 ./bin/clabdev stack
+# or
+./bin/clabdev stack maze_shortest_distance
 ```
 
 To run the release binary, run:
 ```bash
 make runclab cmd=stack
-#or
+# or 
+make runclab cmd1=debug cmd2=maze_shortest_distance
+# or
 ./bin/clab stack
+# or
+./bin/clab stack maze_shortest_distance
 ```
 

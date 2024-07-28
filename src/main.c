@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 {
 	if (argc < 2)
 	{
-		fprintf(stderr, "%s  - one command needed [all, debug, stack, queue, runtime, graph, tree, hashmap, console, path]\n", argv[0]);
+		fprintf(stderr, "error  - one command needed [all, debug, stack, queue, runtime, graph, tree, hashmap, console, path]\n");
 		return EXIT_FAILURE;
 	}
 
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 	{
 		if (argc < 3)
 		{
-			fprintf(stderr, "%s  - debug require function name\n", argv[0]);
+			fprintf(stderr, "error  - debug require function name\n");
 			return EXIT_FAILURE;
 		}
 		return debugfn(argv[2]);

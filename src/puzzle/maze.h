@@ -8,7 +8,7 @@ extern "C"
 {
 #endif
 
-void puzzle_dummy(void);
+	int maze_shortest_distance(void);
 
 #ifdef __cplusplus
 }

@@ -59,10 +59,10 @@ debug: $(BIN_DEV)
 
 # Run the program
 runclabdev: $(BIN_DEV)
-	./$(BIN_DEV) $(cmd1); ./$(BIN_DEV) $(cmd2)
+	./$(BIN_DEV) $(cmd1) $(cmd2)
 
 runclab: $(BIN_RELEASE)
-	./$(BIN_RELEASE) $(cmd1); /.$(BIN_RELEASE) $(cmd2)
+	./$(BIN_RELEASE) $(cmd1) $(cmd2)
 
 # Phony targets
 .PHONY: all clean dev release debug runclabdev runclab

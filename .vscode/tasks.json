@@ -14,7 +14,7 @@
     {
       "label": "Run",
       "type": "shell",
-      "command": "${workspaceFolder}/bin/main",
+      "command": "${workspaceFolder}/bin/main_dev",
       "group": {
         "kind": "test",
         "isDefault": true

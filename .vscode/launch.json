@@ -5,7 +5,7 @@
 			"name": "(lldb) Launch",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/bin/main",
+			"program": "${workspaceFolder}/bin/main_dev",
 			"args": [],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",

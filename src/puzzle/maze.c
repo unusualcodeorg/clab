@@ -34,15 +34,21 @@ Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree
 
   Graph *graph = graph_create(autofree);
   HashMap *idmap = hashmap_create(rows * cols, true);
+
   int idstore[rows][cols];
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      idstore[i][j] = rows * cols;
+    }
+  }
 
   char *skip = "#";
 
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      char key[50];
+      char key[10];
       char *data = arr[i][j];
-      snprintf(key, 50, "%s", data);
+      snprintf(key, 10, "%s", data);
 
       // skip adding '#'
       if (strcmp(data, skip) == 0) continue;
@@ -59,12 +65,12 @@ Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree
 
       int index = i * cols + j;
       int upindex = index - cols;
-      int backindex = j > 0 ? index - 1 : -1;
+      int backindex = j == 0 ? -1 : index - 1;
 
       // skip trapped node
       if (upindex >= 0 && backindex >= 0) {
         int downindex = i == rows - 1 ? -1 : index + cols;
-        int frontindex = j == cols - 1 ? -1 : index - 1;
+        int frontindex = j == cols - 1 ? -1 : index + 1;
 
         if (downindex >= 0 && frontindex >= 0) {
           if (strcmp(arr[i - 1][j], skip) == 0 && strcmp(arr[i][j - 1], skip) == 0 &&
@@ -78,23 +84,22 @@ Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree
       if (upindex < 0 && backindex < 0) continue;
 
       int *mid = malloc(sizeof(int));
+      int nid = 0;
 
       if (upindex >= 0 && backindex < 0) {  // can link up only
         int up = idstore[i - 1][j];
-        int nid = graph_insert_conditional(graph, data, true, 1, (unsigned int)up);
-        *mid = nid;
+        nid = graph_insert_conditional(graph, data, true, 1, (unsigned int)up);
       } else if (upindex < 0 && backindex >= 0) {  // can link back only
         int back = idstore[i][j - 1];
-        int nid = graph_insert_conditional(graph, data, true, 1, (unsigned int)back);
-        *mid = nid;
+        nid = graph_insert_conditional(graph, data, true, 1, (unsigned int)back);
       } else {  // can link up and back
         int up = idstore[i - 1][j];
         int back = idstore[i][j - 1];
-        int nid =
-            graph_insert_conditional(graph, data, true, 2, (unsigned int)up, (unsigned int)back);
-        *mid = nid;
+        nid = graph_insert_conditional(graph, data, true, 2, (unsigned int)up, (unsigned int)back);
       }
 
+      idstore[i][j] = nid;
+      *mid = nid;
       hashmap_put(idmap, key, mid);
     }
   }
@@ -107,6 +112,7 @@ Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree
 
 int maze_shortest_distance(void) {
   const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
+  // const char maze[] = "..........AB@C.D@..@EFGH*I..J.KL@M@..N..@.....OP@Q$RS..........";
 
   int rows = 7;
   int cols = 9;

@@ -190,7 +190,7 @@ int graph_insert_root(Graph *graph, void *data)
 	return node->id;
 }
 
-int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...)
+int graph_insert_node(Graph *graph, void *data, bool allowisolated, unsigned int linkcount, va_list vargs)
 {
 	pthread_rwlock_wrlock(&graph->rwlock);
 	if (graph->debug == true)
@@ -211,7 +211,7 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...)
 
 	unsigned short nodeids[linkcount];
 	va_list args;
-	va_start(args, linkcount);
+	va_copy(args, vargs);
 
 	for (unsigned int i = 0; i < linkcount; i++)
 		nodeids[i] = va_arg(args, unsigned int);
@@ -227,7 +227,7 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...)
 			empty = false;
 	}
 
-	if (empty == true)
+	if (allowisolated == false && empty == true)
 	{
 		va_end(args);
 		pthread_rwlock_unlock(&graph->rwlock);
@@ -262,6 +262,24 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...)
 	va_end(args);
 	pthread_rwlock_unlock(&graph->rwlock);
 	return node->id;
+}
+
+int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...)
+{
+	va_list args;
+	va_start(args, linkcount);
+	int nodeid = graph_insert_node(graph, data, false, linkcount, args);
+	va_end(args);
+	return nodeid;
+}
+
+int graph_insert_conditional(Graph *graph, void *data, bool allowisolated, unsigned int linkcount, ...)
+{
+	va_list args;
+	va_start(args, linkcount);
+	int nodeid = graph_insert_node(graph, data, allowisolated, linkcount, args);
+	va_end(args);
+	return nodeid;
 }
 
 int graph_delete(Graph *graph, unsigned int nodeid)

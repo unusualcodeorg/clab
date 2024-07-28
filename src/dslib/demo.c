@@ -431,25 +431,32 @@ int tree_demo(void)
 
 /*-------------------HASHMAP DEMO----------------------*/
 
+char *hashmap_value_to_string(void *value)
+{
+	char *data = (char *)value;
+	char *temp = malloc(10 * sizeof(char));
+	return strcpy(temp, data);
+}
+
 int hashmap_demo(void)
 {
 	printf("\n------------HASHMAP DEMO------------------\n");
-	HashMap *map = hashmap_create(10);
-	hashmap_put(map, "A", 1);
-	hashmap_put(map, "B", 2);
-	hashmap_put(map, "C", 3);
-	hashmap_put(map, "D", 4);
-	hashmap_put(map, "E", 5);
-	hashmap_put(map, "F", 5);
-	hashmap_put(map, "F", 6);
-	hashmap_put(map, "F", 7);
-	hashmap_put(map, "G", 1);
-	hashmap_print(map);
+	HashMap *map = hashmap_create(10, false);
+	hashmap_put(map, "A", "N1");
+	hashmap_put(map, "B", "N2");
+	hashmap_put(map, "C", "N3");
+	hashmap_put(map, "D", "N4");
+	hashmap_put(map, "E", "N5");
+	hashmap_put(map, "F", "N6");
+	hashmap_put(map, "F", "N7");
+	hashmap_put(map, "F", "N8");
+	hashmap_put(map, "G", "N9");
+	hashmap_print(map, hashmap_value_to_string);
 
-	printf("\nHashMap Get %s - %ld\n\n", "E", hashmap_get(map, "E"));
+	printf("\nHashMap Get %s - %s\n\n", "E", (char *)hashmap_get(map, "E"));
 	hashmap_delete(map, "F");
 	hashmap_delete(map, "F");
-	hashmap_print(map);
+	hashmap_print(map, hashmap_value_to_string);
 
 	hashmap_destroy(map);
 	printf("\n------------HASHMAP DEMO------------------\n");

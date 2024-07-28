@@ -163,8 +163,8 @@ void path_shortest_nw_graph_solution(void *arg)
 	// unsigned int srcid = hashmap_get(gmap->idmap, "N6");
 	// unsigned int dstid = hashmap_get(gmap->idmap, "N300");
 
-	unsigned int srcid = hashmap_get(gmap->idmap, "I");
-	unsigned int dstid = hashmap_get(gmap->idmap, "U");
+	unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, "I");
+	unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, "U");
 
 	Stack *stack = path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, path_graph_data_to_string); // G->S
 

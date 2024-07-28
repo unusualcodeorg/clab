@@ -16,12 +16,12 @@ Graph2DMap *util_graph_from_2d_arr(char ***arr, int rows, int cols, bool autofre
 
 	Graph *graph = graph_create(autofree);
 	HashMap *idmap = hashmap_create(rows * cols);
-	char *key = malloc(50 * sizeof(char));
 
 	for (int i = 0; i < rows; i++)
 	{
 		for (int j = 0; j < cols; j++)
 		{
+			char key[50]; 
 			char *data = arr[i][j];
 			snprintf(key, 50, "%s", data);
 
@@ -55,7 +55,6 @@ Graph2DMap *util_graph_from_2d_arr(char ***arr, int rows, int cols, bool autofre
 	Graph2DMap *gmap = malloc(sizeof(Graph2DMap));
 	gmap->graph = graph;
 	gmap->idmap = idmap;
-	free(key);
 	return gmap;
 }
 

@@ -10,6 +10,7 @@ extern "C" {
 
 typedef char *(*DataToString)(void *);
 
+// this is used to send the result of the path search, id is the graph id, and data is graph data
 typedef struct {
   unsigned int id;
   void *data;

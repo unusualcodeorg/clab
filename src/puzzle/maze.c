@@ -13,10 +13,26 @@
 #include "../dslib/util.h"
 #include "../term/console.h"
 
-char *maze_data_to_string(void *arg) {
-  char data = *(char *)arg;
+char *maze_graph_data_to_string(void *arg) {
+  int data = *(int *)arg;
   char *buffer = malloc(50);
-  snprintf(buffer, 50, "%c", data);
+  snprintf(buffer, 50, "%d", data);
+  return buffer;
+}
+
+char *maze_path_graph_data_to_string(void *arg) {
+  GraphNode *node = (GraphNode *)arg;
+  int data = *(int *)node->data;
+  char *buffer = malloc(50);
+  snprintf(buffer, 50, "%d", data);
+  return buffer;
+}
+
+char *maze_location_to_string(void *arg) {
+  Location *location = (Location *)arg;
+  int data = *(int *)location->data;
+  char *buffer = malloc(50);
+  snprintf(buffer, 50, "[%d]%d", location->id, data);
   return buffer;
 }
 
@@ -46,12 +62,16 @@ Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree
 
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
+      int index = i * cols + j;
+
+      int *data = malloc(sizeof(int));
+      *data = index;
+
       char key[10];
-      char *data = arr[i][j];
-      snprintf(key, 10, "%s", data);
+      snprintf(key, 10, "%s", arr[i][j]);
 
       // skip adding '#'
-      if (strcmp(data, skip) == 0) continue;
+      if (strcmp(key, skip) == 0) continue;
 
       // add root logic and skip below
       if (graph->size == 0) {
@@ -63,7 +83,6 @@ Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree
         continue;
       }
 
-      int index = i * cols + j;
       int upindex = index - cols;
       int backindex = j == 0 ? -1 : index - 1;
 
@@ -130,17 +149,25 @@ int maze_shortest_distance(void) {
   }
 
   // cannot auto free arr[i][j] since arr[i] is a continous memory
-  Graph2DMap *gmap = maze_graph_map_create(arr, rows, cols, false);
+  Graph2DMap *gmap = maze_graph_map_create(arr, rows, cols, true);
   gmap->graph->debug = true;
-  graph_print(gmap->graph, maze_data_to_string);
 
   unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, "S");
   unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, "G");
 
-  Stack *stack = path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, path_graph_data_to_string);
+  Stack *stack =
+      path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, maze_path_graph_data_to_string);
 
-  graph_print(gmap->graph, graph_sd_data_to_string);
-  stack_print(stack, location_to_string);
+  graph_print(gmap->graph, maze_graph_data_to_string);
+  stack_print(stack, maze_location_to_string);
+
+  for (unsigned int i = 0; i < stack->size; i++) {
+    Location *loc = (Location *)stack_get(stack, i);
+    int position = *(int *)loc->data;
+    int i = position / cols;
+    int j = position % cols;
+    printf("[%d]%s\n", position, arr[i][j]);
+  }
 
   stack_destroy(stack);
   graph_destroy(gmap->graph);

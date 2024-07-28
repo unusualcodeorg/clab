@@ -133,8 +133,12 @@ void path_shortest_nw_graph_solution(void *arg)
 {
 	Runtime *rnc = (Runtime *)arg;
 
+	// int rows = 30;
+	// int cols = 30;
+
 	int rows = 5;
 	int cols = 5;
+
 	char ***arr = util_create_2d_str_arr(rows, cols);
 
 	for (int i = 0; i < rows; i++)
@@ -156,8 +160,8 @@ void path_shortest_nw_graph_solution(void *arg)
 	Graph2DMap *gmap = util_graph_from_2d_arr(arr, rows, cols, false); // cannot auto free arr[i][j] since arr[i] is a continous memory
 	gmap->graph->debug = false;
 
-	// unsigned int srcid = hashmap_get(gmap->idmap, "N0");
-	// unsigned int dstid = hashmap_get(gmap->idmap, "N3");
+	// unsigned int srcid = hashmap_get(gmap->idmap, "N6");
+	// unsigned int dstid = hashmap_get(gmap->idmap, "N300");
 
 	unsigned int srcid = hashmap_get(gmap->idmap, "I");
 	unsigned int dstid = hashmap_get(gmap->idmap, "U");

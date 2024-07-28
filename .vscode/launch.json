@@ -1,17 +1,26 @@
 {
   "version": "0.2.0",
   "configurations": [
-		{
-			"name": "(lldb) Launch",
-			"type": "cppdbg",
-			"request": "launch",
-			"program": "${workspaceFolder}/bin/main_dev",
-			"args": [],
-			"stopAtEntry": false,
-			"cwd": "${fileDirname}",
-			"environment": [],
-			"externalConsole": false,
-			"MIMode": "lldb"
-		},
+    {
+      "name": "(lldb) Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/clabdev",
+      "args": [],
+      // "args": ["${input:runArg}"],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "runArg",
+      "type": "promptString",
+      "description": "Enter the argument for clabdev",
+      "default": "all"
+    }
   ]
 }

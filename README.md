@@ -1,5 +1,10 @@
 # Study C language
 
+To remove all build files and binaries
+```bash
+make clean
+```
+
 To build both dev and release binaries, run:
 ```bash
 make dev
@@ -17,10 +22,15 @@ make release
 
 To run the dev binary, run:
 ```bash
-make run_dev
+make runclabdev cmd=stack
+#or
+./bin/clabdev stack
 ```
 
 To run the release binary, run:
 ```bash
-make run_release
+make runclab cmd=stack
+#or
+./bin/clab stack
 ```
+

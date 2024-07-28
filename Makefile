@@ -20,19 +20,19 @@ all: dev release
 
 # Development build
 dev: CFLAGS=$(CFLAGS_COMMON) $(CFLAGS_DEV)
-dev: $(BIN_DIR)/main_dev
+dev: $(BIN_DIR)/clabdev
 
 # Release build
 release: CFLAGS=$(CFLAGS_COMMON) $(CFLAGS_RELEASE)
-release: $(BIN_DIR)/main_release
+release: $(BIN_DIR)/clab
 
 # Link object files to create the executable for development
-$(BIN_DIR)/main_dev: $(OBJS_DEV)
+$(BIN_DIR)/clabdev: $(OBJS_DEV)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 
 # Link object files to create the executable for release
-$(BIN_DIR)/main_release: $(OBJS_RELEASE)
+$(BIN_DIR)/clab: $(OBJS_RELEASE)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 
@@ -51,15 +51,15 @@ clean:
 	rm -rf $(BUILD_DIR) $(BIN_DIR)
 
 # Apple Silicon debug
-debug: $(BIN_DIR)/main_dev
-	lldb -o 'run' $(BIN_DIR)/main_dev
+debug: $(BIN_DIR)/clabdev
+	lldb -o 'run' $(BIN_DIR)/clabdev
 
 # Run the program
-run_dev: $(BIN_DIR)/main_dev
-	./$(BIN_DIR)/main_dev
+runclabdev: $(BIN_DIR)/clabdev
+	./$(BIN_DIR)/clabdev $(cmd)
 
-run_release: $(BIN_DIR)/main_release
-	./$(BIN_DIR)/main_release
+runclab: $(BIN_DIR)/clab
+	./$(BIN_DIR)/clab $(cmd)
 
 # Phony targets
-.PHONY: all clean dev release debug run_dev run_release
+.PHONY: all clean dev release debug runclabdev runclab

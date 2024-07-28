@@ -8,6 +8,7 @@
 #include "path.h"
 #include "hashmap.h"
 #include "../crun/runtime.h"
+#include "../term/console.h"
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -516,13 +517,37 @@ char *path_graph_data_to_string(void *arg)
 	return buffer;
 }
 
-int path_shortest_nw_graph_demo(void)
+void path_shortest_console(void *arg)
 {
-	printf("\n-----SHORTEST PATH NON WEIGHTED GRAPH DEMO-----\n");
+	Runtime *rnc = (Runtime *)arg;
+	Console *console = console_create(100);
 	clock_t start = clock();
+	double cputime = 0;
 
-	int rows = 30;
-	int cols = 30;
+	while (rnc->exit != true)
+	{
+		clock_t end = clock();
+		cputime = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+		char *text = malloc(50 * sizeof(char));
+		snprintf(text, 50, "processing %f sec", cputime);
+		console_render(console, text);
+		usleep(1000000);
+	}
+
+	console_destroy(console);
+
+	clock_t end = clock();
+	cputime = ((double)(end - start)) / CLOCKS_PER_SEC;
+	printf("Execution time %f\n sec", cputime);
+}
+
+void path_shortest_nw_graph_solution(void *arg)
+{
+	Runtime *rnc = (Runtime *)arg;
+
+	int rows = 28;
+	int cols = 28;
 	char ***arr = util_create_2d_str_arr(rows, cols);
 
 	for (int i = 0; i < rows; i++)
@@ -546,16 +571,26 @@ int path_shortest_nw_graph_demo(void)
 
 	Stack *stack = path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, path_graph_data_to_string); // G->S
 
-	clock_t end = clock();
-	double cputime = ((double)(end - start)) / CLOCKS_PER_SEC;
-	printf("Execution time seconds = %f\n", cputime);
-
+	runtime_destroy(rnc);
 	stack_print(stack, location_to_string);
 
 	stack_destroy(stack);
 	graph_destroy(gmap->graph);
 	hashmap_destroy(gmap->idmap);
 	util_free_2d_str_arr(arr, rows, cols);
+}
+
+int path_shortest_nw_graph_demo(void)
+{
+	printf("\n-----SHORTEST PATH NON WEIGHTED GRAPH DEMO-----\n");
+
+	Runtime *rns = runtime_create("Solution", false);
+	Runtime *rnc = runtime_create("Console", false);
+
+	runtime_exec(rns, path_shortest_nw_graph_solution, rnc);
+	runtime_exec(rnc, path_shortest_console, rnc);
+
+	runtime_destroy(rns);
 
 	printf("\n-----SHORTEST PATH NON WEIGHTED GRAPH DEMO-----\n");
 	return EXIT_SUCCESS;

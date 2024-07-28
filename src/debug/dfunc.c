@@ -39,5 +39,6 @@ int debugfn(char *fname)
 	}
 	func();
 
+	hashmap_destroy(map);
 	return EXIT_SUCCESS;
 }

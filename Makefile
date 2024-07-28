@@ -9,6 +9,9 @@ SRC_DIR = src
 BUILD_DIR = build
 BIN_DIR = bin
 
+BIN_DEV = $(BIN_DIR)/clabdev
+BIN_RELEASE = $(BIN_DIR)/clab
+
 # Find all .c files in SRC_DIR and subdirectories
 SRCS = $(shell find $(SRC_DIR) -name '*.c')
 # Create a list of .o files based on the .c files
@@ -20,19 +23,19 @@ all: dev release
 
 # Development build
 dev: CFLAGS=$(CFLAGS_COMMON) $(CFLAGS_DEV)
-dev: $(BIN_DIR)/clabdev
+dev: $(BIN_DEV)
 
 # Release build
 release: CFLAGS=$(CFLAGS_COMMON) $(CFLAGS_RELEASE)
-release: $(BIN_DIR)/clab
+release: $(BIN_RELEASE)
 
 # Link object files to create the executable for development
-$(BIN_DIR)/clabdev: $(OBJS_DEV)
+$(BIN_DEV): $(OBJS_DEV)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 
 # Link object files to create the executable for release
-$(BIN_DIR)/clab: $(OBJS_RELEASE)
+$(BIN_RELEASE): $(OBJS_RELEASE)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 
@@ -51,15 +54,15 @@ clean:
 	rm -rf $(BUILD_DIR) $(BIN_DIR)
 
 # Apple Silicon debug
-debug: $(BIN_DIR)/clabdev
-	lldb -o 'run' $(BIN_DIR)/clabdev
+debug: $(BIN_DEV)
+	lldb -o 'run' $(BIN_DEV)
 
 # Run the program
-runclabdev: $(BIN_DIR)/clabdev
-	./$(BIN_DIR)/clabdev $(cmd)
+runclabdev: $(BIN_DEV)
+	./$(BIN_DEV) $(cmd1); ./$(BIN_DEV) $(cmd2)
 
-runclab: $(BIN_DIR)/clab
-	./$(BIN_DIR)/clab $(cmd)
+runclab: $(BIN_RELEASE)
+	./$(BIN_RELEASE) $(cmd1); /.$(BIN_RELEASE) $(cmd2)
 
 # Phony targets
 .PHONY: all clean dev release debug runclabdev runclab

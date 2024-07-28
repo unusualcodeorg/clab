@@ -6,8 +6,10 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/clabdev",
-      "args": [],
-      // "args": ["${input:runArg}"],
+      "args": [
+				"debug",
+				"${input:runArg}"
+			],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
       "environment": [],
@@ -19,8 +21,8 @@
     {
       "id": "runArg",
       "type": "promptString",
-      "description": "Enter the argument for clabdev",
-      "default": "all"
+      "description": "Enter the debug function name for clabdev",
+      "default": "function_demo"
     }
   ]
 }

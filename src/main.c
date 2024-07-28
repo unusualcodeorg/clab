@@ -2,6 +2,7 @@
 #include "dslib/demo.h"
 #include "crun/demo.h"
 #include "term/demo.h"
+#include "debug/dfunc.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,8 +25,18 @@ int main(int argc, char *argv[])
 {
 	if (argc < 2)
 	{
-		fprintf(stderr, "%s  - one command needed [all, stack, queue, runtime, graph, tree, hashmap, console, path]\n", argv[0]);
+		fprintf(stderr, "%s  - one command needed [all, debug, stack, queue, runtime, graph, tree, hashmap, console, path]\n", argv[0]);
 		return EXIT_FAILURE;
+	}
+
+	if (strcmp(argv[1], "debug") == 0)
+	{
+		if (argc < 3)
+		{
+			fprintf(stderr, "%s  - debug require function name\n", argv[0]);
+			return EXIT_FAILURE;
+		}
+		return debugfn(argv[2]);
 	}
 
 	int option = NONE;

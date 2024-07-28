@@ -40,6 +40,7 @@ int graph_2d_arr_demo(void)
 			char data = maze[i * cols + j];
 			snprintf(temp, 50, "%d", data);
 			strcpy(arr[i][j], temp);
+			printf("%c", data);
 		}
 		printf("\n");
 	}

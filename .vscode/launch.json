@@ -6,15 +6,13 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/bin/clabdev",
-      "args": [
-				"debug",
-				"${input:runArg}"
-			],
+      "args": ["debug", "${input:runArg}"],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
       "environment": [],
       "externalConsole": false,
-      "MIMode": "lldb"
+      "MIMode": "lldb",
+      "preLaunchTask": "build"
     }
   ],
   "inputs": [
@@ -22,7 +20,7 @@
       "id": "runArg",
       "type": "promptString",
       "description": "Enter the debug function name for clabdev",
-      "default": "function_demo"
+      "default": "function_name"
     }
   ]
 }

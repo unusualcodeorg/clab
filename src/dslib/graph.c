@@ -218,6 +218,22 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...)
 
 	unsigned short esize = linkcount;
 
+	GraphNode *linknodes[esize];
+	bool empty = true;
+	for (unsigned short i = 0; i < esize; i++)
+	{
+		linknodes[i] = graph_find_bfs(graph, nodeids[i]);
+		if (linknodes[i] != NULL)
+			empty = false;
+	}
+
+	if (empty == true)
+	{
+		va_end(args);
+		pthread_rwlock_unlock(&graph->rwlock);
+		return GRAPH_ERROR;
+	}
+
 	GraphNode *node = (GraphNode *)malloc(sizeof(GraphNode));
 	node->id = graph->size++;
 	node->data = data;
@@ -226,7 +242,7 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...)
 
 	for (unsigned short i = 0; i < node->esize; i++)
 	{
-		GraphNode *n = graph_find_bfs(graph, nodeids[i]);
+		GraphNode *n = linknodes[i];
 		if (n != NULL)
 		{
 			GraphEdge *edge = (GraphEdge *)malloc(sizeof(GraphEdge));

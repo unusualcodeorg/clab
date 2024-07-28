@@ -57,6 +57,7 @@
 		"path.h": "c",
 		"graph.h": "c",
 		"hashmap.h": "c",
-		"runtime.h": "c"
+		"runtime.h": "c",
+		"variant": "c"
 	}
 }

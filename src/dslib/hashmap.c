@@ -23,9 +23,10 @@ HashMap *hashmap_create(unsigned int size)
 
 void hashmap_put(HashMap *map, char *key, long value)
 {
-	unsigned int index = hash_function(key, map->size);
+	char *dupkey = strdup(key);
+	unsigned int index = hash_function(dupkey, map->size);
 	HashNode *new_node = (HashNode *)malloc(sizeof(HashNode));
-	new_node->key = strdup(key); // Duplicate the key string
+	new_node->key = dupkey;
 	new_node->value = value;
 	new_node->next = map->buckets[index];
 	map->buckets[index] = new_node;

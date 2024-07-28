@@ -403,17 +403,18 @@ int graph_2d_arr_demo(void)
 		printf("\n");
 	}
 
-	Graph *graph = util_graph_from_2d_arr(arr, rows, cols, false); // cannot auto free arr[i][j] since arr[i] is a continous memory
-	graph->debug = true;
-	graph_print(graph, graph_maze_data_to_string);
+	Graph2DMap *gmap = util_graph_from_2d_arr(arr, rows, cols, false); // cannot auto free arr[i][j] since arr[i] is a continous memory
+	gmap->graph->debug = true;
+	graph_print(gmap->graph, graph_maze_data_to_string);
 
-	char *data = (char *)graph_get(graph, 40);
+	char *data = (char *)graph_get(gmap->graph, 40);
 	printf("Graph found id %d : %c\n", 40, *data);
 
-	data = (char *)graph_get(graph, 24);
+	data = (char *)graph_get(gmap->graph, 24);
 	printf("Graph found id %d : %c\n", 24, *data);
 
-	graph_destroy(graph);
+	graph_destroy(gmap->graph);
+	hashmap_destroy(gmap->idmap);
 	util_free_2d_pt_arr((void **)arr, rows);
 
 	printf("\n---------------GRAPH 2D ARR DEMO----------------\n");
@@ -524,16 +525,20 @@ int path_shortest_nw_graph_demo(void)
 		for (int j = 0; j < cols; j++)
 			arr[i][j] = 65 + i * cols + j;
 
-	Graph *graph = util_graph_from_2d_arr(arr, rows, cols, false); // cannot auto free arr[i][j] since arr[i] is a continous memory
-	graph->debug = true;
+	Graph2DMap *gmap = util_graph_from_2d_arr(arr, rows, cols, false); // cannot auto free arr[i][j] since arr[i] is a continous memory
+	gmap->graph->debug = true;
 
-	graph_print(graph, graph_sd_data_to_string);
+	graph_print(gmap->graph, graph_sd_data_to_string);
 
-	Stack *stack = path_shortest_nw_graph_vis(graph, 6, 18, path_graph_data_to_string); // G->S
+	unsigned int srcid = hashmap_get(gmap->idmap, "I");
+	unsigned int dstid = hashmap_get(gmap->idmap, "W");
+
+	Stack *stack = path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, path_graph_data_to_string); // G->S
 	stack_print(stack, location_to_string);
 
 	stack_destroy(stack);
-	graph_destroy(graph);
+	graph_destroy(gmap->graph);
+	hashmap_destroy(gmap->idmap);
 	util_free_2d_pt_arr((void **)arr, rows);
 
 	printf("\n-----SHORTEST PATH NON WEIGHTED GRAPH DEMO-----\n");

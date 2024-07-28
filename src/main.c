@@ -17,8 +17,8 @@ int main(void)
 	// graph_concurrent_demo();
 	// graph_2d_arr_demo();
 	// tree_demo();
-	// path_shortest_nw_graph_demo();
+	path_shortest_nw_graph_demo();
 	// console_demo();
-	hashmap_demo();
+	// hashmap_demo();
 	return EXIT_SUCCESS;
 }

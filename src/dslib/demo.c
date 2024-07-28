@@ -564,14 +564,13 @@ void path_shortest_nw_graph_solution(void *arg)
 	Graph2DMap *gmap = util_graph_from_2d_arr(arr, rows, cols, false); // cannot auto free arr[i][j] since arr[i] is a continous memory
 	gmap->graph->debug = false;
 
-	// graph_print(gmap->graph, graph_sd_data_to_string);
-
 	unsigned int srcid = hashmap_get(gmap->idmap, "N15");
 	unsigned int dstid = hashmap_get(gmap->idmap, "N85");
 
 	Stack *stack = path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, path_graph_data_to_string); // G->S
 
 	runtime_destroy(rnc);
+	graph_print(gmap->graph, graph_sd_data_to_string);
 	stack_print(stack, location_to_string);
 
 	stack_destroy(stack);

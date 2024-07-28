@@ -3,22 +3,20 @@
 #define DS_LIB_MODEL_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-	typedef struct
-	{
-		char name[50];
-		int salary;
-		bool verified;
-	} Customer;
+typedef struct {
+  char name[50];
+  int salary;
+  bool verified;
+} Customer;
 
-	Customer *new_customer(char name[50], int salary, bool verified);
-	char *customer_to_string(void *cust);
+Customer *new_customer(char name[50], int salary, bool verified);
+char *customer_to_string(void *cust);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // DS_LIB_MODEL_H
+#endif  // DS_LIB_MODEL_H

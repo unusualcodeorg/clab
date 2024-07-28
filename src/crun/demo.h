@@ -2,14 +2,13 @@
 #define CRUN_DEMO_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-	int runtime_demo(void);
-	int runpool_demo(void);
+int runtime_demo(void);
+int runpool_demo(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // CRUN_DEMO_H
+#endif  // CRUN_DEMO_H

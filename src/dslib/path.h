@@ -5,23 +5,23 @@
 #define PATH_DEMO_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-	typedef char *(*DataToString)(void *);
+typedef char *(*DataToString)(void *);
 
-	typedef struct
-	{
-		unsigned int id;
-		void *data;
-	} Location;
+typedef struct {
+  unsigned int id;
+  void *data;
+} Location;
 
-	Stack *path_shortest_nw_graph_vis(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid, DataToString tostring); // non weighted graph
-	Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid);														// non weighted graph
+Stack *path_shortest_nw_graph_vis(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid,
+                                  DataToString tostring);  // non weighted graph
+Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid,
+                              unsigned int dstnodeid);  // non weighted graph
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // PATH_DEMO_H
+#endif  // PATH_DEMO_H

@@ -12,7 +12,7 @@
       "problemMatcher": ["$gcc"],
       "detail": "task to build the project using make dev"
     },
-		{
+    {
       "label": "release",
       "type": "shell",
       "command": "make release",
@@ -22,6 +22,22 @@
       },
       "problemMatcher": ["$gcc"],
       "detail": "task to build the project using make release"
+    },
+    {
+      "label": "Format All Files",
+      "type": "shell",
+      "command": "find . -name \"*.c\" -o -name \"*.cpp\" -o -name \"*.h\" | xargs clang-format -i",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
     }
   ]
 }

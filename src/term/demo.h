@@ -2,13 +2,12 @@
 #define TERM_DEMO_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-	int console_demo(void);
+int console_demo(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // TERM_DEMO_H
+#endif  // TERM_DEMO_H

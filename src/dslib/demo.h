@@ -2,23 +2,22 @@
 #define DS_LIB_DEMO_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-	int stack_demo(void);
-	int stack_concurrent_demo(void);
-	int queue_demo(void);
-	int queue_concurrent_demo(void);
-	int graph_demo(void);
-	int graph_concurrent_demo(void);
-	int graph_2d_arr_demo(void);
-	int tree_demo(void);
-	int hashmap_demo(void);
-	int path_shortest_nw_graph_demo(void);
+int stack_demo(void);
+int stack_concurrent_demo(void);
+int queue_demo(void);
+int queue_concurrent_demo(void);
+int graph_demo(void);
+int graph_concurrent_demo(void);
+int graph_2d_arr_demo(void);
+int tree_demo(void);
+int hashmap_demo(void);
+int path_shortest_nw_graph_demo(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // DS_LIB_DEMO_H
+#endif  // DS_LIB_DEMO_H

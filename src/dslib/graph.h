@@ -1,6 +1,6 @@
-#include <stdbool.h>
-#include <stdarg.h>
 #include <pthread.h>
+#include <stdarg.h>
+#include <stdbool.h>
 
 #ifndef DS_LIB_GRAPH_H
 #define DS_LIB_GRAPH_H
@@ -9,60 +9,57 @@
 #define GRAPH_ERROR -1;
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-	typedef char *(*DataToString)(void *);
+typedef char *(*DataToString)(void *);
 
-	// Traversal direction will be opposite to the direction of visit
-	typedef struct
-	{
-		unsigned short weight;
-		struct GraphNode *end; // Use forward-declared GraphNode
-	} GraphEdge;
+// Traversal direction will be opposite to the direction of visit
+typedef struct {
+  unsigned short weight;
+  struct GraphNode *end;  // Use forward-declared GraphNode
+} GraphEdge;
 
-	typedef struct GraphNode
-	{
-		unsigned int id;
-		void *data;
-		unsigned short esize;
-		GraphEdge **edges;
-	} GraphNode;
+typedef struct GraphNode {
+  unsigned int id;
+  void *data;
+  unsigned short esize;
+  GraphEdge **edges;
+} GraphNode;
 
-	typedef struct
-	{
-		bool debug;
-		unsigned int counter;
-		pthread_rwlock_t rwlock;
-		void *lambda;
-	} GraphCallbackArg;
+typedef struct {
+  bool debug;
+  unsigned int counter;
+  pthread_rwlock_t rwlock;
+  void *lambda;
+} GraphCallbackArg;
 
-	typedef void (*GraphCallback)(GraphNode *, GraphCallbackArg *arg);
+typedef void (*GraphCallback)(GraphNode *, GraphCallbackArg *arg);
 
-	/**
-	 * Think as if a 1D array of nodes, in which a node can connect with other nodes via connections
-	 */
-	typedef struct
-	{
-		bool debug;
-		bool autofree; // free data on pop
-		unsigned int size;
-		GraphNode *root;
-		pthread_rwlock_t rwlock;
-	} Graph;
+/**
+ * Think as if a 1D array of nodes, in which a node can connect with other nodes via connections
+ */
+typedef struct {
+  bool debug;
+  bool autofree;  // free data on pop
+  unsigned int size;
+  GraphNode *root;
+  pthread_rwlock_t rwlock;
+} Graph;
 
-	Graph *graph_create(bool autofree);
-	GraphNode *graph_find_bfs(Graph *graph, unsigned int nodeid);
-	GraphNode *graph_find_dfs(Graph *graph, unsigned int nodeid);
-	void *graph_get(Graph *graph, unsigned int nodeid);
-	int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...); // var arg for node ids to link with other nodes
-	int graph_insert_conditional(Graph *graph, void *data, bool allowisolated, unsigned int linkcount, ...);
-	int graph_delete(Graph *graph, unsigned int nodeid);
-	void graph_print(Graph *graph, DataToString tostring);
-	void graph_destroy(Graph *graph);
+Graph *graph_create(bool autofree);
+GraphNode *graph_find_bfs(Graph *graph, unsigned int nodeid);
+GraphNode *graph_find_dfs(Graph *graph, unsigned int nodeid);
+void *graph_get(Graph *graph, unsigned int nodeid);
+int graph_insert(Graph *graph, void *data, unsigned int linkcount,
+                 ...);  // var arg for node ids to link with other nodes
+int graph_insert_conditional(Graph *graph, void *data, bool allowisolated, unsigned int linkcount,
+                             ...);
+int graph_delete(Graph *graph, unsigned int nodeid);
+void graph_print(Graph *graph, DataToString tostring);
+void graph_destroy(Graph *graph);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // DS_LIB_GRAPH_H
+#endif  // DS_LIB_GRAPH_H

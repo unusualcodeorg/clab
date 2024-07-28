@@ -58,10 +58,10 @@ debug: $(BIN_DEV)
 	lldb -o 'run' $(BIN_DEV)
 
 # Run the program
-runclabdev: $(BIN_DEV)
+runclabdev: dev
 	./$(BIN_DEV) $(cmd1) $(cmd2)
 
-runclab: $(BIN_RELEASE)
+runclab: release
 	./$(BIN_RELEASE) $(cmd1) $(cmd2)
 
 # Phony targets

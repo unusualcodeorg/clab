@@ -79,28 +79,6 @@ int graph_2d_arr_demo(void) {
     |        |        |        |        |
 [20]U----[21]V----[22]W----[23]X----[24]Y
  */
-char *graph_sd_data_to_string(void *arg) {
-  char *data = (char *)arg;
-  char *buffer = malloc(50);
-  snprintf(buffer, 50, "%s", data);
-  return buffer;
-}
-
-char *location_to_string(void *arg) {
-  Location *location = (Location *)arg;
-  char *data = (char *)location->data;
-  char *buffer = malloc(50);
-  snprintf(buffer, 50, "[%d]%s", location->id, data);
-  return buffer;
-}
-
-char *path_graph_data_to_string(void *arg) {
-  GraphNode *node = (GraphNode *)arg;
-  char data = *(char *)node->data;
-  char *buffer = malloc(50);
-  snprintf(buffer, 50, "%c", data);
-  return buffer;
-}
 
 void path_shortest_console(void *arg) {
   Runtime *rnc = (Runtime *)arg;

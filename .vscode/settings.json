@@ -59,6 +59,7 @@
 		"hashmap.h": "c",
 		"runtime.h": "c",
 		"variant": "c",
-		"util.h": "c"
+		"util.h": "c",
+		"locale": "c"
 	}
 }

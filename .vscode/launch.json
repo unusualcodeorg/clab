@@ -20,7 +20,7 @@
       "id": "runArg",
       "type": "promptString",
       "description": "Enter the debug function name for clabdev",
-      "default": "function_name"
+      "default": "maze_shortest_distance"
     }
   ]
 }

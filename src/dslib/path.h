@@ -20,6 +20,10 @@ Stack *path_shortest_nw_graph_vis(Graph *graph, unsigned int srcnodeid, unsigned
 Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid,
                               unsigned int dstnodeid);  // non weighted graph
 
+char *graph_sd_data_to_string(void *arg);
+char *location_to_string(void *arg);
+char *path_graph_data_to_string(void *arg);
+
 #ifdef __cplusplus
 }
 #endif

@@ -34,6 +34,7 @@ Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree
 
   Graph *graph = graph_create(autofree);
   HashMap *idmap = hashmap_create(rows * cols, true);
+  int idstore[rows][cols];
 
   char *skip = "#";
 
@@ -52,41 +53,45 @@ Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree
         int nid = graph_insert(graph, data, 0);
         *mid = nid;
         hashmap_put(idmap, key, mid);
+        idstore[i][j] = nid;
         continue;
       }
 
-      int id = i * cols + j;
-      int upid = id - cols;
-      int backid = j > 0 ? id - 1 : -1;
+      int index = i * cols + j;
+      int upindex = index - cols;
+      int backindex = j > 0 ? index - 1 : -1;
 
       // skip trapped node
-      if (upid >= 0 && backid >= 0) {
-        int downid = id + cols;
+      if (upindex >= 0 && backindex >= 0) {
+        int downindex = i == rows - 1 ? -1 : index + cols;
+        int frontindex = j == cols - 1 ? -1 : index - 1;
 
-        int fontid = j == cols - 1 ? -1 : id - 1;
-        if (strcmp(arr[upid][j], skip) == 0 && strcmp(arr[i][backid], skip) == 0 &&
-            strcmp(arr[downid][j], skip) == 0 && strcmp(arr[i][fontid], skip) == 0) {
+        if (downindex >= 0 && frontindex >= 0) {
+          if (strcmp(arr[i - 1][j], skip) == 0 && strcmp(arr[i][j - 1], skip) == 0 &&
+              strcmp(arr[i + 1][j], skip) == 0 && strcmp(arr[i][j + 1], skip) == 0) {
+            continue;
+          }
         }
       }
 
-      if (upid < 0 && backid < 0)  // this condition will never arrive, but
-                                   // adding here to cover all the cases
-        continue;
+      // this condition will never arrive, but adding here to cover all the cases
+      if (upindex < 0 && backindex < 0) continue;
 
       int *mid = malloc(sizeof(int));
 
-      // can link up only
-      if (upid >= 0 && backid < 0) {
-        int nid = graph_insert_conditional(graph, data, true, 1, (unsigned int)upid);
+      if (upindex >= 0 && backindex < 0) {  // can link up only
+        int up = idstore[i - 1][j];
+        int nid = graph_insert_conditional(graph, data, true, 1, (unsigned int)up);
         *mid = nid;
-      } else if (upid < 0 && backid >= 0)  // can link back only
-      {
-        int nid = graph_insert_conditional(graph, data, true, 1, (unsigned int)backid);
+      } else if (upindex < 0 && backindex >= 0) {  // can link back only
+        int back = idstore[i][j - 1];
+        int nid = graph_insert_conditional(graph, data, true, 1, (unsigned int)back);
         *mid = nid;
-      } else  // can link up and back
-      {
-        int nid = graph_insert_conditional(graph, data, true, 2, (unsigned int)upid,
-                                           (unsigned int)backid);
+      } else {  // can link up and back
+        int up = idstore[i - 1][j];
+        int back = idstore[i][j - 1];
+        int nid =
+            graph_insert_conditional(graph, data, true, 2, (unsigned int)up, (unsigned int)back);
         *mid = nid;
       }
 
@@ -109,29 +114,31 @@ int maze_shortest_distance(void) {
 
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      char temp[50];
+      char temp[10];
       char data = maze[i * cols + j];
-      snprintf(temp, 50, "%d", data);
+      snprintf(temp, 10, "%c", data);
       strcpy(arr[i][j], temp);
+      printf("%c", data);
     }
     printf("\n");
   }
 
-  Graph2DMap *gmap =
-      util_graph_from_2d_arr(arr, rows, cols, false);  // cannot auto free arr[i][j] since arr[i]
-                                                       // is a continous memory
+  // cannot auto free arr[i][j] since arr[i] is a continous memory
+  Graph2DMap *gmap = maze_graph_map_create(arr, rows, cols, false);
   gmap->graph->debug = true;
   graph_print(gmap->graph, maze_data_to_string);
 
-  char *data = (char *)graph_get(gmap->graph, 40);
-  printf("Graph found id %d : %c\n", 40, *data);
+  unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, "S");
+  unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, "G");
 
-  data = (char *)graph_get(gmap->graph, 24);
-  printf("Graph found id %d : %c\n", 24, *data);
+  Stack *stack = path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, path_graph_data_to_string);
 
+  graph_print(gmap->graph, graph_sd_data_to_string);
+  stack_print(stack, location_to_string);
+
+  stack_destroy(stack);
   graph_destroy(gmap->graph);
   hashmap_destroy(gmap->idmap);
   util_free_2d_str_arr(arr, rows, cols);
-
   return EXIT_SUCCESS;
 }

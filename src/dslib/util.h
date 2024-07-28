@@ -15,9 +15,9 @@ extern "C"
 		HashMap *idmap;
 	} Graph2DMap;
 
-	void **util_create_2d_pt_arr(int rows, int cols, unsigned long elemsize);
-	void util_free_2d_pt_arr(void **arr, int rows);
-	Graph2DMap *util_graph_from_2d_arr(char **arr, int rows, int cols, bool autofree);
+	char ***util_create_2d_str_arr(int rows, int cols);
+	void util_free_2d_str_arr(char ***arr, int rows, int cols);
+	Graph2DMap *util_graph_from_2d_arr(char ***arr, int rows, int cols, bool autofree); // char ***arr allows to hold variable length string elements
 
 #ifdef __cplusplus
 }

@@ -9,7 +9,7 @@
 4->5->6->7
 .........
  */
-Graph2DMap *util_graph_from_2d_arr(char **arr, int rows, int cols, bool autofree)
+Graph2DMap *util_graph_from_2d_arr(char ***arr, int rows, int cols, bool autofree)
 {
 	if (arr == NULL)
 		return NULL;
@@ -22,8 +22,8 @@ Graph2DMap *util_graph_from_2d_arr(char **arr, int rows, int cols, bool autofree
 	{
 		for (int j = 0; j < cols; j++)
 		{
-			char *data = &arr[i][j];
-			snprintf(key, 50, "%c", *data);
+			char *data = arr[i][j];
+			snprintf(key, 50, "%s", data);
 
 			int id = i * cols + j;
 			int upid = id - cols;
@@ -59,17 +59,27 @@ Graph2DMap *util_graph_from_2d_arr(char **arr, int rows, int cols, bool autofree
 	return gmap;
 }
 
-void **util_create_2d_pt_arr(int rows, int cols, unsigned long elemsize)
+char ***util_create_2d_str_arr(int rows, int cols)
 {
-	void **arr = malloc(rows * sizeof(void *));
+	char ***arr = malloc(rows * sizeof(char **));
 	for (int i = 0; i < rows; i++)
-		arr[i] = malloc(cols * elemsize);
+	{
+		arr[i] = malloc(cols * sizeof(char *));
+		for (int j = 0; j < cols; j++)
+			arr[i][j] = malloc(50 * sizeof(char));
+	}
 	return arr;
 }
 
-void util_free_2d_pt_arr(void **arr, int rows)
+void util_free_2d_str_arr(char ***arr, int rows, int cols)
 {
 	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < cols; j++)
+		{
+			free(arr[i][j]);
+		}
 		free(arr[i]);
+	}
 	free(arr);
 }

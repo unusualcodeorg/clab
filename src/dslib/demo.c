@@ -14,6 +14,8 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <time.h>
+#include <string.h>
 
 /*--------------------STACK DEMO------------------------ */
 int stack_demo(void)
@@ -390,15 +392,16 @@ int graph_2d_arr_demo(void)
 
 	int rows = 7;
 	int cols = 9;
-	char **arr = (char **)util_create_2d_pt_arr(rows, cols, sizeof(char));
+	char ***arr = util_create_2d_str_arr(rows, cols);
 
 	for (int i = 0; i < rows; i++)
 	{
 		for (int j = 0; j < cols; j++)
 		{
+			char temp[50];
 			char data = maze[i * cols + j];
-			arr[i][j] = data;
-			printf("%c", data);
+			snprintf(temp, 50, "%d", data);
+			strcpy(arr[i][j], temp);
 		}
 		printf("\n");
 	}
@@ -415,7 +418,7 @@ int graph_2d_arr_demo(void)
 
 	graph_destroy(gmap->graph);
 	hashmap_destroy(gmap->idmap);
-	util_free_2d_pt_arr((void **)arr, rows);
+	util_free_2d_str_arr(arr, rows, cols);
 
 	printf("\n---------------GRAPH 2D ARR DEMO----------------\n");
 	return EXIT_SUCCESS;
@@ -489,18 +492,18 @@ int tree_demo(void)
 /*-------SHORTEST PATH NON WEIGHTED GRAPH DEMO--------- */
 char *graph_sd_data_to_string(void *arg)
 {
-	char data = *(char *)arg;
+	char *data = (char *)arg;
 	char *buffer = malloc(50);
-	snprintf(buffer, 50, "%c", data);
+	snprintf(buffer, 50, "%s", data);
 	return buffer;
 }
 
 char *location_to_string(void *arg)
 {
 	Location *location = (Location *)arg;
-	char data = *(char *)location->data;
+	char *data = (char *)location->data;
 	char *buffer = malloc(50);
-	snprintf(buffer, 50, "[%d]%c", location->id, data);
+	snprintf(buffer, 50, "[%d]%s", location->id, data);
 	return buffer;
 }
 
@@ -516,30 +519,43 @@ char *path_graph_data_to_string(void *arg)
 int path_shortest_nw_graph_demo(void)
 {
 	printf("\n-----SHORTEST PATH NON WEIGHTED GRAPH DEMO-----\n");
+	clock_t start = clock();
 
-	int rows = 5;
-	int cols = 5;
-	char **arr = (char **)util_create_2d_pt_arr(rows, cols, sizeof(char));
+	int rows = 30;
+	int cols = 30;
+	char ***arr = util_create_2d_str_arr(rows, cols);
 
 	for (int i = 0; i < rows; i++)
+	{
 		for (int j = 0; j < cols; j++)
-			arr[i][j] = 65 + i * cols + j;
+		{
+			char str[50];
+			int num = i * cols + j;
+			snprintf(str, 50, "N%d", num);
+			strcpy(arr[i][j], str);
+		}
+	}
 
 	Graph2DMap *gmap = util_graph_from_2d_arr(arr, rows, cols, false); // cannot auto free arr[i][j] since arr[i] is a continous memory
-	gmap->graph->debug = true;
+	gmap->graph->debug = false;
 
-	graph_print(gmap->graph, graph_sd_data_to_string);
+	// graph_print(gmap->graph, graph_sd_data_to_string);
 
-	unsigned int srcid = hashmap_get(gmap->idmap, "I");
-	unsigned int dstid = hashmap_get(gmap->idmap, "W");
+	unsigned int srcid = hashmap_get(gmap->idmap, "N15");
+	unsigned int dstid = hashmap_get(gmap->idmap, "N85");
 
 	Stack *stack = path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, path_graph_data_to_string); // G->S
+
+	clock_t end = clock();
+	double cputime = ((double)(end - start)) / CLOCKS_PER_SEC;
+	printf("Execution time seconds = %f\n", cputime);
+
 	stack_print(stack, location_to_string);
 
 	stack_destroy(stack);
 	graph_destroy(gmap->graph);
 	hashmap_destroy(gmap->idmap);
-	util_free_2d_pt_arr((void **)arr, rows);
+	util_free_2d_str_arr(arr, rows, cols);
 
 	printf("\n-----SHORTEST PATH NON WEIGHTED GRAPH DEMO-----\n");
 	return EXIT_SUCCESS;

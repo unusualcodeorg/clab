@@ -14,6 +14,7 @@
 #include <string.h>
 
 /*-----------------------GRAPH 2D ARR DEMO-------------- */
+
 char *graph_maze_data_to_string(void *arg)
 {
 	char data = *(char *)arg;
@@ -60,7 +61,10 @@ int graph_2d_arr_demo(void)
 	printf("\n---------------GRAPH 2D ARR DEMO----------------\n");
 	return EXIT_SUCCESS;
 }
+
 /*-----------------------GRAPH 2D ARR DEMO-------------- */
+
+/*-------SHORTEST PATH NON WEIGHTED GRAPH DEMO--------- */
 
 /*
  [0]A-----[1]B-----[2]C-----[3]D-----[4]E
@@ -77,7 +81,6 @@ int graph_2d_arr_demo(void)
 		|        |        |        |        |
 [20]U----[21]V----[22]W----[23]X----[24]Y
  */
-/*-------SHORTEST PATH NON WEIGHTED GRAPH DEMO--------- */
 char *graph_sd_data_to_string(void *arg)
 {
 	char *data = (char *)arg;
@@ -193,4 +196,5 @@ int path_shortest_nw_graph_demo(void)
 	printf("\n-----SHORTEST PATH NON WEIGHTED GRAPH DEMO-----\n");
 	return EXIT_SUCCESS;
 }
+
 /*-------SHORTEST PATH NON WEIGHTED GRAPH DEMO--------- */

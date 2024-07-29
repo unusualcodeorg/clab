@@ -36,7 +36,7 @@ Graph2DMap *maze_graph_map_create(char ***arr, unsigned int rows, unsigned int c
   unsigned int idstore[rows][cols];
   for (unsigned int i = 0; i < rows; i++) {
     for (unsigned int j = 0; j < cols; j++) {
-      idstore[i][j] = rows * cols;
+      idstore[i][j] = rows * cols + 1;  // set max value which can not be asigned to any graph node
     }
   }
 

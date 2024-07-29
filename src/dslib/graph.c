@@ -168,7 +168,6 @@ int graph_insert_root(Graph *graph, void *data) {
 bool graph_isolated_node_matcher(void *item, void *match) {
   GraphNode *node = (GraphNode *)item;
   unsigned int id = *(unsigned int *)match;
-  free(match);
   return node->id == id;
 }
 
@@ -187,7 +186,7 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...) {
     return GRAPH_ERROR;
   }
 
-  unsigned short nodeids[linkcount];
+  unsigned int nodeids[linkcount];
   va_list args;
   va_start(args, linkcount);
 
@@ -207,14 +206,21 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...) {
   }
 
   unsigned int edgecount = 0;
-  for (unsigned short i = 0; i < linkcount; i++) {
+  bool isolated = true;
+  for (unsigned int i = 0; i < linkcount; i++) {
     GraphNode *gnode = graph_find_bfs(graph, nodeids[i]);
     if (gnode == NULL) {
       // check in isolated nodes
       unsigned int *nid = malloc(sizeof(unsigned int));
       *nid = nodeids[i];
       int index = list_index_of(graph->inodes, nid, graph_isolated_node_matcher);
-      if (index >= 0) gnode = list_delete_at(graph->inodes, index);
+      free(nid);
+      if (index >= 0) {
+        gnode = list_delete_at(graph->inodes, index);
+      }
+    } else {
+      // if no node exits in the graph
+      isolated = false;
     }
 
     if (gnode == NULL) continue;
@@ -239,9 +245,9 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...) {
     for (unsigned int i = 0; i < linkcount; i++) {
       if (edges[i]) node->edges[node->esize++] = edges[i];
     }
-  } else {
-    list_add(graph->inodes, node);
   }
+
+  if (isolated == true) list_add(graph->inodes, node);
 
   va_end(args);
   pthread_rwlock_unlock(&graph->rwlock);

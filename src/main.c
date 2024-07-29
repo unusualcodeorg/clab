@@ -5,6 +5,7 @@
 #include "debug/dfunc.h"
 #include "demo/dmcrun.h"
 #include "demo/dmdslib.h"
+#include "demo/dmpuzzle.h"
 #include "demo/dmterm.h"
 
 enum COMMAND {
@@ -18,6 +19,7 @@ enum COMMAND {
   HASHMAP,
   CONSOLE,
   PATH,
+  PUZZLE_MAZE_SD,
 };
 
 int main(int argc, char *argv[]) {
@@ -54,6 +56,8 @@ int main(int argc, char *argv[]) {
     option = CONSOLE;
   else if (strcmp(argv[1], "path") == 0)
     option = PATH;
+  else if (strcmp(argv[1], "puzzle-maze-sd") == 0)
+    option = PUZZLE_MAZE_SD;
 
   switch (option) {
     case ALL:
@@ -98,6 +102,9 @@ int main(int argc, char *argv[]) {
       break;
     case PATH:
       path_shortest_nw_graph_demo();
+      break;
+    case PUZZLE_MAZE_SD:
+      demo_maze_shortest_distance();
       break;
     default:
       fprintf(stderr, "Unknown command name: %s\n", argv[1]);

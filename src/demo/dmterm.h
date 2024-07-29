@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 int console_demo(void);
 
 #ifdef __cplusplus

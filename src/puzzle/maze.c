@@ -87,14 +87,14 @@ Graph2DMap *maze_graph_map_create(char ***arr, unsigned int rows, unsigned int c
 
       if (upindex >= 0 && backindex < 0) {  // can link up only
         unsigned int up = idstore[i - 1][j];
-        nid = graph_insert_conditional(graph, data, true, 1, (unsigned int)up);
+        nid = graph_insert(graph, data, 1, up);
       } else if (upindex < 0 && backindex >= 0) {  // can link back only
         unsigned int back = idstore[i][j - 1];
-        nid = graph_insert_conditional(graph, data, true, 1, (unsigned int)back);
+        nid = graph_insert(graph, data, 1, back);
       } else {  // can link up and back
         unsigned int up = idstore[i - 1][j];
         unsigned int back = idstore[i][j - 1];
-        nid = graph_insert_conditional(graph, data, true, 2, (unsigned int)up, (unsigned int)back);
+        nid = graph_insert(graph, data, 2, up, back);
       }
 
       idstore[i][j] = nid;

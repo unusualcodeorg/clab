@@ -159,7 +159,10 @@ int list_index_of(List *list, void *match, ListMatcher matcher) {
     else
       current = current->next;
 
-    if (matcher(current->data, match) == true) return i;
+    if (matcher(current->data, match) == true) {
+      pthread_rwlock_unlock(&list->rwlock);
+      return i;
+    }
   }
   pthread_rwlock_unlock(&list->rwlock);
   return LIST_NULL_INDEX;

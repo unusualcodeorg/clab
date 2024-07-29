@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "list.h"
 #include "queue.h"
 #include "stack.h"
 
@@ -15,6 +16,7 @@ Graph *graph_create(bool autofree) {
   graph->debug = false;
   graph->root = NULL;
   graph->size = 0;
+  graph->inodes = list_create(false);
   pthread_rwlock_init(&graph->rwlock, NULL);
   return graph;
 }
@@ -163,8 +165,14 @@ int graph_insert_root(Graph *graph, void *data) {
   return node->id;
 }
 
-int graph_insert_node(Graph *graph, void *data, bool allowisolated, unsigned int linkcount,
-                      va_list vargs) {
+bool graph_isolated_node_matcher(void *item, void *match) {
+  GraphNode *node = (GraphNode *)item;
+  unsigned int id = *(unsigned int *)match;
+  free(match);
+  return node->id == id;
+}
+
+int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...) {
   pthread_rwlock_wrlock(&graph->rwlock);
   if (graph->debug == true) printf("\nGraph: Add To %u Node\n", linkcount);
 
@@ -181,68 +189,63 @@ int graph_insert_node(Graph *graph, void *data, bool allowisolated, unsigned int
 
   unsigned short nodeids[linkcount];
   va_list args;
-  va_copy(args, vargs);
+  va_start(args, linkcount);
 
-  for (unsigned int i = 0; i < linkcount; i++) nodeids[i] = va_arg(args, unsigned int);
-
-  unsigned short esize = linkcount;
-
-  GraphNode *linknodes[esize];
-  bool empty = true;
-  for (unsigned short i = 0; i < esize; i++) {
-    linknodes[i] = graph_find_bfs(graph, nodeids[i]);
-    if (linknodes[i] != NULL) empty = false;
-  }
-
-  if (allowisolated == false && empty == true) {
-    va_end(args);
-    pthread_rwlock_unlock(&graph->rwlock);
-    return GRAPH_ERROR;
+  for (unsigned int i = 0; i < linkcount; i++) {
+    nodeids[i] = va_arg(args, unsigned int);
   }
 
   GraphNode *node = (GraphNode *)malloc(sizeof(GraphNode));
   node->id = graph->size++;
   node->data = data;
-  node->esize = esize;
-  node->edges = (GraphEdge **)calloc(esize, sizeof(GraphEdge *));
+  node->esize = 0;
+  node->edges = NULL;
 
-  for (unsigned short i = 0; i < node->esize; i++) {
-    GraphNode *n = linknodes[i];
-    if (n == NULL) continue;
+  GraphEdge *edges[linkcount];
+  for (unsigned int i = 0; i < linkcount; i++) {
+    edges[i] = NULL;
+  }
+
+  unsigned int edgecount = 0;
+  for (unsigned short i = 0; i < linkcount; i++) {
+    GraphNode *gnode = graph_find_bfs(graph, nodeids[i]);
+    if (gnode == NULL) {
+      // check in isolated nodes
+      unsigned int *nid = malloc(sizeof(unsigned int));
+      *nid = nodeids[i];
+      int index = list_index_of(graph->inodes, nid, graph_isolated_node_matcher);
+      if (index >= 0) gnode = list_delete_at(graph->inodes, index);
+    }
+
+    if (gnode == NULL) continue;
 
     GraphEdge *edge = (GraphEdge *)malloc(sizeof(GraphEdge));
     edge->weight = 0;
-    edge->end = n;
-    node->edges[i] = edge;
+    edge->end = gnode;
+    edges[i] = edge;
 
     GraphEdge *ez = (GraphEdge *)malloc(sizeof(GraphEdge));
     ez->weight = 0;
     ez->end = node;
-    n->esize++;
-    n->edges = (GraphEdge **)realloc(n->edges, n->esize * sizeof(GraphEdge *));
-    n->edges[n->esize - 1] = ez;
+    gnode->esize++;
+    gnode->edges = (GraphEdge **)realloc(gnode->edges, gnode->esize * sizeof(GraphEdge *));
+    gnode->edges[gnode->esize - 1] = ez;
+
+    edgecount++;
+  }
+
+  if (edgecount > 0) {
+    node->edges = (GraphEdge **)malloc(edgecount * sizeof(GraphEdge *));
+    for (unsigned int i = 0; i < linkcount; i++) {
+      if (edges[i]) node->edges[node->esize++] = edges[i];
+    }
+  } else {
+    list_add(graph->inodes, node);
   }
 
   va_end(args);
   pthread_rwlock_unlock(&graph->rwlock);
   return node->id;
-}
-
-int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...) {
-  va_list args;
-  va_start(args, linkcount);
-  int nodeid = graph_insert_node(graph, data, false, linkcount, args);
-  va_end(args);
-  return nodeid;
-}
-
-int graph_insert_conditional(Graph *graph, void *data, bool allowisolated, unsigned int linkcount,
-                             ...) {
-  va_list args;
-  va_start(args, linkcount);
-  int nodeid = graph_insert_node(graph, data, allowisolated, linkcount, args);
-  va_end(args);
-  return nodeid;
 }
 
 int graph_delete(Graph *graph, unsigned int nodeid) {
@@ -257,7 +260,7 @@ int graph_delete(Graph *graph, unsigned int nodeid) {
     GraphEdge *edge = node->edges[i];
     if (edge == NULL || edge->end == NULL) continue;
 
-    for (unsigned short j = 0; j < edge->end->esize; i++) {
+    for (unsigned short j = 0; j < edge->end->esize; j++) {
       GraphEdge *ez = node->edges[j];
       if (ez == NULL || ez->end == NULL) continue;
 
@@ -345,6 +348,9 @@ void graph_destroy(Graph *graph) {
     graph_node_destroy(node, graph->autofree);
     arg->counter++;
   }
+
+  graph->inodes->autofree = true;
+  list_destroy(graph->inodes);
 
   if (graph->debug == true) printf("\nGraph: Destroy DFS Traversal = %u\n", arg->counter);
 

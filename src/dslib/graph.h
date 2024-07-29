@@ -3,6 +3,7 @@
 #include <stdbool.h>
 
 #include "datastr.h"
+#include "list.h"
 
 #ifndef CLAB_DS_LIB_GRAPH_H
 #define CLAB_DS_LIB_GRAPH_H
@@ -43,6 +44,7 @@ typedef struct {
   bool debug;
   bool autofree;  // free data on pop
   unsigned int size;
+  List *inodes; // isolated nodes
   GraphNode *root;
   pthread_rwlock_t rwlock;
 } Graph;
@@ -51,10 +53,8 @@ Graph *graph_create(bool autofree);
 GraphNode *graph_find_bfs(Graph *graph, unsigned int nodeid);
 GraphNode *graph_find_dfs(Graph *graph, unsigned int nodeid);
 void *graph_get(Graph *graph, unsigned int nodeid);
-int graph_insert(Graph *graph, void *data, unsigned int linkcount,
-                 ...);  // var arg for node ids to link with other nodes
-int graph_insert_conditional(Graph *graph, void *data, bool allowisolated, unsigned int linkcount,
-                             ...);
+// var arg for node ids to link with other nodes
+int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...);
 int graph_delete(Graph *graph, unsigned int nodeid);
 void graph_print(Graph *graph, DataToString tostring);
 void graph_destroy(Graph *graph);

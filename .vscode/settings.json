@@ -60,6 +60,10 @@
 		"runtime.h": "c",
 		"variant": "c",
 		"util.h": "c",
-		"locale": "c"
+		"locale": "c",
+		"runpool.h": "c",
+		"tree.h": "c",
+		"console.h": "c",
+		"dmcrun.h": "c"
 	}
 }

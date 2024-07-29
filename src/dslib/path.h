@@ -1,8 +1,8 @@
 #include "graph.h"
 #include "stack.h"
 
-#ifndef PATH_DEMO_H
-#define PATH_DEMO_H
+#ifndef CLAB_DS_LIB_PATH_H
+#define CLAB_DS_LIB_PATH_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,4 +29,4 @@ char *path_graph_data_to_string(void *arg);
 }
 #endif
 
-#endif  // PATH_DEMO_H
+#endif  // CLAB_DS_LIB_PATH_H

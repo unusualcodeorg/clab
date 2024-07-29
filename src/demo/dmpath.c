@@ -6,12 +6,13 @@
 #include <unistd.h>
 
 #include "../crun/runtime.h"
+#include "../dslib/graph.h"
+#include "../dslib/hashmap.h"
+#include "../dslib/path.h"
+#include "../dslib/util.h"
 #include "../term/console.h"
-#include "demo.h"
-#include "graph.h"
-#include "hashmap.h"
-#include "path.h"
-#include "util.h"
+#include "dmdslib.h"
+#include "model.h"
 
 /*-----------------------GRAPH 2D ARR DEMO-------------- */
 

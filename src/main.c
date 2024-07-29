@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "crun/demo.h"
 #include "debug/dfunc.h"
-#include "dslib/demo.h"
-#include "term/demo.h"
+#include "demo/dmcrun.h"
+#include "demo/dmdslib.h"
+#include "demo/dmterm.h"
 
 enum COMMAND {
   NONE,

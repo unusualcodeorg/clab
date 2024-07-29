@@ -1,8 +1,8 @@
 #include <pthread.h>
 #include <stdbool.h>
 
-#ifndef DS_LIB_STACK_H
-#define DS_LIB_STACK_H
+#ifndef CLAB_DS_LIB_STACK_H
+#define CLAB_DS_LIB_STACK_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,4 +34,4 @@ void stack_destroy(Stack *stack);
 }
 #endif
 
-#endif  // DS_LIB_STACK_H
+#endif  // CLAB_DS_LIB_STACK_H

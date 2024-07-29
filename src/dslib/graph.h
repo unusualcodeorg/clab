@@ -2,8 +2,8 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
-#ifndef DS_LIB_GRAPH_H
-#define DS_LIB_GRAPH_H
+#ifndef CLAB_DS_LIB_GRAPH_H
+#define CLAB_DS_LIB_GRAPH_H
 
 #define GRAPH_NODE_NULL_ID -1;
 #define GRAPH_ERROR -1;
@@ -62,4 +62,4 @@ void graph_destroy(Graph *graph);
 }
 #endif
 
-#endif  // DS_LIB_GRAPH_H
+#endif  // CLAB_DS_LIB_GRAPH_H

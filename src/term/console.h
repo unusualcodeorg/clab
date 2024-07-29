@@ -1,7 +1,7 @@
 #include "../crun/runtime.h"
 
-#ifndef TERM_CONSOLE_H
-#define TERM_CONSOLE_H
+#ifndef CLAB_TERM_CONSOLE_H
+#define CLAB_TERM_CONSOLE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,4 +25,4 @@ void console_destroy(Console *console);
 }
 #endif
 
-#endif  // TERM_CONSOLE_H
+#endif  // CLAB_TERM_CONSOLE_H

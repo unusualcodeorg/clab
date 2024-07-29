@@ -2,8 +2,8 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
-#ifndef DS_LIB_TREE_H
-#define DS_LIB_TREE_H
+#ifndef CLAB_DS_LIB_TREE_H
+#define CLAB_DS_LIB_TREE_H
 
 #define TREE_NODE_NULL_ID -1;
 #define TREE_ERROR -1;
@@ -55,4 +55,4 @@ void tree_destroy(Tree *tree);
 }
 #endif
 
-#endif  // DS_LIB_TREE_H
+#endif  // CLAB_DS_LIB_TREE_H

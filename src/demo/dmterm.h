@@ -1,5 +1,5 @@
-#ifndef TERM_DEMO_H
-#define TERM_DEMO_H
+#ifndef CLAB_DEMO_TERM_H
+#define CLAB_DEMO_TERM_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,4 +10,4 @@ int console_demo(void);
 }
 #endif
 
-#endif  // TERM_DEMO_H
+#endif  // CLAB_DEMO_TERM_H

@@ -1,7 +1,7 @@
 
 
-#ifndef PUZZLE_MAZE_H
-#define PUZZLE_MAZE_H
+#ifndef CLAB_PUZZLE_MAZE_H
+#define CLAB_PUZZLE_MAZE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,4 +13,4 @@ int maze_shortest_distance(void);
 }
 #endif
 
-#endif  // PUZZLE_MAZE_H
+#endif  // CLAB_PUZZLE_MAZE_H

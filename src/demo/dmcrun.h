@@ -1,5 +1,5 @@
-#ifndef CRUN_DEMO_H
-#define CRUN_DEMO_H
+#ifndef CLAB_DEMO_CRUN_H
+#define CLAB_DEMO_CRUN_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,4 +11,4 @@ int runpool_demo(void);
 }
 #endif
 
-#endif  // CRUN_DEMO_H
+#endif  // CLAB_DEMO_CRUN_H

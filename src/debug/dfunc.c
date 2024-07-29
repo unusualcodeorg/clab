@@ -4,11 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../crun/demo.h"
-#include "../dslib/demo.h"
+#include "../demo/dmcrun.h"
+#include "../demo/dmdslib.h"
+#include "../demo/dmterm.h"
 #include "../dslib/hashmap.h"
 #include "../puzzle/maze.h"
-#include "../term/demo.h"
 
 int debugfn(char *fname) {
   if (strlen(fname) == 0) {

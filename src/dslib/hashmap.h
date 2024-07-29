@@ -1,7 +1,7 @@
 #include <stdbool.h>
 
-#ifndef DS_LIB_HASHMAP_H
-#define DS_LIB_HASHMAP_H
+#ifndef CLAB_DS_LIB_HASHMAP_H
+#define CLAB_DS_LIB_HASHMAP_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,4 +32,4 @@ void hashmap_destroy(HashMap *map);
 }
 #endif
 
-#endif  // DS_LIB_HASHMAP_H
+#endif  // CLAB_DS_LIB_HASHMAP_H

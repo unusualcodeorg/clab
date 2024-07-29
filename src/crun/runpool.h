@@ -3,8 +3,8 @@
 
 #include "runtime.h"
 
-#ifndef CRUN_RUNPOOL_H
-#define CRUN_RUNPOOL_H
+#ifndef CLAB_CRUN_RUNPOOL_H
+#define CLAB_CRUN_RUNPOOL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,4 +26,4 @@ void runpool_destroy(Runpool *pool);
 }
 #endif
 
-#endif  // CRUN_RUNPOOL_H
+#endif  // CLAB_CRUN_RUNPOOL_H

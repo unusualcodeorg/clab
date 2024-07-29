@@ -1,8 +1,8 @@
 #include <pthread.h>
 #include <stdbool.h>
 
-#ifndef DS_LIB_QUEUE_H
-#define DS_LIB_QUEUE_H
+#ifndef CLAB_DS_LIB_QUEUE_H
+#define CLAB_DS_LIB_QUEUE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,4 +35,4 @@ void queue_destroy(Queue *queue);
 }
 #endif
 
-#endif  // DS_LIB_QUEUE_H
+#endif  // CLAB_DS_LIB_QUEUE_H

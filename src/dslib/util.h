@@ -1,8 +1,8 @@
 #include "graph.h"
 #include "hashmap.h"
 
-#ifndef DS_LIB_UTIL_H
-#define DS_LIB_UTIL_H
+#ifndef CLAB_DS_LIB_UTIL_H
+#define CLAB_DS_LIB_UTIL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,4 +23,4 @@ Graph2DMap *util_graph_from_2d_arr(
 }
 #endif
 
-#endif  // DS_LIB_UTIL_H
+#endif  // CLAB_DS_LIB_UTIL_H

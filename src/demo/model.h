@@ -1,6 +1,6 @@
 #include <stdbool.h>
-#ifndef DS_LIB_MODEL_H
-#define DS_LIB_MODEL_H
+#ifndef CLAB_DEMO_MODEL_H
+#define CLAB_DEMO_MODEL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,4 +19,4 @@ char *customer_to_string(void *cust);
 }
 #endif
 
-#endif  // DS_LIB_MODEL_H
+#endif  // CLAB_DEMO_MODEL_H

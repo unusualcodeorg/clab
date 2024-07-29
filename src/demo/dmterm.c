@@ -1,11 +1,11 @@
-#include "demo.h"
+#include "dmterm.h"
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "console.h"
+#include "../term/console.h"
 
 /*--------------------CONSOLE DEMO------------------------ */
 

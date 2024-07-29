@@ -3,8 +3,8 @@
 
 #include "../dslib/queue.h"
 
-#ifndef CRUN_RUNTIME_H
-#define CRUN_RUNTIME_H
+#ifndef CLAB_CRUN_RUNTIME_H
+#define CLAB_CRUN_RUNTIME_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,4 +39,4 @@ void runtime_destroy(Runtime *runtime);
 }
 #endif
 
-#endif  // CRUN_RUNTIME_H
+#endif  // CLAB_CRUN_RUNTIME_H

@@ -1,4 +1,4 @@
-#include "demo.h"
+#include "dmdslib.h"
 
 #include <pthread.h>
 #include <stdbool.h>
@@ -9,15 +9,15 @@
 #include <unistd.h>
 
 #include "../crun/runtime.h"
+#include "../dslib/graph.h"
+#include "../dslib/hashmap.h"
+#include "../dslib/path.h"
+#include "../dslib/queue.h"
+#include "../dslib/stack.h"
+#include "../dslib/tree.h"
+#include "../dslib/util.h"
 #include "../term/console.h"
-#include "graph.h"
-#include "hashmap.h"
 #include "model.h"
-#include "path.h"
-#include "queue.h"
-#include "stack.h"
-#include "tree.h"
-#include "util.h"
 
 /*--------------------STACK DEMO------------------------ */
 int stack_demo(void) {

@@ -1,12 +1,12 @@
-#include "demo.h"
+#include "dmcrun.h"
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "runpool.h"
-#include "runtime.h"
+#include "../crun/runpool.h"
+#include "../crun/runtime.h"
 
 /*--------------------RUNTIME DEMO------------------------ */
 

@@ -1,5 +1,5 @@
-#ifndef DS_LIB_DEMO_H
-#define DS_LIB_DEMO_H
+#ifndef CLAB_DEMO_DS_LIB_H
+#define CLAB_DEMO_DS_LIB_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,4 +20,4 @@ int path_shortest_nw_graph_demo(void);
 }
 #endif
 
-#endif  // DS_LIB_DEMO_H
+#endif  // CLAB_DEMO_DS_LIB_H

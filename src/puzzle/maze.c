@@ -109,20 +109,12 @@ Graph2DMap *maze_graph_map_create(char ***arr, unsigned int rows, unsigned int c
   return gmap;
 }
 
-/*
-#########
-#..@.#.@#
-#@....G.#
-#.#..@.@#
-#.##@####
-#..@.S..#
-#########
-*/
 void maze_find_shortest_distance(char ***arr, unsigned int rows, unsigned int cols, char *start,
                                  char *dest, char *skip) {
   // cannot auto free arr[i][j] since arr[i] is a continous memory
   Graph2DMap *gmap = maze_graph_map_create(arr, rows, cols, skip, true);
   gmap->graph->debug = true;
+  graph_print(gmap->graph, int_data_to_string);
 
   unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, start);
   unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, dest);

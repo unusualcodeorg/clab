@@ -7,6 +7,15 @@
 #include "../dslib/util.h"
 #include "../puzzle/maze.h"
 
+/*
+#########
+#..@.#.@#
+#@....G.#
+#.#..@.@#
+#.##@####
+#..@.S..#
+#########
+*/
 int maze_shortest_distance_demo(void) {
   // const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
   // unsigned int rows = 7;

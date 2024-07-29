@@ -39,7 +39,10 @@ Stack *path_shortest_nw_graph_vis(Graph *graph, unsigned int srcnodeid, unsigned
   GraphNode *start = graph_find_bfs(graph, srcnodeid);
   if (start == NULL) return stack;
 
-  if (srcnodeid == dstnodeid) {
+  GraphNode *dest = graph_find_bfs(graph, dstnodeid);
+  if (dest == NULL) return stack;
+
+  if (start == dest) {
     stack_push(stack, location_from_graph_node(start));
     return stack;
   }
@@ -57,7 +60,7 @@ Stack *path_shortest_nw_graph_vis(Graph *graph, unsigned int srcnodeid, unsigned
     TreeNode *tnode = queue_dequeue(queue);
     GraphNode *node = (GraphNode *)tnode->data;
 
-    if (node->id == dstnodeid) {
+    if (node == dest) {
       found = tnode;
       break;
     }

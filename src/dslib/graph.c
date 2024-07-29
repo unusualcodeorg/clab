@@ -208,19 +208,19 @@ int graph_insert_node(Graph *graph, void *data, bool allowisolated, unsigned int
 
   for (unsigned short i = 0; i < node->esize; i++) {
     GraphNode *n = linknodes[i];
-    if (n != NULL) {
-      GraphEdge *edge = (GraphEdge *)malloc(sizeof(GraphEdge));
-      edge->weight = 0;
-      edge->end = n;
-      node->edges[i] = edge;
+    if (n == NULL) continue;
 
-      GraphEdge *ez = (GraphEdge *)malloc(sizeof(GraphEdge));
-      ez->weight = 0;
-      ez->end = node;
-      n->esize++;
-      n->edges = (GraphEdge **)realloc(n->edges, n->esize * sizeof(GraphEdge *));
-      n->edges[n->esize - 1] = ez;
-    }
+    GraphEdge *edge = (GraphEdge *)malloc(sizeof(GraphEdge));
+    edge->weight = 0;
+    edge->end = n;
+    node->edges[i] = edge;
+
+    GraphEdge *ez = (GraphEdge *)malloc(sizeof(GraphEdge));
+    ez->weight = 0;
+    ez->end = node;
+    n->esize++;
+    n->edges = (GraphEdge **)realloc(n->edges, n->esize * sizeof(GraphEdge *));
+    n->edges[n->esize - 1] = ez;
   }
 
   va_end(args);

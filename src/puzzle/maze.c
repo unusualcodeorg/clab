@@ -14,16 +14,45 @@
 #include "../dslib/util.h"
 #include "../term/console.h"
 
-void maze_sd_result_print(Stack *stack, char ***arr, unsigned int cols) {
+void maze_sd_result_print(Stack *stack, char ***arr, unsigned int rows, unsigned int cols) {
   StackNode *node = stack->top;
+  char ***patharr = util_create_2d_str_arr(rows, cols, 5);
+
+  printf("\nMaze\n");
+  for (unsigned int i = 0; i < rows; i++) {
+    for (unsigned int j = 0; j < cols; j++) {
+      printf("%c", *arr[i][j]);
+      if (strcmp(arr[i][j], "#") != 0) {
+        *patharr[i][j] = ' ';
+        continue;
+      }
+      strcpy(patharr[i][j], arr[i][j]);
+    }
+    printf("\n");
+  }
+
   while (node) {
     Location *loc = (Location *)node->data;
     unsigned int position = *(unsigned int *)loc->data;
     unsigned i = position / cols;
     unsigned j = position % cols;
-    printf("[%d]%s\n", position, arr[i][j]);
+    strcpy(patharr[i][j], arr[i][j]);
     node = node->next;
   }
+
+  printf("\nShortest Path\n");
+  for (unsigned int i = 0; i < rows; i++) {
+    for (unsigned int j = 0; j < cols; j++) {
+      if (strcmp(patharr[i][j], "@") == 0) {
+        printf("%c", '.');
+        continue;
+      }
+      printf("%c", *patharr[i][j]);
+    }
+    printf("\n");
+  }
+
+  util_destroy_2d_str_arr(patharr, rows, cols);
 }
 
 Graph2DMap *maze_graph_map_create(char ***arr, unsigned int rows, unsigned int cols, char *skip,
@@ -114,7 +143,6 @@ void maze_find_shortest_distance(char ***arr, unsigned int rows, unsigned int co
   // cannot auto free arr[i][j] since arr[i] is a continous memory
   Graph2DMap *gmap = maze_graph_map_create(arr, rows, cols, skip, true);
   gmap->graph->debug = true;
-  graph_print(gmap->graph, int_data_to_string);
 
   unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, start);
   unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, dest);
@@ -124,7 +152,7 @@ void maze_find_shortest_distance(char ***arr, unsigned int rows, unsigned int co
 
   graph_print(gmap->graph, int_data_to_string);
   stack_print(stack, int_location_data_to_string);
-  maze_sd_result_print(stack, arr, cols);
+  maze_sd_result_print(stack, arr, rows, cols);
 
   stack_destroy(stack);
   graph_destroy(gmap->graph);

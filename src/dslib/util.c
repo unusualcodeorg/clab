@@ -61,7 +61,10 @@ char ***util_create_2d_str_arr(unsigned int rows, unsigned int cols, unsigned in
   char ***arr = malloc(rows * sizeof(char **));
   for (unsigned int i = 0; i < rows; i++) {
     arr[i] = malloc(cols * sizeof(char *));
-    for (unsigned int j = 0; j < cols; j++) arr[i][j] = malloc(capacity * sizeof(char));
+    for (unsigned int j = 0; j < cols; j++) {
+      arr[i][j] = malloc(capacity * sizeof(char));
+      *arr[i][j] = '\0';
+    }
   }
   return arr;
 }

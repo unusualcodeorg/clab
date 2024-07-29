@@ -23,6 +23,46 @@
 #..@.S..#
 #########
 */
+int maze_shortest_distance(void) {
+  const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
+  // const char maze[] = "..........AB@C.D@..@EFGH*I..J.KL@M@..N..@.....OP@Q$RS..........";
+
+  int rows = 7;
+  int cols = 9;
+  char ***arr = util_create_2d_str_arr(rows, cols);
+
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      char temp[10];
+      char data = maze[i * cols + j];
+      snprintf(temp, 10, "%c", data);
+      strcpy(arr[i][j], temp);
+      printf("%c", data);
+    }
+    printf("\n");
+  }
+
+  // cannot auto free arr[i][j] since arr[i] is a continous memory
+  Graph2DMap *gmap = maze_graph_map_create(arr, rows, cols, true);
+  gmap->graph->debug = true;
+
+  unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, "S");
+  unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, "G");
+
+  Stack *stack =
+      path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, graph_node_num_data_to_string);
+
+  graph_print(gmap->graph, int_data_to_string);
+  stack_print(stack, int_location_data_to_string);
+  maze_sd_result_print(stack, arr, cols);
+
+  stack_destroy(stack);
+  graph_destroy(gmap->graph);
+  hashmap_destroy(gmap->idmap);
+  util_free_2d_str_arr(arr, rows, cols);
+  return EXIT_SUCCESS;
+}
+
 Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree) {
   if (arr == NULL) return NULL;
 
@@ -107,38 +147,7 @@ Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree
   return gmap;
 }
 
-int maze_shortest_distance(void) {
-  const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
-  // const char maze[] = "..........AB@C.D@..@EFGH*I..J.KL@M@..N..@.....OP@Q$RS..........";
-
-  int rows = 7;
-  int cols = 9;
-  char ***arr = util_create_2d_str_arr(rows, cols);
-
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      char temp[10];
-      char data = maze[i * cols + j];
-      snprintf(temp, 10, "%c", data);
-      strcpy(arr[i][j], temp);
-      printf("%c", data);
-    }
-    printf("\n");
-  }
-
-  // cannot auto free arr[i][j] since arr[i] is a continous memory
-  Graph2DMap *gmap = maze_graph_map_create(arr, rows, cols, true);
-  gmap->graph->debug = true;
-
-  unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, "S");
-  unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, "G");
-
-  Stack *stack =
-      path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, graph_node_num_data_to_string);
-
-  graph_print(gmap->graph, int_data_to_string);
-  stack_print(stack, int_location_data_to_string);
-
+void maze_sd_result_print(Stack *stack, char ***arr, int cols) {
   StackNode *node = stack->top;
   while (node) {
     Location *loc = (Location *)node->data;
@@ -148,10 +157,4 @@ int maze_shortest_distance(void) {
     printf("[%d]%s\n", position, arr[i][j]);
     node = node->next;
   }
-
-  stack_destroy(stack);
-  graph_destroy(gmap->graph);
-  hashmap_destroy(gmap->idmap);
-  util_free_2d_str_arr(arr, rows, cols);
-  return EXIT_SUCCESS;
 }

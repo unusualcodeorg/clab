@@ -97,7 +97,7 @@ void *list_delete_at(List *list, unsigned int index) {
 
   if (found == list->head) {
     list->head = list->head->next;
-    if (list->head == list->tail) {
+    if (list->head == NULL || list->head == list->tail) {
       list->tail = NULL;
     }
   } else if (found == list->tail) {

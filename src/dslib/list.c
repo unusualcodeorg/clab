@@ -68,7 +68,7 @@ int list_add_at(List *list, void *data, unsigned int index) {
   return index;
 }
 
-int list_delete_at(List *list, void *data, unsigned int index) {
+int list_delete_at(List *list, unsigned int index) {
   if (index >= list->size) return LIST_NULL_INDEX;
   pthread_rwlock_wrlock(&list->rwlock);
 
@@ -118,7 +118,7 @@ int list_delete_at(List *list, void *data, unsigned int index) {
 
 void *list_get_at(List *list, unsigned int index) {
   if (index >= list->size) return NULL;
-	
+
   pthread_rwlock_rdlock(&list->rwlock);
   ListNode *current = list->head;
   for (unsigned int i = 1; i <= index; i++) {

@@ -15,6 +15,7 @@ int graph_2d_arr_demo(void);
 int tree_demo(void);
 int hashmap_demo(void);
 int path_shortest_nw_graph_demo(void);
+int linked_list_demo(void);
 
 #ifdef __cplusplus
 }

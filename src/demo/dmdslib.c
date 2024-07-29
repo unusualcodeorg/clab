@@ -9,14 +9,15 @@
 #include <unistd.h>
 
 #include "../crun/runtime.h"
+#include "../dslib/datastr.h"
 #include "../dslib/graph.h"
 #include "../dslib/hashmap.h"
+#include "../dslib/list.h"
 #include "../dslib/path.h"
 #include "../dslib/queue.h"
 #include "../dslib/stack.h"
 #include "../dslib/tree.h"
 #include "../dslib/util.h"
-#include "../dslib/datastr.h"
 #include "../term/console.h"
 #include "model.h"
 
@@ -397,8 +398,55 @@ int tree_demo(void) {
 
 /*------------------------TREE DEMO-------------------- */
 
-/*-------------------HASHMAP DEMO----------------------*/
+/*---------------------LINKED LIST DEMO---------------- */
+int linked_list_demo(void) {
+  printf("\n-----------LINKED LIST DEMO-------------\n");
 
+  List *list = list_create(true);
+
+  int result = list_add_at(list, new_customer("Janishar Ali 1", 100, true), 0);
+  printf("List add at 0 when empty result = %d\n", result);
+  list_print(list, customer_to_string);
+
+  result = list_delete_at(list, 0);
+  printf("List delete at 0 when empty result = %d\n", result);
+
+  result = list_delete_at(list, 1);
+  printf("List delete at 1 when empty result = %d\n", result);
+
+  result = list_add(list, new_customer("Janishar Ali 2", 100, true));
+  printf("List add when empty result = %d\n", result);
+  list_print(list, customer_to_string);
+
+  result = list_add_at(list, new_customer("Janishar Ali 3", 100, true), 0);
+  printf("List add at 0 when not empty result = %d\n", result);
+  list_print(list, customer_to_string);
+
+  list_add(list, new_customer("Janishar Ali 4", 100, true));
+  list_add(list, new_customer("Janishar Ali 5", 100, true));
+  list_add(list, new_customer("Janishar Ali 6", 100, true));
+  list_add(list, new_customer("Janishar Ali 7", 100, true));
+  list_add(list, new_customer("Janishar Ali 8", 100, true));
+  list_print(list, customer_to_string);
+
+  result = list_delete_at(list, 2);
+  printf("List delete at 2 result = %d\n", result);
+  list_print(list, customer_to_string);
+
+  result = list_delete_at(list, 0);
+  printf("List delete at 0 result = %d\n", result);
+  list_print(list, customer_to_string);
+
+  result = list_delete_at(list, list->size - 1);
+  printf("List delete at end result = %d\n", result);
+  list_print(list, customer_to_string);
+
+  printf("\n-----------LINKED LIST DEMO-------------\n");
+  return EXIT_SUCCESS;
+}
+/*---------------------LINKED LIST DEMO---------------- */
+
+/*-------------------HASHMAP DEMO-----------------------*/
 
 int hashmap_demo(void) {
   printf("\n------------HASHMAP DEMO------------------\n");

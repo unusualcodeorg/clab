@@ -65,6 +65,13 @@
 		"tree.h": "c",
 		"console.h": "c",
 		"dmcrun.h": "c",
-		"datastr.h": "c"
+		"datastr.h": "c",
+		"type_traits": "cpp",
+		"utility": "cpp",
+		"iomanip": "cpp",
+		"istream": "cpp",
+		"limits": "cpp",
+		"new": "cpp",
+		"list.h": "c"
 	}
 }

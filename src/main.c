@@ -17,6 +17,7 @@ enum COMMAND {
   GRAPH,
   TREE,
   HASHMAP,
+  LIST,
   CONSOLE,
   PATH,
   PUZZLE_MAZE_SD,
@@ -26,7 +27,7 @@ int main(int argc, char *argv[]) {
   if (argc < 2) {
     fprintf(stderr,
             "error  - one command needed [all, debug, stack, queue, runtime, graph, tree, "
-            "hashmap, console, path]\n");
+            "hashmap, list, console, path, puzzle-maze-sd]\n");
     return EXIT_FAILURE;
   }
 
@@ -52,6 +53,8 @@ int main(int argc, char *argv[]) {
     option = TREE;
   else if (strcmp(argv[1], "hashmap") == 0)
     option = HASHMAP;
+  else if (strcmp(argv[1], "list") == 0)
+    option = LIST;
   else if (strcmp(argv[1], "console") == 0)
     option = CONSOLE;
   else if (strcmp(argv[1], "path") == 0)
@@ -72,7 +75,9 @@ int main(int argc, char *argv[]) {
       graph_2d_arr_demo();
       tree_demo();
       hashmap_demo();
+      linked_list_demo();
       path_shortest_nw_graph_demo();
+      maze_shortest_distance_demo();
       break;
     case STACK:
       stack_demo();
@@ -96,6 +101,9 @@ int main(int argc, char *argv[]) {
       break;
     case HASHMAP:
       hashmap_demo();
+      break;
+    case LIST:
+      linked_list_demo();
       break;
     case CONSOLE:
       console_demo();

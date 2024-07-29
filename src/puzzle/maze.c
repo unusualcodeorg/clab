@@ -139,12 +139,14 @@ int maze_shortest_distance(void) {
   graph_print(gmap->graph, int_data_to_string);
   stack_print(stack, int_location_data_to_string);
 
-  for (unsigned int i = 0; i < stack->size; i++) {
-    Location *loc = (Location *)stack_get(stack, i);
+  StackNode *node = stack->top;
+  while (node) {
+    Location *loc = (Location *)node->data;
     int position = *(int *)loc->data;
     int i = position / cols;
     int j = position % cols;
     printf("[%d]%s\n", position, arr[i][j]);
+    node = node->next;
   }
 
   stack_destroy(stack);

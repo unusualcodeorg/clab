@@ -68,8 +68,8 @@ int list_add_at(List *list, void *data, unsigned int index) {
   return index;
 }
 
-int list_delete_at(List *list, unsigned int index) {
-  if (index >= list->size) return LIST_NULL_INDEX;
+void *list_delete_at(List *list, unsigned int index) {
+  if (index >= list->size) return NULL;
   pthread_rwlock_wrlock(&list->rwlock);
 
   ListNode *found = NULL;
@@ -92,7 +92,7 @@ int list_delete_at(List *list, unsigned int index) {
 
   if (found == NULL) {
     pthread_rwlock_unlock(&list->rwlock);
-    return LIST_NULL_INDEX;
+    return NULL;
   }
 
   if (found == list->head) {
@@ -109,11 +109,15 @@ int list_delete_at(List *list, unsigned int index) {
 
   list->size--;
 
-  if (list->autofree == true) free(found->data);
+  void *data = found->data;
+  if (list->autofree == true) {
+    free(data);
+    data = NULL;
+  }
   free(found);
 
   pthread_rwlock_unlock(&list->rwlock);
-  return index;
+  return data;
 }
 
 void *list_get_at(List *list, unsigned int index) {
@@ -146,7 +150,7 @@ void list_print(List *list, DataToString tostring) {
   pthread_rwlock_unlock(&list->rwlock);
 }
 
-int list_index_of(List *list, void *data) {
+int list_index_of(List *list, void *match, ListMatcher matcher) {
   pthread_rwlock_rdlock(&list->rwlock);
   ListNode *current = NULL;
   for (unsigned int i = 0; i < list->size; i++) {
@@ -155,7 +159,7 @@ int list_index_of(List *list, void *data) {
     else
       current = current->next;
 
-    if (current->data == data) return i;
+    if (matcher(current->data, match) == true) return i;
   }
   pthread_rwlock_unlock(&list->rwlock);
   return LIST_NULL_INDEX;

@@ -7,12 +7,13 @@ extern "C" {
 #endif
 
 typedef struct {
+  int id;
   char name[50];
   int salary;
   bool verified;
 } Customer;
 
-Customer *new_customer(char name[50], int salary, bool verified);
+Customer *new_customer(int id, char name[50], int salary, bool verified);
 char *customer_to_string(void *cust);
 
 #ifdef __cplusplus

@@ -26,10 +26,10 @@ int stack_demo(void) {
   printf("\n--------------STACK DEMO----------------\n");
   Stack *stack = stack_create(true);
 
-  stack_push(stack, new_customer("Janishar Ali 1", 100, true));
-  stack_push(stack, new_customer("Janishar Ali 2", 10, true));
-  stack_push(stack, new_customer("Janishar Ali 3", 5, true));
-  stack_push(stack, new_customer("Janishar Ali 4", 87, true));
+  stack_push(stack, new_customer(1, "Janishar Ali 1", 100, true));
+  stack_push(stack, new_customer(2, "Janishar Ali 2", 10, true));
+  stack_push(stack, new_customer(3, "Janishar Ali 3", 5, true));
+  stack_push(stack, new_customer(4, "Janishar Ali 4", 87, true));
 
   printf("Stack: Size = %d\n", stack->size);
 
@@ -50,10 +50,10 @@ int stack_demo(void) {
 
 /*--------------------STACK CUNCURRENT DEMO------------- */
 
-void push_customer(Stack *stack, char *name, char i) {
+void push_customer(Stack *stack, char *name, int i) {
   char buff[50];
   snprintf(buff, 50, "%s %d", name, i);
-  Customer *customer = new_customer(buff, 100 * i, true);
+  Customer *customer = new_customer(i, buff, 100 * i, true);
   stack_push(stack, customer);
   printf("  %s\n", customer_to_string(customer));
 }
@@ -63,7 +63,7 @@ void *s_thread_1_push_function(void *arg) {
   printf("Thread ID: Create: %lu\n", tid);
   Stack *stack = (Stack *)arg;
 
-  for (char i = 1; i < 3; i++) {
+  for (int i = 1; i < 3; i++) {
     push_customer(stack, "Tom", i);
     usleep(1500000);
   }
@@ -77,7 +77,7 @@ void *s_thread_2_push_function(void *arg) {
   printf("Thread ID: Create: %lu\n", tid);
   Stack *stack = (Stack *)arg;
 
-  for (char i = 1; i < 5; i++) {
+  for (int i = 1; i < 5; i++) {
     push_customer(stack, "Hardy", i);
     usleep(2000000);
   }
@@ -126,10 +126,10 @@ int queue_demo(void) {
   printf("\n--------------QUEUE DEMO----------------\n");
   Queue *queue = queue_create(true);
 
-  queue_enqueue(queue, new_customer("Janishar Ali 1", 100, true));
-  queue_enqueue(queue, new_customer("Janishar Ali 2", 10, true));
-  queue_enqueue(queue, new_customer("Janishar Ali 3", 5, true));
-  queue_enqueue(queue, new_customer("Janishar Ali 4", 87, true));
+  queue_enqueue(queue, new_customer(1, "Janishar Ali 1", 100, true));
+  queue_enqueue(queue, new_customer(2, "Janishar Ali 2", 10, true));
+  queue_enqueue(queue, new_customer(3, "Janishar Ali 3", 5, true));
+  queue_enqueue(queue, new_customer(4, "Janishar Ali 4", 87, true));
 
   printf("Queue: Size = %d\n", queue->size);
 
@@ -150,10 +150,10 @@ int queue_demo(void) {
 
 /*--------------------QUEUE CUNCURRENT DEMO------------- */
 
-void queue_customer(Queue *queue, char *name, char i) {
+void queue_customer(Queue *queue, char *name, int i) {
   char buff[50];
   snprintf(buff, 50, "%s %d", name, i);
-  Customer *customer = new_customer(buff, 100 * i, true);
+  Customer *customer = new_customer(i, buff, 100 * i, true);
   queue_enqueue(queue, customer);
   printf("  %s\n", customer_to_string(customer));
 }
@@ -163,7 +163,7 @@ void *q_thread_1_push_function(void *arg) {
   printf("Thread ID: Create: %lu\n", tid);
   Queue *queue = (Queue *)arg;
 
-  for (char i = 1; i < 3; i++) {
+  for (int i = 1; i < 3; i++) {
     queue_customer(queue, "Tom", i);
     usleep(1500000);
   }
@@ -177,7 +177,7 @@ void *q_thread_2_push_function(void *arg) {
   printf("Thread ID: Create: %lu\n", tid);
   Queue *queue = (Queue *)arg;
 
-  for (char i = 1; i < 5; i++) {
+  for (int i = 1; i < 5; i++) {
     queue_customer(queue, "Hardy", i);
     usleep(2000000);
   }
@@ -399,49 +399,63 @@ int tree_demo(void) {
 /*------------------------TREE DEMO-------------------- */
 
 /*---------------------LINKED LIST DEMO---------------- */
+
+bool list_customer_matcher(void *item, void *match) {
+  Customer *customer = (Customer *)item;
+  int id = *(int *)match;
+  return id == customer->id;
+}
+
 int linked_list_demo(void) {
   printf("\n-----------LINKED LIST DEMO-------------\n");
 
   List *list = list_create(true);
 
-  int result = list_add_at(list, new_customer("Janishar Ali 1", 100, true), 0);
+  int result = list_add_at(list, new_customer(1, "Janishar Ali 1", 100, true), 0);
   printf("List add at 0 when empty result = %d\n", result);
   list_print(list, customer_to_string);
 
-  result = list_delete_at(list, 0);
-  printf("List delete at 0 when empty result = %d\n", result);
+  list_delete_at(list, 0);
+  printf("List delete at 0 when empty\n");
+  list_print(list, customer_to_string);
 
-  result = list_delete_at(list, 1);
-  printf("List delete at 1 when empty result = %d\n", result);
+  list_delete_at(list, 1);
+  printf("List delete at 1 when empty\n");
+  list_print(list, customer_to_string);
 
-  result = list_add(list, new_customer("Janishar Ali 2", 100, true));
+  result = list_add(list, new_customer(2, "Janishar Ali 2", 100, true));
   printf("List add when empty result = %d\n", result);
   list_print(list, customer_to_string);
 
-  result = list_add_at(list, new_customer("Janishar Ali 3", 100, true), 0);
+  result = list_add_at(list, new_customer(3, "Janishar Ali 3", 100, true), 0);
   printf("List add at 0 when not empty result = %d\n", result);
   list_print(list, customer_to_string);
 
-  list_add(list, new_customer("Janishar Ali 4", 100, true));
-  list_add(list, new_customer("Janishar Ali 5", 100, true));
-  list_add(list, new_customer("Janishar Ali 6", 100, true));
+  list_add(list, new_customer(4, "Janishar Ali 4", 100, true));
+  list_add(list, new_customer(5, "Janishar Ali 5", 100, true));
+  list_add(list, new_customer(6, "Janishar Ali 6", 100, true));
 
-  Customer *customer = new_customer("Janishar Ali 7", 100, true);
+  Customer *customer = new_customer(7, "Janishar Ali 7", 100, true);
   list_add(list, customer);
 
-  list_add(list, new_customer("Janishar Ali 8", 100, true));
+  list_add(list, new_customer(8, "Janishar Ali 8", 100, true));
   list_print(list, customer_to_string);
 
-  result = list_delete_at(list, 2);
-  printf("List delete at 2 result = %d\n", result);
+  list->autofree = false;
+  Customer *deleted = list_delete_at(list, 2);
+  printf("List delete at 2 result = %s\n",
+         deleted == NULL ? "Not found" : customer_to_string(deleted));
+  list->autofree = true;
+  free(deleted);
+  deleted = NULL;
   list_print(list, customer_to_string);
 
-  result = list_delete_at(list, 0);
-  printf("List delete at 0 result = %d\n", result);
+  list_delete_at(list, 0);
+  printf("List delete at 0\n");
   list_print(list, customer_to_string);
 
-  result = list_delete_at(list, list->size - 1);
-  printf("List delete at end result = %d\n", result);
+  list_delete_at(list, list->size - 1);
+  printf("List delete at %d\n", list->size);
   list_print(list, customer_to_string);
 
   Customer *item = list_get_at(list, 2);
@@ -450,7 +464,7 @@ int linked_list_demo(void) {
   item = list_get_at(list, 20);
   printf("List get at 20 result = %s\n", item == NULL ? "Not found" : customer_to_string(item));
 
-  result = list_index_of(list, customer);
+  result = list_index_of(list, customer, list_customer_matcher);
   printf("List index of %s = %d\n", customer_to_string(customer), result);
 
   printf("\n-----------LINKED LIST DEMO-------------\n");

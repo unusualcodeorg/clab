@@ -12,6 +12,8 @@
 extern "C" {
 #endif
 
+typedef bool (*ListMatcher)(void *item, void *match);
+
 typedef struct ListNode {
   void *data;
   struct ListNode *next;
@@ -28,9 +30,9 @@ typedef struct {
 List *list_create(bool autofree);
 int list_add(List *list, void *data);
 int list_add_at(List *list, void *data, unsigned int index);
-int list_delete_at(List *list, unsigned int index);
+void *list_delete_at(List *list, unsigned int index);
 void *list_get_at(List *list, unsigned int index);
-int list_index_of(List *list, void *data);
+int list_index_of(List *list, void *match, ListMatcher matcher);
 void list_print(List *list, DataToString tostring);
 void list_destroy(List *list);
 

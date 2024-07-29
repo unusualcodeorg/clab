@@ -72,16 +72,17 @@ void *stack_get(Stack *stack, unsigned int position) {
 void stack_print(Stack *stack, DataToString tostring) {
   pthread_rwlock_rdlock(&stack->rwlock);
   printf("Stack: [\n");
+
   StackNode *top = stack->top;
   while (top) {
     char *data_str = tostring(top->data);
     printf("  %s", data_str);
     free(data_str);
-
-    StackNode *next = top->next;
-    top = next;
+		
+    top = top->next;
     if (top != NULL) printf(",\n");
   }
+
   printf("\n]\n");
   pthread_rwlock_unlock(&stack->rwlock);
 }

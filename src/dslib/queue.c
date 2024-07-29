@@ -93,8 +93,7 @@ void queue_print(Queue *queue, DataToString tostring) {
     printf("  %s", str);
     free(str);
 
-    QueueNode *next = start->next;
-    start = next;
+    start = start->next;
     if (start != NULL) printf(",\n");
   }
   printf("\n]\n");

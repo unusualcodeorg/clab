@@ -54,7 +54,12 @@ char *graph_node_char_data_to_string(void *arg) {
   return char_data_to_string(node->data);
 }
 
-char *graph_node_num_data_to_string(void *arg) {
+char *graph_node_int_data_to_string(void *arg) {
   GraphNode *node = (GraphNode *)arg;
   return int_data_to_string(node->data);
+}
+
+char *graph_node_str_data_to_string(void *arg) {
+  GraphNode *node = (GraphNode *)arg;
+  return str_data_to_string(node->data);
 }

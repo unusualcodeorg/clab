@@ -14,7 +14,8 @@ char *str_data_to_string(void *arg);
 char *str_location_data_to_string(void *arg);
 char *int_location_data_to_string(void *arg);
 char *graph_node_char_data_to_string(void *arg);
-char *graph_node_num_data_to_string(void *arg);
+char *graph_node_int_data_to_string(void *arg);
+char *graph_node_str_data_to_string(void *arg);
 
 #ifdef __cplusplus
 }

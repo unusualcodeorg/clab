@@ -22,9 +22,12 @@ int maze_shortest_distance_demo(void) {
   // unsigned int cols = 9;
   // unsigned int elemstrlen = 5;
 
-  const char maze[] = "#############S.....##.G##.###.#....##..........#############";
-  unsigned int rows = 5;
-  unsigned int cols = 12;
+  const char maze[] =
+      "#################..............##..#....###.#.###..#.......#...##..#...####..#.##...#.#.#.."
+      "..#.##.......#....#.##....###....#..#####..G.#..#...##...##..#.#....##.....##.......##..#.#"
+      ".#.#..#..##.#...#......#.####.##..#..#.#.##..##...##..S..##.....#........#################";
+  unsigned int rows = 17;
+  unsigned int cols = 16;
   unsigned int elemstrlen = 5;
 
   char ***arr = util_create_2d_str_arr(rows, cols, elemstrlen);

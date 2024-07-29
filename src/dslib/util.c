@@ -65,7 +65,7 @@ char ***util_create_2d_str_arr(int rows, int cols) {
   return arr;
 }
 
-void util_free_2d_str_arr(char ***arr, int rows, int cols) {
+void util_destroy_2d_str_arr(char ***arr, int rows, int cols) {
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       free(arr[i][j]);

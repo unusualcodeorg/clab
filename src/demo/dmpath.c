@@ -49,7 +49,7 @@ int graph_2d_arr_demo(void) {
 
   graph_destroy(gmap->graph);
   hashmap_destroy(gmap->idmap);
-  util_free_2d_str_arr(arr, rows, cols);
+  util_destroy_2d_str_arr(arr, rows, cols);
 
   printf("\n---------------GRAPH 2D ARR DEMO----------------\n");
   return EXIT_SUCCESS;
@@ -143,7 +143,7 @@ void path_shortest_nw_graph_solution(void *arg) {
   stack_destroy(stack);
   graph_destroy(gmap->graph);
   hashmap_destroy(gmap->idmap);
-  util_free_2d_str_arr(arr, rows, cols);
+  util_destroy_2d_str_arr(arr, rows, cols);
 }
 
 int path_shortest_nw_graph_demo(void) {

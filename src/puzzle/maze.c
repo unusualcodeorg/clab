@@ -119,12 +119,33 @@ Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree
 #..@.S..#
 #########
 */
+void maze_find_shortest_distance(char ***arr, int rows, int cols, char *start, char *dest) {
+  // cannot auto free arr[i][j] since arr[i] is a continous memory
+  Graph2DMap *gmap = maze_graph_map_create(arr, rows, cols, true);
+  gmap->graph->debug = true;
+
+  unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, start);
+  unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, dest);
+
+  Stack *stack =
+      path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, graph_node_num_data_to_string);
+
+  graph_print(gmap->graph, int_data_to_string);
+  stack_print(stack, int_location_data_to_string);
+  maze_sd_result_print(stack, arr, cols);
+
+  stack_destroy(stack);
+  graph_destroy(gmap->graph);
+  hashmap_destroy(gmap->idmap);
+}
+
 int maze_shortest_distance(void) {
   const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
   // const char maze[] = "..........AB@C.D@..@EFGH*I..J.KL@M@..N..@.....OP@Q$RS..........";
 
   int rows = 7;
   int cols = 9;
+
   char ***arr = util_create_2d_str_arr(rows, cols);
 
   for (int i = 0; i < rows; i++) {
@@ -138,23 +159,8 @@ int maze_shortest_distance(void) {
     printf("\n");
   }
 
-  // cannot auto free arr[i][j] since arr[i] is a continous memory
-  Graph2DMap *gmap = maze_graph_map_create(arr, rows, cols, true);
-  gmap->graph->debug = true;
+  maze_find_shortest_distance(arr, rows, cols, "S", "G");
 
-  unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, "S");
-  unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, "G");
-
-  Stack *stack =
-      path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, graph_node_num_data_to_string);
-
-  graph_print(gmap->graph, int_data_to_string);
-  stack_print(stack, int_location_data_to_string);
-  maze_sd_result_print(stack, arr, cols);
-
-  stack_destroy(stack);
-  graph_destroy(gmap->graph);
-  hashmap_destroy(gmap->idmap);
-  util_free_2d_str_arr(arr, rows, cols);
+  util_destroy_2d_str_arr(arr, rows, cols);
   return EXIT_SUCCESS;
 }

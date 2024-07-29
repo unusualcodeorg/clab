@@ -14,7 +14,7 @@ typedef struct {
 } Graph2DMap;
 
 char ***util_create_2d_str_arr(int rows, int cols);
-void util_free_2d_str_arr(char ***arr, int rows, int cols);
+void util_destroy_2d_str_arr(char ***arr, int rows, int cols);
 Graph2DMap *util_graph_from_2d_arr(
     char ***arr, int rows, int cols,
     bool autofree);  // char ***arr allows to hold variable length string elements

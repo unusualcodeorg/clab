@@ -2,6 +2,8 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
+#include "datastr.h"
+
 #ifndef CLAB_DS_LIB_GRAPH_H
 #define CLAB_DS_LIB_GRAPH_H
 
@@ -11,7 +13,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef char *(*DataToString)(void *);
 
 // Traversal direction will be opposite to the direction of visit
 typedef struct {

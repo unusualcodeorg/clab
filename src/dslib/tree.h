@@ -2,6 +2,8 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
+#include "datastr.h"
+
 #ifndef CLAB_DS_LIB_TREE_H
 #define CLAB_DS_LIB_TREE_H
 
@@ -11,7 +13,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef char *(*DataToString)(void *);
 
 typedef struct TreeNode {
   unsigned int id;

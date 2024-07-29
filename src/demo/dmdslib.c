@@ -16,6 +16,7 @@
 #include "../dslib/stack.h"
 #include "../dslib/tree.h"
 #include "../dslib/util.h"
+#include "../dslib/datastr.h"
 #include "../term/console.h"
 #include "model.h"
 
@@ -242,13 +243,6 @@ Graph[
 ]
  */
 
-char *graph_data_to_string(void *arg) {
-  char *data = (char *)arg;
-  char *buffer = malloc(100);
-  snprintf(buffer, 100, "%s", data);
-  return buffer;
-}
-
 int graph_demo(void) {
   printf("\n---------------GRAPH DEMO----------------\n");
   Graph *graph = graph_create(false);
@@ -265,7 +259,7 @@ int graph_demo(void) {
   unsigned int id_I = graph_insert(graph, "I", 2, id_D, id_H);
   (void)id_I;  // suppress unused warning
 
-  graph_print(graph, graph_data_to_string);
+  graph_print(graph, str_data_to_string);
   graph_destroy(graph);
   printf("\n---------------GRAPH DEMO----------------\n");
   return EXIT_SUCCESS;
@@ -346,13 +340,13 @@ int graph_concurrent_demo(void) {
   runtime_exec(r1, croutine1, graph);
   runtime_exec(r2, croutine2, graph);
 
-  graph_print(graph, graph_data_to_string);
+  graph_print(graph, str_data_to_string);
 
   runtime_destroy(r1);
   runtime_destroy(r2);
 
   printf("Thread ID: main: %lu\n", tid);
-  graph_print(graph, graph_data_to_string);
+  graph_print(graph, str_data_to_string);
   graph_destroy(graph);
   printf("\n---------------GRAPH CONCURRENT DEMO----------------\n");
   return EXIT_SUCCESS;
@@ -362,12 +356,6 @@ int graph_concurrent_demo(void) {
 
 /*------------------------TREE DEMO-------------------- */
 
-char *tree_data_to_string(void *arg) {
-  char data = *(char *)arg;
-  char *buffer = malloc(50);
-  snprintf(buffer, 50, "%c", data);
-  return buffer;
-}
 int tree_demo(void) {
   printf("\n---------------TREE DEMO----------------\n");
   Tree *tree = tree_create(true);
@@ -390,7 +378,7 @@ int tree_demo(void) {
   tree_insert(tree, "O", id_M);
   tree_insert(tree, "P", id_M);
 
-  tree_print(tree, tree_data_to_string);
+  tree_print(tree, str_data_to_string);
 
   char *data = tree_get(tree, id_C);
   printf("\nTree: Get - id %d = %s\n", id_C, data);
@@ -400,8 +388,8 @@ int tree_demo(void) {
 
   tree_delete(tree, id_C);
   printf("\nTree: Remove - id %d = %s", id_D, data);
-  tree_print_raw(tree, tree_data_to_string);
-  tree_print(tree, tree_data_to_string);
+  tree_print_raw(tree, str_data_to_string);
+  tree_print(tree, str_data_to_string);
 
   printf("\n---------------TREE DEMO----------------\n");
   return EXIT_SUCCESS;
@@ -411,11 +399,6 @@ int tree_demo(void) {
 
 /*-------------------HASHMAP DEMO----------------------*/
 
-char *hashmap_value_to_string(void *value) {
-  char *data = (char *)value;
-  char *temp = malloc(10 * sizeof(char));
-  return strcpy(temp, data);
-}
 
 int hashmap_demo(void) {
   printf("\n------------HASHMAP DEMO------------------\n");
@@ -429,12 +412,12 @@ int hashmap_demo(void) {
   hashmap_put(map, "F", "N7");
   hashmap_put(map, "F", "N8");
   hashmap_put(map, "G", "N9");
-  hashmap_print(map, hashmap_value_to_string);
+  hashmap_print(map, str_data_to_string);
 
   printf("\nHashMap Get %s - %s\n\n", "E", (char *)hashmap_get(map, "E"));
   hashmap_delete(map, "F");
   hashmap_delete(map, "F");
-  hashmap_print(map, hashmap_value_to_string);
+  hashmap_print(map, str_data_to_string);
 
   hashmap_destroy(map);
   printf("\n------------HASHMAP DEMO------------------\n");

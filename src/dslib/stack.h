@@ -1,14 +1,14 @@
 #include <pthread.h>
 #include <stdbool.h>
 
+#include "datastr.h"
+
 #ifndef CLAB_DS_LIB_STACK_H
 #define CLAB_DS_LIB_STACK_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef char *(*DataToString)(void *);
 
 typedef struct StackNode {
   void *data;

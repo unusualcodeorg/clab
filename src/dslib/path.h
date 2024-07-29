@@ -1,3 +1,4 @@
+#include "datastr.h"
 #include "graph.h"
 #include "stack.h"
 
@@ -7,8 +8,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef char *(*DataToString)(void *);
 
 // this is used to send the result of the path search, id is the graph id, and data is graph data
 typedef struct {
@@ -20,10 +19,6 @@ Stack *path_shortest_nw_graph_vis(Graph *graph, unsigned int srcnodeid, unsigned
                                   DataToString tostring);  // non weighted graph
 Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid,
                               unsigned int dstnodeid);  // non weighted graph
-
-char *graph_sd_data_to_string(void *arg);
-char *location_to_string(void *arg);
-char *path_graph_data_to_string(void *arg);
 
 #ifdef __cplusplus
 }

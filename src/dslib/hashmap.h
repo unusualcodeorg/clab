@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include "datastr.h"
 
 #ifndef CLAB_DS_LIB_HASHMAP_H
 #define CLAB_DS_LIB_HASHMAP_H
@@ -6,8 +7,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef char *(*DataToString)(void *);
 
 typedef struct HashNode {
   char *key;

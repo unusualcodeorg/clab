@@ -64,6 +64,7 @@
 		"runpool.h": "c",
 		"tree.h": "c",
 		"console.h": "c",
-		"dmcrun.h": "c"
+		"dmcrun.h": "c",
+		"datastr.h": "c"
 	}
 }

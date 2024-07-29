@@ -7,34 +7,12 @@
 #include <time.h>
 
 #include "../crun/runtime.h"
+#include "../dslib/datastr.h"
 #include "../dslib/graph.h"
 #include "../dslib/hashmap.h"
 #include "../dslib/path.h"
 #include "../dslib/util.h"
 #include "../term/console.h"
-
-char *maze_graph_data_to_string(void *arg) {
-  int data = *(int *)arg;
-  char *buffer = malloc(50);
-  snprintf(buffer, 50, "%d", data);
-  return buffer;
-}
-
-char *maze_path_graph_data_to_string(void *arg) {
-  GraphNode *node = (GraphNode *)arg;
-  int data = *(int *)node->data;
-  char *buffer = malloc(50);
-  snprintf(buffer, 50, "%d", data);
-  return buffer;
-}
-
-char *maze_location_to_string(void *arg) {
-  Location *location = (Location *)arg;
-  int data = *(int *)location->data;
-  char *buffer = malloc(50);
-  snprintf(buffer, 50, "[%d]%d", location->id, data);
-  return buffer;
-}
 
 /*
 #########
@@ -156,10 +134,10 @@ int maze_shortest_distance(void) {
   unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, "G");
 
   Stack *stack =
-      path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, maze_path_graph_data_to_string);
+      path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, graph_node_num_data_to_string);
 
-  graph_print(gmap->graph, maze_graph_data_to_string);
-  stack_print(stack, maze_location_to_string);
+  graph_print(gmap->graph, int_data_to_string);
+  stack_print(stack, int_location_data_to_string);
 
   for (unsigned int i = 0; i < stack->size; i++) {
     Location *loc = (Location *)stack_get(stack, i);

@@ -1,5 +1,6 @@
 #include <pthread.h>
 #include <stdbool.h>
+#include "datastr.h"
 
 #ifndef CLAB_DS_LIB_QUEUE_H
 #define CLAB_DS_LIB_QUEUE_H
@@ -7,8 +8,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef char *(*DataToString)(void *);
 
 typedef struct QueueNode {
   void *data;

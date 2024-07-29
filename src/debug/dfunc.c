@@ -23,6 +23,7 @@ int debugfn(char *fname) {
   hashmap_put(map, "queue_concurrent_demo", (void *)queue_concurrent_demo);
   hashmap_put(map, "runtime_demo", (void *)runtime_demo);
   hashmap_put(map, "runpool_demo", (void *)runpool_demo);
+  hashmap_put(map, "tree_demo", (void *)tree_demo);
   hashmap_put(map, "graph_demo", (void *)graph_demo);
   hashmap_put(map, "graph_concurrent_demo", (void *)graph_concurrent_demo);
   hashmap_put(map, "graph_2d_arr_demo", (void *)graph_2d_arr_demo);

@@ -11,17 +11,11 @@
 #include "../dslib/path.h"
 #include "../dslib/util.h"
 #include "../term/console.h"
+#include "../dslib/datastr.h"
 #include "dmdslib.h"
 #include "model.h"
 
 /*-----------------------GRAPH 2D ARR DEMO-------------- */
-
-char *graph_maze_data_to_string(void *arg) {
-  char data = *(char *)arg;
-  char *buffer = malloc(50);
-  snprintf(buffer, 50, "%c", data);
-  return buffer;
-}
 
 int graph_2d_arr_demo(void) {
   printf("\n---------------GRAPH 2D ARR DEMO----------------\n");
@@ -35,7 +29,7 @@ int graph_2d_arr_demo(void) {
     for (int j = 0; j < cols; j++) {
       char temp[50];
       char data = maze[i * cols + j];
-      snprintf(temp, 50, "%d", data);
+      snprintf(temp, 50, "%c", data);
       strcpy(arr[i][j], temp);
       printf("%c", data);
     }
@@ -45,7 +39,7 @@ int graph_2d_arr_demo(void) {
   Graph2DMap *gmap = util_graph_from_2d_arr(
       arr, rows, cols, false);  // cannot auto free arr[i][j] since arr[i] is a continous memory
   gmap->graph->debug = true;
-  graph_print(gmap->graph, graph_maze_data_to_string);
+  graph_print(gmap->graph, char_data_to_string);
 
   char *data = (char *)graph_get(gmap->graph, 40);
   printf("Graph found id %d : %c\n", 40, *data);
@@ -140,11 +134,11 @@ void path_shortest_nw_graph_solution(void *arg) {
   unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, "U");
 
   Stack *stack =
-      path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, path_graph_data_to_string);  // G->S
+      path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, graph_node_char_data_to_string);  // G->S
 
   runtime_destroy(rnc);
-  graph_print(gmap->graph, graph_sd_data_to_string);
-  stack_print(stack, location_to_string);
+  graph_print(gmap->graph, str_data_to_string);
+  stack_print(stack, str_location_data_to_string);
 
   stack_destroy(stack);
   graph_destroy(gmap->graph);

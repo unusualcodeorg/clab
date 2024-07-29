@@ -7,7 +7,10 @@ extern "C" {
 #endif
 
 int maze_shortest_distance(void);
-void maze_find_shortest_distance(char ***arr, int rows, int cols, char *start, char *dest);
+
+// skip defines the char which can not be traversed
+void maze_find_shortest_distance(char ***arr, unsigned int rows, unsigned int cols, char *start,
+                                 char *dest, char *skip);
 
 #ifdef __cplusplus
 }

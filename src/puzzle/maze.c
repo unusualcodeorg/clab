@@ -14,38 +14,37 @@
 #include "../dslib/util.h"
 #include "../term/console.h"
 
-void maze_sd_result_print(Stack *stack, char ***arr, int cols) {
+void maze_sd_result_print(Stack *stack, char ***arr, unsigned int cols) {
   StackNode *node = stack->top;
   while (node) {
     Location *loc = (Location *)node->data;
-    int position = *(int *)loc->data;
-    int i = position / cols;
-    int j = position % cols;
+    unsigned int position = *(unsigned int *)loc->data;
+    unsigned i = position / cols;
+    unsigned j = position % cols;
     printf("[%d]%s\n", position, arr[i][j]);
     node = node->next;
   }
 }
 
-Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree) {
+Graph2DMap *maze_graph_map_create(char ***arr, unsigned int rows, unsigned int cols, char *skip,
+                                  bool autofree) {
   if (arr == NULL) return NULL;
 
   Graph *graph = graph_create(autofree);
   HashMap *idmap = hashmap_create(rows * cols, true);
 
-  int idstore[rows][cols];
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
+  unsigned int idstore[rows][cols];
+  for (unsigned int i = 0; i < rows; i++) {
+    for (unsigned int j = 0; j < cols; j++) {
       idstore[i][j] = rows * cols;
     }
   }
 
-  char *skip = "#";
+  for (unsigned int i = 0; i < rows; i++) {
+    for (unsigned int j = 0; j < cols; j++) {
+      unsigned int index = i * cols + j;
 
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      int index = i * cols + j;
-
-      int *data = malloc(sizeof(int));
+      unsigned int *data = malloc(sizeof(unsigned int));
       *data = index;
 
       char key[10];
@@ -56,21 +55,21 @@ Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree
 
       // add root logic and skip below
       if (graph->size == 0) {
-        int *mid = malloc(sizeof(int));
-        int nid = graph_insert(graph, data, 0);
+        unsigned int *mid = malloc(sizeof(unsigned int));
+        unsigned int nid = graph_insert(graph, data, 0);
         *mid = nid;
         hashmap_put(idmap, key, mid);
         idstore[i][j] = nid;
         continue;
       }
 
-      int upindex = index - cols;
-      int backindex = j == 0 ? -1 : index - 1;
+      long upindex = index - cols;
+      long backindex = j == 0 ? -1 : index - 1;
 
       // skip trapped node
       if (upindex >= 0 && backindex >= 0) {
-        int downindex = i == rows - 1 ? -1 : index + cols;
-        int frontindex = j == cols - 1 ? -1 : index + 1;
+        long downindex = i == rows - 1 ? -1 : index + cols;
+        long frontindex = j == cols - 1 ? -1 : index + 1;
 
         if (downindex >= 0 && frontindex >= 0) {
           if (strcmp(arr[i - 1][j], skip) == 0 && strcmp(arr[i][j - 1], skip) == 0 &&
@@ -83,18 +82,18 @@ Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree
       // this condition will never arrive, but adding here to cover all the cases
       if (upindex < 0 && backindex < 0) continue;
 
-      int *mid = malloc(sizeof(int));
-      int nid = 0;
+      unsigned int *mid = malloc(sizeof(unsigned int));
+      unsigned int nid = 0;
 
       if (upindex >= 0 && backindex < 0) {  // can link up only
-        int up = idstore[i - 1][j];
+        unsigned int up = idstore[i - 1][j];
         nid = graph_insert_conditional(graph, data, true, 1, (unsigned int)up);
       } else if (upindex < 0 && backindex >= 0) {  // can link back only
-        int back = idstore[i][j - 1];
+        unsigned int back = idstore[i][j - 1];
         nid = graph_insert_conditional(graph, data, true, 1, (unsigned int)back);
       } else {  // can link up and back
-        int up = idstore[i - 1][j];
-        int back = idstore[i][j - 1];
+        unsigned int up = idstore[i - 1][j];
+        unsigned int back = idstore[i][j - 1];
         nid = graph_insert_conditional(graph, data, true, 2, (unsigned int)up, (unsigned int)back);
       }
 
@@ -119,9 +118,10 @@ Graph2DMap *maze_graph_map_create(char ***arr, int rows, int cols, bool autofree
 #..@.S..#
 #########
 */
-void maze_find_shortest_distance(char ***arr, int rows, int cols, char *start, char *dest) {
+void maze_find_shortest_distance(char ***arr, unsigned int rows, unsigned int cols, char *start,
+                                 char *dest, char *skip) {
   // cannot auto free arr[i][j] since arr[i] is a continous memory
-  Graph2DMap *gmap = maze_graph_map_create(arr, rows, cols, true);
+  Graph2DMap *gmap = maze_graph_map_create(arr, rows, cols, skip, true);
   gmap->graph->debug = true;
 
   unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, start);
@@ -140,26 +140,47 @@ void maze_find_shortest_distance(char ***arr, int rows, int cols, char *start, c
 }
 
 int maze_shortest_distance(void) {
-  const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
-  // const char maze[] = "..........AB@C.D@..@EFGH*I..J.KL@M@..N..@.....OP@Q$RS..........";
+  unsigned int rows, cols;
+  unsigned int max = 1000;
+  unsigned int elemstrlen = 5;
 
-  int rows = 7;
-  int cols = 9;
+  printf("Enter number of rows: ");
+  scanf("%d", &rows);
 
-  char ***arr = util_create_2d_str_arr(rows, cols);
+  printf("Enter number of columns: ");
+  scanf("%d", &cols);
 
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      char temp[10];
-      char data = maze[i * cols + j];
-      snprintf(temp, 10, "%c", data);
-      strcpy(arr[i][j], temp);
+  if (rows > max || cols > max) {
+    printf("Rows and Columns should less than %d", max);
+    return EXIT_FAILURE;
+  }
+
+  printf("Enter elements of the %dx%d array:\n", rows, cols);
+  char maze[rows][cols];
+  for (unsigned int i = 0; i < rows; ++i) {
+    for (unsigned int j = 0; j < cols; ++j) {
+      /**
+       * space before %d tells scanf to ignore any leading whitespace characters
+       * (including newlines)
+       */
+      scanf(" %c", &maze[i][j]);
+    }
+  }
+
+  printf("\nYour input %dx%d array:\n", rows, cols);
+  char ***arr = util_create_2d_str_arr(rows, cols, elemstrlen);
+  for (unsigned int i = 0; i < rows; i++) {
+    for (unsigned int j = 0; j < cols; j++) {
+      char buffer[elemstrlen];
+      char data = maze[i][j];
+      snprintf(buffer, elemstrlen, "%c", data);
+      strcpy(arr[i][j], buffer);
       printf("%c", data);
     }
     printf("\n");
   }
 
-  maze_find_shortest_distance(arr, rows, cols, "S", "G");
+  maze_find_shortest_distance(arr, rows, cols, "S", "G", "#");
 
   util_destroy_2d_str_arr(arr, rows, cols);
   return EXIT_SUCCESS;

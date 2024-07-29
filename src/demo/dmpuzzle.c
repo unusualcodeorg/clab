@@ -8,26 +8,30 @@
 #include "../puzzle/maze.h"
 
 int maze_shortest_distance_demo(void) {
-  const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
-  // const char maze[] = "..........AB@C.D@..@EFGH*I..J.KL@M@..N..@.....OP@Q$RS..........";
+  // const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
+  // unsigned int rows = 7;
+  // unsigned int cols = 9;
+  // unsigned int elemstrlen = 5;
 
-  int rows = 7;
-  int cols = 9;
+  const char maze[] = "#############S.....##.G##.###.#....##..........#############";
+  unsigned int rows = 5;
+  unsigned int cols = 12;
+  unsigned int elemstrlen = 5;
 
-  char ***arr = util_create_2d_str_arr(rows, cols, 5);
+  char ***arr = util_create_2d_str_arr(rows, cols, elemstrlen);
 
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      char temp[10];
+  for (unsigned int i = 0; i < rows; i++) {
+    for (unsigned int j = 0; j < cols; j++) {
+      char temp[elemstrlen];
       char data = maze[i * cols + j];
-      snprintf(temp, 10, "%c", data);
+      snprintf(temp, elemstrlen, "%c", data);
       strcpy(arr[i][j], temp);
       printf("%c", data);
     }
     printf("\n");
   }
 
-  maze_find_shortest_distance(arr, rows, cols, "S", "G");
+  maze_find_shortest_distance(arr, rows, cols, "S", "G", "#");
 
   util_destroy_2d_str_arr(arr, rows, cols);
   return EXIT_SUCCESS;

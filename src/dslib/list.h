@@ -18,7 +18,7 @@ typedef struct ListNode {
 } ListNode;
 
 typedef struct {
-  ListNode *tail;
+  ListNode *tail;  // keeps the insertion order
   ListNode *head;
   unsigned int size;
   bool autofree;  // free data on pop
@@ -30,6 +30,7 @@ int list_add(List *list, void *data);
 int list_add_at(List *list, void *data, unsigned int index);
 int list_delete_at(List *list, unsigned int index);
 void *list_get_at(List *list, unsigned int index);
+int list_index_of(List *list, void *data);
 void list_print(List *list, DataToString tostring);
 void list_destroy(List *list);
 

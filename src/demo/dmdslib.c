@@ -425,7 +425,10 @@ int linked_list_demo(void) {
   list_add(list, new_customer("Janishar Ali 4", 100, true));
   list_add(list, new_customer("Janishar Ali 5", 100, true));
   list_add(list, new_customer("Janishar Ali 6", 100, true));
-  list_add(list, new_customer("Janishar Ali 7", 100, true));
+
+  Customer *customer = new_customer("Janishar Ali 7", 100, true);
+  list_add(list, customer);
+
   list_add(list, new_customer("Janishar Ali 8", 100, true));
   list_print(list, customer_to_string);
 
@@ -440,6 +443,15 @@ int linked_list_demo(void) {
   result = list_delete_at(list, list->size - 1);
   printf("List delete at end result = %d\n", result);
   list_print(list, customer_to_string);
+
+  Customer *item = list_get_at(list, 2);
+  printf("List get at 2 result = %s\n", item == NULL ? "Not found" : customer_to_string(item));
+
+  item = list_get_at(list, 20);
+  printf("List get at 20 result = %s\n", item == NULL ? "Not found" : customer_to_string(item));
+
+  result = list_index_of(list, customer);
+  printf("List index of %s = %d\n", customer_to_string(customer), result);
 
   printf("\n-----------LINKED LIST DEMO-------------\n");
   return EXIT_SUCCESS;

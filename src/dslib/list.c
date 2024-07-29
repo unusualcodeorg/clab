@@ -121,7 +121,7 @@ void *list_get_at(List *list, unsigned int index) {
 
   pthread_rwlock_rdlock(&list->rwlock);
   ListNode *current = list->head;
-  for (unsigned int i = 1; i <= index; i++) {
+  for (unsigned int i = 0; i < index; i++) {
     current = current->next;
   }
   pthread_rwlock_unlock(&list->rwlock);
@@ -144,6 +144,21 @@ void list_print(List *list, DataToString tostring) {
 
   printf("\n]\n");
   pthread_rwlock_unlock(&list->rwlock);
+}
+
+int list_index_of(List *list, void *data) {
+  pthread_rwlock_rdlock(&list->rwlock);
+  ListNode *current = NULL;
+  for (unsigned int i = 0; i < list->size; i++) {
+    if (current == NULL)
+      current = list->head;
+    else
+      current = current->next;
+
+    if (current->data == data) return i;
+  }
+  pthread_rwlock_unlock(&list->rwlock);
+  return LIST_NULL_INDEX;
 }
 
 void list_destroy(List *list) {

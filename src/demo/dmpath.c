@@ -23,7 +23,7 @@ int graph_2d_arr_demo(void) {
 
   int rows = 7;
   int cols = 9;
-  char ***arr = util_create_2d_str_arr(rows, cols);
+  char ***arr = util_create_2d_str_arr(rows, cols, 5);
 
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
@@ -107,7 +107,7 @@ void path_shortest_nw_graph_solution(void *arg) {
   int rows = 5;
   int cols = 5;
 
-  char ***arr = util_create_2d_str_arr(rows, cols);
+  char ***arr = util_create_2d_str_arr(rows, cols, 5);
 
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {

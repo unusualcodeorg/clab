@@ -13,11 +13,12 @@ typedef struct {
   HashMap *idmap;
 } Graph2DMap;
 
-char ***util_create_2d_str_arr(int rows, int cols);
-void util_destroy_2d_str_arr(char ***arr, int rows, int cols);
-Graph2DMap *util_graph_from_2d_arr(
-    char ***arr, int rows, int cols,
-    bool autofree);  // char ***arr allows to hold variable length string elements
+char ***util_create_2d_str_arr(unsigned int rows, unsigned int cols, unsigned int elemstrlen);
+void util_destroy_2d_str_arr(char ***arr, unsigned int rows, unsigned int cols);
+
+// char ***arr allows to hold variable length string elements
+Graph2DMap *util_graph_from_2d_arr(char ***arr, unsigned int rows, unsigned int cols,
+                                   bool autofree);
 
 #ifdef __cplusplus
 }

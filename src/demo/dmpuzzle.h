@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-int demo_maze_shortest_distance(void);
+int maze_shortest_distance_demo(void);
 
 #ifdef __cplusplus
 }

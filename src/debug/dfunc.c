@@ -31,7 +31,7 @@ int debugfn(char *fname) {
   hashmap_put(map, "hashmap_demo", (void *)hashmap_demo);
   hashmap_put(map, "path_shortest_nw_graph_demo", (void *)path_shortest_nw_graph_demo);
   hashmap_put(map, "console_demo", (void *)console_demo);
-  hashmap_put(map, "demo_maze_shortest_distance", (void *)demo_maze_shortest_distance);
+  hashmap_put(map, "maze_shortest_distance_demo", (void *)maze_shortest_distance_demo);
   hashmap_put(map, "maze_shortest_distance", (void *)maze_shortest_distance);
 
   debug_func_ptr_t func = (debug_func_ptr_t)hashmap_get(map, fname);

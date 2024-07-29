@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
       path_shortest_nw_graph_demo();
       break;
     case PUZZLE_MAZE_SD:
-      demo_maze_shortest_distance();
+      maze_shortest_distance_demo();
       break;
     default:
       fprintf(stderr, "Unknown command name: %s\n", argv[1]);

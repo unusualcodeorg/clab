@@ -55,6 +55,8 @@ GraphNode *graph_find_dfs(Graph *graph, unsigned int nodeid);
 void *graph_get(Graph *graph, unsigned int nodeid);
 // var arg for node ids to link with other nodes
 int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...);
+int graph_insert_weighted(Graph *graph, void *data, unsigned int linkcount,
+                          unsigned int *linknodeids, unsigned int *edgeweights);
 int graph_delete(Graph *graph, unsigned int nodeid, FreeDataFunc freedatafunc);
 void graph_print(Graph *graph, DataToString tostring);
 void graph_destroy(Graph *graph, FreeDataFunc freedatafunc);

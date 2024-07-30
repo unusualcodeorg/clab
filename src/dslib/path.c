@@ -103,3 +103,75 @@ Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned
 
   return stack;
 }
+
+/**
+ * graph should contain data of type location
+ */
+Stack *path_shortest(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid) {
+  Stack *stack = stack_create();  // store backtrack
+
+  GraphNode *start = graph_find_bfs(graph, srcnodeid);
+  if (start == NULL) return stack;
+
+  GraphNode *dest = graph_find_bfs(graph, dstnodeid);
+  if (dest == NULL) return stack;
+
+  if (start == dest) {
+    stack_push(stack, start->data);
+    return stack;
+  }
+
+  GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
+
+  ((Location *)start->data)->cost = 0;
+
+  Queue *queue = queue_create();
+  queue_enqueue(queue, start);
+
+  while (queue->size > 0) {
+    GraphNode *node = queue_dequeue(queue, NULL);
+    if (visited_nodes[node->id] == node) continue;
+    visited_nodes[node->id] = node;
+
+    Location *loc = (Location *)node->data;
+
+    for (unsigned short i = 0; i < node->esize; i++) {
+      GraphEdge *edge = node->edges[i];
+      if (edge == NULL || edge->end == NULL) continue;
+
+      unsigned int cost = loc->cost + edge->weight;
+
+      Location *ezloc = (Location *)edge->end->data;
+      if (ezloc->cost > cost) ezloc->cost = cost;
+
+      queue_enqueue(queue, edge->end);
+    }
+  }
+
+  GraphNode *current = dest;
+  while (current != NULL) {
+    Location *loc = (Location *)current->data;
+    stack_push(stack, loc);
+    if (loc->cost == 0) break;
+
+    GraphNode *next = NULL;
+    unsigned int min = UINT_MAX;
+
+    for (unsigned short i = 0; i < current->esize; i++) {
+      GraphEdge *edge = current->edges[i];
+      if (edge == NULL || edge->end == NULL) continue;
+
+      Location *minloc = (Location *)edge->end->data;
+      if (minloc->cost < min) {
+        min = minloc->cost;
+        next = edge->end;
+      }
+    }
+
+    current = next;
+  }
+
+  queue_destroy(queue, NULL);
+  free(visited_nodes);
+  return stack;
+}

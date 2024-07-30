@@ -225,12 +225,12 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...) {
     if (gnode == NULL) continue;
 
     GraphEdge *edge = (GraphEdge *)malloc(sizeof(GraphEdge));
-    edge->weight = 0;
+    edge->weight = 1;
     edge->end = gnode;
     edges[i] = edge;
 
     GraphEdge *ez = (GraphEdge *)malloc(sizeof(GraphEdge));
-    ez->weight = 0;
+    ez->weight = 1;
     ez->end = node;
     gnode->esize++;
     gnode->edges = (GraphEdge **)realloc(gnode->edges, gnode->esize * sizeof(GraphEdge *));
@@ -252,6 +252,12 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...) {
   pthread_rwlock_unlock(&graph->rwlock);
   return node->id;
 }
+
+// TODO
+// int graph_insert_weighted(Graph *graph, void *data, unsigned int linkcount,
+//                           unsigned int *linknodeids, unsigned int *edgeweights) {
+//   return -1;
+// }
 
 int graph_delete(Graph *graph, unsigned int nodeid, FreeDataFunc freedatafunc) {
   pthread_rwlock_wrlock(&graph->rwlock);

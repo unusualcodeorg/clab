@@ -5,6 +5,7 @@
 #include "debug/dfunc.h"
 #include "demo/crundemo.h"
 #include "demo/dslibdemo.h"
+#include "demo/pathdemo.h"
 #include "demo/puzzledemo.h"
 #include "demo/termdemo.h"
 
@@ -110,6 +111,7 @@ int main(int argc, char *argv[]) {
       break;
     case PATH:
       path_shortest_nwg_tree_demo();
+      path_shortest_demo();
       break;
     case PUZZLE_MAZE_SD:
       maze_shortest_distance_demo();

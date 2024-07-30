@@ -98,7 +98,7 @@ void path_shortest_console(void *arg) {
   printf("Execution time %f\n sec", cputime);
 }
 
-void path_shortest_nw_graph_solution(void *arg) {
+void path_shortest_nwg_tree_solution(void *arg) {
   Runtime *rnc = (Runtime *)arg;
 
   // int rows = 30;
@@ -134,7 +134,7 @@ void path_shortest_nw_graph_solution(void *arg) {
   unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, "U");
 
   Stack *stack =
-      path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, graph_node_char_data_to_string);  // G->S
+      path_shortest_nwg_tree_vis(gmap->graph, srcid, dstid, graph_node_char_data_to_string);  // G->S
 
   runtime_destroy(rnc);
   graph_print(gmap->graph, str_data_to_string);
@@ -146,13 +146,13 @@ void path_shortest_nw_graph_solution(void *arg) {
   util_destroy_2d_str_arr(arr, rows, cols);
 }
 
-int path_shortest_nw_graph_demo(void) {
+int path_shortest_nwg_tree_demo(void) {
   printf("\n-----SHORTEST PATH NON WEIGHTED GRAPH DEMO-----\n");
 
   Runtime *rns = runtime_create("Solution", false);
   Runtime *rnc = runtime_create("Console", false);
 
-  runtime_exec(rns, path_shortest_nw_graph_solution, rnc);
+  runtime_exec(rns, path_shortest_nwg_tree_solution, rnc);
   runtime_exec(rnc, path_shortest_console, rnc);
 
   runtime_destroy(rns);

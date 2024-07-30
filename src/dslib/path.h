@@ -15,9 +15,9 @@ typedef struct {
   void *data;
 } Location;
 
-Stack *path_shortest_nw_graph_vis(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid,
+Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid,
                                   DataToString tostring);  // non weighted graph
-Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid,
+Stack *path_shortest_nwg_tree(Graph *graph, unsigned int srcnodeid,
                               unsigned int dstnodeid);  // non weighted graph
 
 #ifdef __cplusplus

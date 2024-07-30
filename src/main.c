@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
       tree_demo();
       hashmap_demo();
       linked_list_demo();
-      path_shortest_nw_graph_demo();
+      path_shortest_nwg_tree_demo();
       maze_shortest_distance_demo();
       break;
     case STACK:
@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
       console_demo();
       break;
     case PATH:
-      path_shortest_nw_graph_demo();
+      path_shortest_nwg_tree_demo();
       break;
     case PUZZLE_MAZE_SD:
       maze_shortest_distance_demo();

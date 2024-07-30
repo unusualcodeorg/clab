@@ -150,7 +150,7 @@ void maze_find_shortest_distance(char ***arr, unsigned int rows, unsigned int co
   graph_print(gmap->graph, int_data_to_string);
 
   Stack *stack =
-      path_shortest_nw_graph_vis(gmap->graph, srcid, dstid, graph_node_int_data_to_string);
+      path_shortest_nwg_tree_vis(gmap->graph, srcid, dstid, graph_node_int_data_to_string);
 
   graph_print(gmap->graph, int_data_to_string);
   stack_print(stack, int_location_data_to_string);

@@ -29,7 +29,7 @@ int debugfn(char *fname) {
   hashmap_put(map, "graph_concurrent_demo", (void *)graph_concurrent_demo);
   hashmap_put(map, "graph_2d_arr_demo", (void *)graph_2d_arr_demo);
   hashmap_put(map, "hashmap_demo", (void *)hashmap_demo);
-  hashmap_put(map, "path_shortest_nw_graph_demo", (void *)path_shortest_nw_graph_demo);
+  hashmap_put(map, "path_shortest_nwg_tree_demo", (void *)path_shortest_nwg_tree_demo);
   hashmap_put(map, "console_demo", (void *)console_demo);
   hashmap_put(map, "maze_shortest_distance_demo", (void *)maze_shortest_distance_demo);
   hashmap_put(map, "maze_shortest_distance", (void *)maze_shortest_distance);

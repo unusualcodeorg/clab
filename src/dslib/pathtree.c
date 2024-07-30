@@ -23,8 +23,8 @@ Location *location_from_graph_node(GraphNode *node) {
   return location;
 }
 
-Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid) {
-  return path_shortest_nw_graph_vis(graph, srcnodeid, dstnodeid, path_tree_data_to_string);
+Stack *path_shortest_nwg_tree(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid) {
+  return path_shortest_nwg_tree_vis(graph, srcnodeid, dstnodeid, path_tree_data_to_string);
 }
 
 /**
@@ -32,7 +32,7 @@ Stack *path_shortest_nw_graph(Graph *graph, unsigned int srcnodeid, unsigned int
  * Stack holds the backtracked path,
  * Traversal algo don't allow to go back and up
  */
-Stack *path_shortest_nw_graph_vis(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid,
+Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid,
                                   DataToString tostring) {
   Stack *stack = stack_create(true);
 

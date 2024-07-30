@@ -45,7 +45,7 @@ int maze_shortest_distance_demo(void) {
 /*------------PATH PERMUTATION DEMO--------------*/
 
 int path_permutation_demo(void) {
-  int arr[] = {1, 2, 3};
+  int arr[] = {1, 2, 3, 4, 5};
   int arrsize = sizeof(arr) / sizeof(arr[0]);
   Queue *queue = generate_permutations(arr, arrsize);
 

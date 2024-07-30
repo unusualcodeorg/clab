@@ -24,6 +24,11 @@ PermutationState *create_permutation_state(int *arr, int n, int left, int right)
 }
 
 Queue *generate_permutations(int *arr, int n) {
+  if (n > 10) {
+    perror("permutation larger than 10 will take a lot of memory");
+    exit(EXIT_FAILURE);
+  }
+
   Stack *stack = stack_create();
   Queue *queue = queue_create();
 

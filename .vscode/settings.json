@@ -64,7 +64,7 @@
 		"runpool.h": "c",
 		"tree.h": "c",
 		"console.h": "c",
-		"dmcrun.h": "c",
+		"crundemo.h": "c",
 		"datastr.h": "c",
 		"type_traits": "cpp",
 		"utility": "cpp",

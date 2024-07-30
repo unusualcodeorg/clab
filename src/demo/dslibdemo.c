@@ -1,4 +1,4 @@
-#include "dmdslib.h"
+#include "dslibdemo.h"
 
 #include <pthread.h>
 #include <stdbool.h>

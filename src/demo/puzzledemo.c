@@ -1,4 +1,4 @@
-#include "dmpuzzle.h"
+#include "puzzledemo.h"
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -3,10 +3,10 @@
 #include <string.h>
 
 #include "debug/dfunc.h"
-#include "demo/dmcrun.h"
-#include "demo/dmdslib.h"
-#include "demo/dmpuzzle.h"
-#include "demo/dmterm.h"
+#include "demo/crundemo.h"
+#include "demo/dslibdemo.h"
+#include "demo/puzzledemo.h"
+#include "demo/termdemo.h"
 
 enum COMMAND {
   NONE,

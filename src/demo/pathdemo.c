@@ -12,7 +12,7 @@
 #include "../dslib/path.h"
 #include "../dslib/util.h"
 #include "../term/console.h"
-#include "dmdslib.h"
+#include "dslibdemo.h"
 #include "model.h"
 
 /*-----------------------GRAPH 2D ARR DEMO-------------- */

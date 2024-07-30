@@ -1,4 +1,4 @@
-#include "dmterm.h"
+#include "termdemo.h"
 
 #include <stdbool.h>
 #include <stdio.h>

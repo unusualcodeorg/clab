@@ -34,7 +34,7 @@ Stack *path_shortest_nwg_tree(Graph *graph, unsigned int srcnodeid, unsigned int
  */
 Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid,
                                   DataToString tostring) {
-  Stack *stack = stack_create(true);
+  Stack *stack = stack_create();
 
   GraphNode *start = graph_find_bfs(graph, srcnodeid);
   if (start == NULL) return stack;
@@ -49,15 +49,15 @@ Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned
 
   TreeNode *found = NULL;
 
-  Tree *tree = tree_create(false);
+  Tree *tree = tree_create();
   tree->debug = graph->debug;
   tree_insert_root(tree, start);
 
-  Queue *queue = queue_create(false);
+  Queue *queue = queue_create();
   queue_enqueue(queue, tree->root);
 
   while (queue->size > 0) {
-    TreeNode *tnode = queue_dequeue(queue);
+    TreeNode *tnode = queue_dequeue(queue, NULL);
     GraphNode *node = (GraphNode *)tnode->data;
 
     if (node == dest) {
@@ -89,8 +89,8 @@ Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned
   if (graph->debug) tree_print_raw(tree, tostring);
   if (graph->debug) printf("Tree Node: %d", tree->size);
 
-  tree_destroy(tree);
-  queue_destroy(queue);
+  tree_destroy(tree, NULL);
+  queue_destroy(queue, NULL);
 
   return stack;
 }

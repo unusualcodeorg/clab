@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-List *list_create(bool autofree) {
+List *list_create(void) {
   List *list = (List *)malloc(sizeof(List));
   if (list == NULL) {
     perror("failed to allocate memory for list");
@@ -15,7 +15,6 @@ List *list_create(bool autofree) {
   list->head = NULL;
   list->tail = NULL;
   list->size = 0;
-  list->autofree = autofree;
   pthread_rwlock_init(&list->rwlock, NULL);
   return list;
 }
@@ -68,7 +67,7 @@ int list_add_at(List *list, void *data, unsigned int index) {
   return index;
 }
 
-void *list_delete_at(List *list, unsigned int index) {
+void *list_delete_at(List *list, unsigned int index, FreeDataFunc freedatafunc) {
   if (index >= list->size) return NULL;
   pthread_rwlock_wrlock(&list->rwlock);
 
@@ -110,8 +109,8 @@ void *list_delete_at(List *list, unsigned int index) {
   list->size--;
 
   void *data = found->data;
-  if (list->autofree == true) {
-    free(data);
+  if (freedatafunc != NULL) {
+    freedatafunc(data);
     data = NULL;
   }
   free(found);
@@ -168,13 +167,13 @@ int list_index_of(List *list, void *match, ListMatcher matcher) {
   return LIST_NULL_INDEX;
 }
 
-void list_destroy(List *list) {
+void list_destroy(List *list, FreeDataFunc freedatafunc) {
   pthread_rwlock_trywrlock(&list->rwlock);
 
   ListNode *current = list->head;
   while (current) {
     ListNode *next = current->next;
-    if (list->autofree) free(current->data);
+    if (freedatafunc != NULL) freedatafunc(current->data);
     free(current);
     current = next;
   }

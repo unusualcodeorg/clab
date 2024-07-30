@@ -8,10 +8,9 @@
 #include "queue.h"
 #include "stack.h"
 
-Tree *tree_create(bool autofree) {
+Tree *tree_create(void) {
   Tree *tree = (Tree *)malloc(sizeof(Tree));
   tree->debug = false;
-  tree->autofree = autofree;
   tree->size = 0;
   tree->root = NULL;
   pthread_rwlock_init(&tree->rwlock, NULL);
@@ -35,13 +34,13 @@ TreeNode *tree_node_find_bfs(TreeNode *start, unsigned int nodeid, TreeCallback 
   pthread_rwlock_rdlock(&arg->rwlock);
   TreeNode *found = NULL;
 
-  Queue *queue = queue_create(false);
+  Queue *queue = queue_create();
   queue_enqueue(queue, start);
 
   while (queue->size > 0) {
     if (arg->debug == true) arg->counter++;
 
-    TreeNode *node = queue_dequeue(queue);
+    TreeNode *node = queue_dequeue(queue, NULL);
 
     if (callback != NULL) callback(node, arg);
 
@@ -62,7 +61,7 @@ TreeNode *tree_node_find_bfs(TreeNode *start, unsigned int nodeid, TreeCallback 
     if (found != NULL) break;
   }
 
-  queue_destroy(queue);
+  queue_destroy(queue, NULL);
   pthread_rwlock_unlock(&arg->rwlock);
   return found;
 }
@@ -72,13 +71,13 @@ TreeNode *tree_node_find_dfs(TreeNode *start, long nodeid, TreeCallback callback
   pthread_rwlock_rdlock(&arg->rwlock);
   TreeNode *found = NULL;
 
-  Stack *stack = stack_create(false);
+  Stack *stack = stack_create();
   stack_push(stack, start);
 
   while (stack->size > 0) {
     if (arg->debug == true) arg->counter++;
 
-    TreeNode *node = stack_pop(stack);
+    TreeNode *node = stack_pop(stack, NULL);
 
     if (callback != NULL) callback(node, arg);
 
@@ -99,7 +98,7 @@ TreeNode *tree_node_find_dfs(TreeNode *start, long nodeid, TreeCallback callback
     if (found != NULL) break;
   }
 
-  stack_destroy(stack);
+  stack_destroy(stack, NULL);
   pthread_rwlock_unlock(&arg->rwlock);
   return found;
 }
@@ -184,7 +183,7 @@ int tree_max_depth(Tree *tree) {
 
   pthread_rwlock_rdlock(&tree->rwlock);
 
-  Stack *stack = stack_create(false);
+  Stack *stack = stack_create();
   stack_push(stack, tree->root);
 
   int maxdepth = 0;
@@ -193,7 +192,7 @@ int tree_max_depth(Tree *tree) {
   while (stack->size > 0) {
     if (depth > maxdepth) maxdepth = depth;
 
-    TreeNode *node = stack_pop(stack);
+    TreeNode *node = stack_pop(stack, NULL);
     if (node->csize == 0) {
       depth = 0;
       continue;
@@ -207,7 +206,7 @@ int tree_max_depth(Tree *tree) {
     depth++;
   }
 
-  stack_destroy(stack);
+  stack_destroy(stack, NULL);
   pthread_rwlock_unlock(&tree->rwlock);
   return maxdepth;
 }
@@ -254,7 +253,7 @@ void tree_print(Tree *tree, DataToString tostring) {
 
   pthread_rwlock_rdlock(&tree->rwlock);
 
-  Stack *stack = stack_create(false);
+  Stack *stack = stack_create();
   stack_push(stack, tree->root);
 
   unsigned int counter = 0;
@@ -263,7 +262,7 @@ void tree_print(Tree *tree, DataToString tostring) {
 
   while (stack->size > 0) {
     counter++;
-    TreeNode *node = stack_pop(stack);
+    TreeNode *node = stack_pop(stack, NULL);
 
     // backtracks to the last known parent
     if (node->parent != NULL && parent != node->parent) {
@@ -300,20 +299,20 @@ void tree_print(Tree *tree, DataToString tostring) {
 
   if (tree->debug == true) printf("Tree: Print DFS Traversal = %u\n", counter);
 
-  stack_destroy(stack);
+  stack_destroy(stack, NULL);
   pthread_rwlock_unlock(&tree->rwlock);
 }
 
-void tree_node_destroy(TreeNode *node, bool autofree, TreeCallback callback,
-                       TreeCallbackArg *arg) {
-  Stack *history = stack_create(false);
-  Stack *stack = stack_create(false);
+void tree_node_destroy(TreeNode *node, TreeCallback callback, TreeCallbackArg *arg,
+                       FreeDataFunc freedatafunc) {
+  Stack *history = stack_create();
+  Stack *stack = stack_create();
   stack_push(stack, node);
 
   while (stack->size > 0) {
     if (arg->debug == true) arg->counter++;
 
-    TreeNode *node = stack_pop(stack);
+    TreeNode *node = stack_pop(stack, NULL);
     stack_push(history, node);
 
     for (unsigned short i = 0; i < node->csize; i++) {
@@ -325,19 +324,19 @@ void tree_node_destroy(TreeNode *node, bool autofree, TreeCallback callback,
   while (stack->size > 0) {
     if (arg->debug == true) arg->counter++;
 
-    TreeNode *n = stack_pop(stack);
+    TreeNode *n = stack_pop(stack, NULL);
 
     if (callback != NULL) callback(n, arg);
 
-    if (autofree == true) free(n->data);
+    if (freedatafunc != NULL) freedatafunc(n->data);
     free(n->children);
   }
 
-  stack_destroy(history);
-  stack_destroy(stack);
+  stack_destroy(history, NULL);
+  stack_destroy(stack, NULL);
 }
 
-int tree_delete(Tree *tree, unsigned int nodeid) {
+int tree_delete(Tree *tree, unsigned int nodeid, FreeDataFunc freedatafunc) {
   TreeNode *node = tree_find_dfs(tree, nodeid);
   if (node == NULL) return TREE_NODE_NULL_ID;
 
@@ -362,16 +361,16 @@ int tree_delete(Tree *tree, unsigned int nodeid) {
     node->parent->children = NULL;
   }
 
-  tree_node_destroy(node, tree->autofree, tree_traversal_callback, arg);
+  tree_node_destroy(node, tree_traversal_callback, arg, freedatafunc);
   pthread_rwlock_unlock(&tree->rwlock);
   return nodeid;
 }
 
-void tree_destroy(Tree *tree) {
+void tree_destroy(Tree *tree, FreeDataFunc freedatafunc) {
   pthread_rwlock_trywrlock(&tree->rwlock);
 
   TreeCallbackArg *arg = tree_default_callback_arg(tree);
-  tree_node_destroy(tree->root, tree->autofree, tree_traversal_callback, arg);
+  tree_node_destroy(tree->root, tree_traversal_callback, arg, freedatafunc);
 
   if (tree->debug == true) printf("\nTree: Destroy DFS Traversal = %u\n", arg->counter);
 

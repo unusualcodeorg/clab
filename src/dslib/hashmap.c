@@ -12,11 +12,10 @@ unsigned int hash_function(char *key, unsigned int size) {
   return hash % size;
 }
 
-HashMap *hashmap_create(unsigned int size, bool autofree) {
+HashMap *hashmap_create(unsigned int size) {
   HashMap *map = (HashMap *)malloc(sizeof(HashMap));
   map->buckets = (HashNode **)calloc(size, sizeof(HashNode *));
   map->size = size;
-  map->autofree = autofree;
   return map;
 }
 
@@ -40,7 +39,7 @@ void *hashmap_get(HashMap *map, char *key) {
   return NULL;
 }
 
-void hashmap_delete(HashMap *map, char *key) {
+void hashmap_delete(HashMap *map, char *key, FreeDataFunc freedatafunc) {
   unsigned int index = hash_function(key, map->size);
   HashNode *node = map->buckets[index];
   HashNode *prev = NULL;
@@ -51,7 +50,7 @@ void hashmap_delete(HashMap *map, char *key) {
       else
         prev->next = node->next;
 
-      if (map->autofree == true) free(node->value);
+      if (freedatafunc != NULL) freedatafunc(node->value);
       free(node->key);
       free(node);
       return;
@@ -78,12 +77,13 @@ void hashmap_print(HashMap *map, DataToString tostring) {
   }
 }
 
-void hashmap_destroy(HashMap *map) {
+void hashmap_destroy(HashMap *map, FreeDataFunc freedatafunc) {
   for (unsigned int i = 0; i < map->size; i++) {
     HashNode *node = map->buckets[i];
     while (node) {
       HashNode *temp = node;
       node = node->next;
+      if (freedatafunc != NULL) freedatafunc(temp->value);
       free(temp->key);
       free(temp);
     }

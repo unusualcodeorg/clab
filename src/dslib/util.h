@@ -17,8 +17,7 @@ char ***util_create_2d_str_arr(unsigned int rows, unsigned int cols, unsigned in
 void util_destroy_2d_str_arr(char ***arr, unsigned int rows, unsigned int cols);
 
 // char ***arr allows to hold variable length string elements
-Graph2DMap *util_graph_from_2d_arr(char ***arr, unsigned int rows, unsigned int cols,
-                                   bool autofree);
+Graph2DMap *util_graph_from_2d_arr(char ***arr, unsigned int rows, unsigned int cols);
 
 #ifdef __cplusplus
 }

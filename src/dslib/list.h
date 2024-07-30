@@ -2,6 +2,7 @@
 #include <stdbool.h>
 
 #include "datastr.h"
+#include "destroy.h"
 
 #define LIST_NULL_INDEX -1;
 
@@ -23,18 +24,17 @@ typedef struct {
   ListNode *tail;  // keeps the insertion order
   ListNode *head;
   unsigned int size;
-  bool autofree;  // free data on pop
   pthread_rwlock_t rwlock;
 } List;
 
-List *list_create(bool autofree);
+List *list_create(void);
 int list_add(List *list, void *data);
 int list_add_at(List *list, void *data, unsigned int index);
-void *list_delete_at(List *list, unsigned int index);
+void *list_delete_at(List *list, unsigned int index, FreeDataFunc freedatafunc);
 void *list_get_at(List *list, unsigned int index);
 int list_index_of(List *list, void *match, ListMatcher matcher);
 void list_print(List *list, DataToString tostring);
-void list_destroy(List *list);
+void list_destroy(List *list, FreeDataFunc freedatafunc);
 
 #ifdef __cplusplus
 }

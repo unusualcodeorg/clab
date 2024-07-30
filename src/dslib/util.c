@@ -11,12 +11,11 @@
 4->5->6->7
 .........
  */
-Graph2DMap *util_graph_from_2d_arr(char ***arr, unsigned int rows, unsigned int cols,
-                                   bool autofree) {
+Graph2DMap *util_graph_from_2d_arr(char ***arr, unsigned int rows, unsigned int cols) {
   if (arr == NULL) return NULL;
 
-  Graph *graph = graph_create(autofree);
-  HashMap *idmap = hashmap_create(rows * cols, true);
+  Graph *graph = graph_create();
+  HashMap *idmap = hashmap_create(rows * cols);
 
   for (unsigned int i = 0; i < rows; i++) {
     for (unsigned int j = 0; j < cols; j++) {

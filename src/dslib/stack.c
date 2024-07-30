@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Stack *stack_create(bool autofree) {
+Stack *stack_create(void) {
   Stack *stack = malloc(sizeof(Stack));
   if (stack == NULL) {
     perror("failed to allocate memory for stack");
@@ -12,7 +12,6 @@ Stack *stack_create(bool autofree) {
   }
   stack->top = NULL;
   stack->size = 0;
-  stack->autofree = autofree;
   pthread_rwlock_init(&stack->rwlock, NULL);
   return stack;
 }
@@ -27,15 +26,15 @@ void stack_push(Stack *stack, void *data) {
   pthread_rwlock_unlock(&stack->rwlock);
 }
 
-void *stack_pop(Stack *stack) {
+void *stack_pop(Stack *stack, FreeDataFunc freedatafunc) {
   pthread_rwlock_wrlock(&stack->rwlock);
   void *data = NULL;
   if (stack->top != NULL) {
     StackNode *node = stack->top;
     stack->top = stack->top->next;
     stack->size--;
-    if (stack->autofree == true)
-      free(node->data);
+    if (freedatafunc != NULL)
+      freedatafunc(node->data);
     else
       data = node->data;
     free(node);
@@ -78,7 +77,7 @@ void stack_print(Stack *stack, DataToString tostring) {
     char *data_str = tostring(top->data);
     printf("  %s", data_str);
     free(data_str);
-		
+
     top = top->next;
     if (top != NULL) printf(",\n");
   }
@@ -87,13 +86,13 @@ void stack_print(Stack *stack, DataToString tostring) {
   pthread_rwlock_unlock(&stack->rwlock);
 }
 
-void stack_destroy(Stack *stack) {
+void stack_destroy(Stack *stack, FreeDataFunc freedatafunc) {
   pthread_rwlock_trywrlock(&stack->rwlock);
 
   StackNode *top = stack->top;
   while (top) {
     StackNode *next = top->next;
-    if (stack->autofree == true) free(top->data);
+    if (freedatafunc != NULL) freedatafunc(top->data);
     free(top);
     top = next;
   }

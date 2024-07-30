@@ -17,7 +17,7 @@ int debugfn(char *fname) {
     return EXIT_FAILURE;
   }
 
-  HashMap *map = hashmap_create(50, false);
+  HashMap *map = hashmap_create(50);
   hashmap_put(map, "stack_demo", (void *)stack_demo);
   hashmap_put(map, "stack_concurrent_demo", (void *)stack_concurrent_demo);
   hashmap_put(map, "queue_demo", (void *)queue_demo);
@@ -43,6 +43,6 @@ int debugfn(char *fname) {
   }
   func();
 
-  hashmap_destroy(map);
+  hashmap_destroy(map, NULL);
   return EXIT_SUCCESS;
 }

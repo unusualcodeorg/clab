@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Queue *queue_create(bool autofree) {
+Queue *queue_create(void) {
   Queue *queue = malloc(sizeof(Queue));
   if (queue == NULL) {
     perror("failed to allocate memory for queue");
@@ -14,7 +14,6 @@ Queue *queue_create(bool autofree) {
   queue->start = NULL;
   queue->end = NULL;
   queue->size = 0;
-  queue->autofree = autofree;
   pthread_rwlock_init(&queue->rwlock, NULL);
   return queue;
 }
@@ -39,7 +38,7 @@ void queue_enqueue(Queue *queue, void *data) {
   pthread_rwlock_unlock(&queue->rwlock);
 }
 
-void *queue_dequeue(Queue *queue) {
+void *queue_dequeue(Queue *queue, FreeDataFunc freedatafunc) {
   pthread_rwlock_wrlock(&queue->rwlock);
   void *data = NULL;
   if (queue->start != NULL) {
@@ -49,8 +48,8 @@ void *queue_dequeue(Queue *queue) {
 
     if (queue->start == queue->end) queue->end = NULL;
 
-    if (queue->autofree == true)
-      free(node->data);
+    if (freedatafunc != NULL)
+      freedatafunc(node->data);
     else
       data = node->data;
     free(node);
@@ -100,13 +99,13 @@ void queue_print(Queue *queue, DataToString tostring) {
   pthread_rwlock_unlock(&queue->rwlock);
 }
 
-void queue_destroy(Queue *queue) {
+void queue_destroy(Queue *queue, FreeDataFunc freedatafunc) {
   pthread_rwlock_trywrlock(&queue->rwlock);
 
   QueueNode *start = queue->start;
   while (start) {
     QueueNode *next = start->next;
-    if (queue->autofree == true) free(start->data);
+    if (freedatafunc != NULL) freedatafunc(start->data);
     free(start);
     start = next;
   }

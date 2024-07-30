@@ -10,13 +10,12 @@
 #include "queue.h"
 #include "stack.h"
 
-Graph *graph_create(bool autofree) {
+Graph *graph_create(void) {
   Graph *graph = (Graph *)malloc(sizeof(Graph));
-  graph->autofree = autofree;
   graph->debug = false;
   graph->root = NULL;
   graph->size = 0;
-  graph->inodes = list_create(false);
+  graph->inodes = list_create();
   pthread_rwlock_init(&graph->rwlock, NULL);
   return graph;
 }
@@ -38,13 +37,13 @@ GraphNode *graph_node_find_bfs(GraphNode *start, long nodeid, GraphNode **visite
   pthread_rwlock_rdlock(&arg->rwlock);
   GraphNode *found = NULL;
 
-  Queue *queue = queue_create(false);
+  Queue *queue = queue_create();
   queue_enqueue(queue, start);
 
   while (queue->size > 0) {
     if (arg->debug == true) arg->counter++;
 
-    GraphNode *node = queue_dequeue(queue);
+    GraphNode *node = queue_dequeue(queue, NULL);
     if (visited_nodes[node->id] == node) continue;
     visited_nodes[node->id] = node;
 
@@ -70,7 +69,7 @@ GraphNode *graph_node_find_bfs(GraphNode *start, long nodeid, GraphNode **visite
     if (found != NULL) break;
   }
 
-  queue_destroy(queue);
+  queue_destroy(queue, NULL);
   pthread_rwlock_unlock(&arg->rwlock);
   return found;
 }
@@ -80,13 +79,13 @@ GraphNode *graph_node_find_dfs(GraphNode *start, long nodeid, GraphNode **visite
   pthread_rwlock_rdlock(&arg->rwlock);
   GraphNode *found = NULL;
 
-  Stack *stack = stack_create(false);
+  Stack *stack = stack_create();
   stack_push(stack, start);
 
   while (stack->size > 0) {
     if (arg->debug == true) arg->counter++;
 
-    GraphNode *node = stack_pop(stack);
+    GraphNode *node = stack_pop(stack, NULL);
     if (visited_nodes[node->id] == node) continue;
     visited_nodes[node->id] = node;
 
@@ -112,7 +111,7 @@ GraphNode *graph_node_find_dfs(GraphNode *start, long nodeid, GraphNode **visite
     if (found != NULL) break;
   }
 
-  stack_destroy(stack);
+  stack_destroy(stack, NULL);
   pthread_rwlock_unlock(&arg->rwlock);
   return found;
 }
@@ -216,7 +215,7 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...) {
       int index = list_index_of(graph->inodes, nid, graph_isolated_node_matcher);
       free(nid);
       if (index >= 0) {
-        gnode = list_delete_at(graph->inodes, index);
+        gnode = list_delete_at(graph->inodes, index, NULL);
       }
     } else {
       // if no node exits in the graph
@@ -254,7 +253,7 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...) {
   return node->id;
 }
 
-int graph_delete(Graph *graph, unsigned int nodeid) {
+int graph_delete(Graph *graph, unsigned int nodeid, FreeDataFunc freedatafunc) {
   pthread_rwlock_wrlock(&graph->rwlock);
   GraphNode *node = graph_find_dfs(graph, nodeid);
   if (node == NULL) {
@@ -279,6 +278,7 @@ int graph_delete(Graph *graph, unsigned int nodeid) {
     free(edge);
   }
 
+  if (freedatafunc != NULL) free(node->data);
   free(node);
   pthread_rwlock_unlock(&graph->rwlock);
   return nodeid;
@@ -340,7 +340,7 @@ void graph_node_destroy(GraphNode *node, bool autofree) {
   free(node);
 }
 
-void graph_destroy(Graph *graph) {
+void graph_destroy(Graph *graph, FreeDataFunc freedatafunc) {
   pthread_rwlock_trywrlock(&graph->rwlock);  // thread will return if lock in not available
 
   if (graph->debug == true) printf("\n");
@@ -351,12 +351,11 @@ void graph_destroy(Graph *graph) {
 
   for (unsigned int i = 0; i < graph->size; i++) {
     GraphNode *node = visited_nodes[i];
-    graph_node_destroy(node, graph->autofree);
+    graph_node_destroy(node, freedatafunc);
     arg->counter++;
   }
 
-  graph->inodes->autofree = true;
-  list_destroy(graph->inodes);
+  list_destroy(graph->inodes, free_data_func);
 
   if (graph->debug == true) printf("\nGraph: Destroy DFS Traversal = %u\n", arg->counter);
 

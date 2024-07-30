@@ -24,7 +24,7 @@
 /*--------------------STACK DEMO------------------------ */
 int stack_demo(void) {
   printf("\n--------------STACK DEMO----------------\n");
-  Stack *stack = stack_create(true);
+  Stack *stack = stack_create();
 
   stack_push(stack, new_customer(1, "Janishar Ali 1", 100, true));
   stack_push(stack, new_customer(2, "Janishar Ali 2", 10, true));
@@ -34,15 +34,16 @@ int stack_demo(void) {
   printf("Stack: Size = %d\n", stack->size);
 
   char *data = stack_get(stack, 2);
-  printf("Stack: Get - Position 2 = %s\n", data);
+  printf("Stack: Get - Position 2 = %s\n", customer_to_string(data));
 
-  stack_pop(stack);
+  stack_pop(stack, free_data_func);
   printf("Stack: Pop - Size = %d\n", stack->size);
 
   Customer *customer = stack_peek(stack);
   printf("Stack: Peek = %s\n", customer_to_string(customer));
 
   stack_print(stack, customer_to_string);
+  stack_destroy(stack, free_data_func);
   printf("--------------STACK DEMO----------------\n");
   return 0;
 }
@@ -86,7 +87,7 @@ void *s_thread_2_push_function(void *arg) {
 
   Customer *cust = stack_peek(stack);
   printf("Thread:%lu, Stack: Pop = %s\n", tid, customer_to_string(cust));
-  stack_pop(stack);
+  stack_pop(stack, free_data_func);
   printf("Thread:%lu, Stack: Size = %d\n", tid, stack->size);
 
   return NULL;
@@ -98,7 +99,7 @@ int stack_concurrent_demo(void) {
   printf("Thread ID: Create: %lu\n", tid);
 
   pthread_t thread1, thread2;
-  Stack *stack = stack_create(true);
+  Stack *stack = stack_create();
 
   pthread_create(&thread1, NULL, s_thread_1_push_function, stack);
   pthread_create(&thread2, NULL, s_thread_2_push_function, stack);
@@ -113,7 +114,7 @@ int stack_concurrent_demo(void) {
   printf("Thread:%lu, Stack: Size = %d\n", tid, stack->size);
 
   stack_print(stack, customer_to_string);
-  stack_destroy(stack);
+  stack_destroy(stack, free_data_func);
   printf("---------STACK CUNCURRENT DEMO---------\n");
   return EXIT_SUCCESS;
 }
@@ -124,7 +125,7 @@ int stack_concurrent_demo(void) {
 
 int queue_demo(void) {
   printf("\n--------------QUEUE DEMO----------------\n");
-  Queue *queue = queue_create(true);
+  Queue *queue = queue_create();
 
   queue_enqueue(queue, new_customer(1, "Janishar Ali 1", 100, true));
   queue_enqueue(queue, new_customer(2, "Janishar Ali 2", 10, true));
@@ -136,7 +137,7 @@ int queue_demo(void) {
   char *data = queue_get(queue, 2);
   printf("Queue: Get - Position 2 = %s\n", data);
 
-  queue_dequeue(queue);
+  queue_dequeue(queue, free_data_func);
   printf("Queue Dequeue: Size = %d\n", queue->size);
 
   Customer *customer = queue_peek(queue);
@@ -186,7 +187,7 @@ void *q_thread_2_push_function(void *arg) {
 
   Customer *cust = queue_peek(queue);
   printf("Thread:%lu, Queue: Pop = %s\n", tid, customer_to_string(cust));
-  queue_dequeue(queue);
+  queue_dequeue(queue, free_data_func);
   printf("Thread:%lu, Queue: Size = %d\n", tid, queue->size);
 
   return NULL;
@@ -198,7 +199,7 @@ int queue_concurrent_demo(void) {
   printf("Thread ID: Create: %lu\n", tid);
 
   pthread_t thread1, thread2;
-  Queue *queue = queue_create(true);
+  Queue *queue = queue_create();
 
   pthread_create(&thread1, NULL, q_thread_1_push_function, queue);
   pthread_create(&thread2, NULL, q_thread_2_push_function, queue);
@@ -213,7 +214,7 @@ int queue_concurrent_demo(void) {
   printf("Thread:%lu, Queue: Size = %d\n", tid, queue->size);
 
   queue_print(queue, customer_to_string);
-  queue_destroy(queue);
+  queue_destroy(queue, free_data_func);
   printf("---------QUEUE CUNCURRENT DEMO---------\n");
   return EXIT_SUCCESS;
 }
@@ -246,7 +247,7 @@ Graph[
 
 int graph_demo(void) {
   printf("\n---------------GRAPH DEMO----------------\n");
-  Graph *graph = graph_create(false);
+  Graph *graph = graph_create();
   graph->debug = true;
 
   unsigned int id_A = graph_insert(graph, "A", 0);
@@ -261,7 +262,7 @@ int graph_demo(void) {
   (void)id_I;  // suppress unused warning
 
   graph_print(graph, str_data_to_string);
-  graph_destroy(graph);
+  graph_destroy(graph, NULL);
   printf("\n---------------GRAPH DEMO----------------\n");
   return EXIT_SUCCESS;
 }
@@ -334,7 +335,7 @@ int graph_concurrent_demo(void) {
   unsigned long tid = (unsigned long)pthread_self();
   printf("Thread ID: main: %lu\n", tid);
 
-  Graph *graph = graph_create(false);
+  Graph *graph = graph_create();
   graph->debug = true;
   graph_insert(graph, "A", 0);
 
@@ -348,7 +349,7 @@ int graph_concurrent_demo(void) {
 
   printf("Thread ID: main: %lu\n", tid);
   graph_print(graph, str_data_to_string);
-  graph_destroy(graph);
+  graph_destroy(graph, NULL);
   printf("\n---------------GRAPH CONCURRENT DEMO----------------\n");
   return EXIT_SUCCESS;
 }
@@ -359,7 +360,7 @@ int graph_concurrent_demo(void) {
 
 int tree_demo(void) {
   printf("\n---------------TREE DEMO----------------\n");
-  Tree *tree = tree_create(true);
+  Tree *tree = tree_create();
   tree->debug = true;
 
   unsigned int id_A = tree_insert_root(tree, "A");
@@ -387,7 +388,7 @@ int tree_demo(void) {
   int maxdepth = tree_max_depth(tree);
   printf("\nTree: Max Depth = %d\n", maxdepth);
 
-  tree_delete(tree, id_C);
+  tree_delete(tree, id_C, NULL);
   printf("\nTree: Remove - id %d = %s", id_D, data);
   tree_print_raw(tree, str_data_to_string);
   tree_print(tree, str_data_to_string);
@@ -409,17 +410,17 @@ bool list_customer_matcher(void *item, void *match) {
 int linked_list_demo(void) {
   printf("\n-----------LINKED LIST DEMO-------------\n");
 
-  List *list = list_create(true);
+  List *list = list_create();
 
   int result = list_add_at(list, new_customer(1, "Janishar Ali 1", 100, true), 0);
   printf("List add at 0 when empty result = %d\n", result);
   list_print(list, customer_to_string);
 
-  list_delete_at(list, 0);
+  list_delete_at(list, 0, free_data_func);
   printf("List delete at 0 when empty\n");
   list_print(list, customer_to_string);
 
-  list_delete_at(list, 1);
+  list_delete_at(list, 1, free_data_func);
   printf("List delete at 1 when empty\n");
   list_print(list, customer_to_string);
 
@@ -441,20 +442,18 @@ int linked_list_demo(void) {
   list_add(list, new_customer(8, "Janishar Ali 8", 100, true));
   list_print(list, customer_to_string);
 
-  list->autofree = false;
-  Customer *deleted = list_delete_at(list, 2);
+  Customer *deleted = list_delete_at(list, 2, NULL);
   printf("List delete at 2 result = %s\n",
          deleted == NULL ? "Not found" : customer_to_string(deleted));
-  list->autofree = true;
   free(deleted);
   deleted = NULL;
   list_print(list, customer_to_string);
 
-  list_delete_at(list, 0);
+  list_delete_at(list, 0, free_data_func);
   printf("List delete at 0\n");
   list_print(list, customer_to_string);
 
-  list_delete_at(list, list->size - 1);
+  list_delete_at(list, list->size - 1, free_data_func);
   printf("List delete at %d\n", list->size);
   list_print(list, customer_to_string);
 
@@ -467,6 +466,8 @@ int linked_list_demo(void) {
   result = list_index_of(list, customer, list_customer_matcher);
   printf("List index of %s = %d\n", customer_to_string(customer), result);
 
+  list_destroy(list, free_data_func);
+
   printf("\n-----------LINKED LIST DEMO-------------\n");
   return EXIT_SUCCESS;
 }
@@ -476,7 +477,7 @@ int linked_list_demo(void) {
 
 int hashmap_demo(void) {
   printf("\n------------HASHMAP DEMO------------------\n");
-  HashMap *map = hashmap_create(10, false);
+  HashMap *map = hashmap_create(10);
   hashmap_put(map, "A", "N1");
   hashmap_put(map, "B", "N2");
   hashmap_put(map, "C", "N3");
@@ -489,11 +490,11 @@ int hashmap_demo(void) {
   hashmap_print(map, str_data_to_string);
 
   printf("\nHashMap Get %s - %s\n\n", "E", (char *)hashmap_get(map, "E"));
-  hashmap_delete(map, "F");
-  hashmap_delete(map, "F");
+  hashmap_delete(map, "F", NULL);
+  hashmap_delete(map, "F", NULL);
   hashmap_print(map, str_data_to_string);
 
-  hashmap_destroy(map);
+  hashmap_destroy(map, NULL);
   printf("\n------------HASHMAP DEMO------------------\n");
   return EXIT_SUCCESS;
 }

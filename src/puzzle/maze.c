@@ -55,12 +55,11 @@ void maze_sd_result_print(Stack *stack, char ***arr, unsigned int rows, unsigned
   util_destroy_2d_str_arr(patharr, rows, cols);
 }
 
-Graph2DMap *maze_graph_map_create(char ***arr, unsigned int rows, unsigned int cols, char *skip,
-                                  bool autofree) {
+Graph2DMap *maze_graph_map_create(char ***arr, unsigned int rows, unsigned int cols, char *skip) {
   if (arr == NULL) return NULL;
 
-  Graph *graph = graph_create(autofree);
-  HashMap *idmap = hashmap_create(rows * cols, true);
+  Graph *graph = graph_create();
+  HashMap *idmap = hashmap_create(rows * cols);
 
   unsigned int idstore[rows][cols];
   for (unsigned int i = 0; i < rows; i++) {
@@ -141,7 +140,7 @@ Graph2DMap *maze_graph_map_create(char ***arr, unsigned int rows, unsigned int c
 void maze_find_shortest_distance(char ***arr, unsigned int rows, unsigned int cols, char *start,
                                  char *dest, char *skip) {
   // cannot auto free arr[i][j] since arr[i] is a continous memory
-  Graph2DMap *gmap = maze_graph_map_create(arr, rows, cols, skip, true);
+  Graph2DMap *gmap = maze_graph_map_create(arr, rows, cols, skip);
   gmap->graph->debug = true;
 
   unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, start);
@@ -156,9 +155,9 @@ void maze_find_shortest_distance(char ***arr, unsigned int rows, unsigned int co
   stack_print(stack, int_location_data_to_string);
   maze_sd_result_print(stack, arr, rows, cols);
 
-  stack_destroy(stack);
-  graph_destroy(gmap->graph);
-  hashmap_destroy(gmap->idmap);
+  stack_destroy(stack, free_data_func);
+  graph_destroy(gmap->graph, free_data_func);
+  hashmap_destroy(gmap->idmap, free_data_func);
 }
 
 int maze_shortest_distance(void) {

@@ -15,7 +15,6 @@ typedef struct {
   bool debug;
   unsigned short size;
   Runtime **runtimes;
-
 } Runpool;
 
 Runpool *runpool_create(char *name, unsigned short size, bool debug);

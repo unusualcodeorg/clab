@@ -29,7 +29,7 @@ void *runner(void *arg) {
       continue;
     }
 
-    Execution *exec = (Execution *)queue_dequeue(runtime->execs);
+    Execution *exec = (Execution *)queue_dequeue(runtime->execs, NULL);
     if (exec != NULL) {
       Croutine croutine = (void (*)(void *))exec->croutine;
       croutine(exec->context);
@@ -46,7 +46,7 @@ Runtime *runtime_create(char *name, bool debug) {
   Runtime *runtime = malloc(sizeof(Runtime));
   runtime->name = name;
   runtime->debug = debug;
-  runtime->execs = queue_create(false);
+  runtime->execs = queue_create();
   runtime->pause = true;
   runtime->exit = false;
 
@@ -93,7 +93,7 @@ void runtime_exec(Runtime *runtime, Croutine croutine, void *context) {
 void runtime_destroy(Runtime *runtime) {
   runtime_exit(runtime);
   pthread_join(runtime->thread, NULL);
-  queue_destroy(runtime->execs);
+  queue_destroy(runtime->execs, NULL);
 
   pthread_mutex_destroy(&runtime->mutex);
   pthread_mutexattr_destroy(&runtime->mutexattr);

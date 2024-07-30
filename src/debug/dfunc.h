@@ -4,7 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef int (*debug_func_ptr_t)(void);
+typedef int (*ExceFunc)(void);
 
 int debugfn(char *fname);
 

@@ -36,6 +36,7 @@ int debugfn(char *fname) {
   hashmap_put(map, "maze_shortest_distance", (void *)maze_shortest_distance);
   hashmap_put(map, "linked_list_demo", (void *)linked_list_demo);
   hashmap_put(map, "path_shortest_demo", (void *)path_shortest_demo);
+  hashmap_put(map, "path_permutation_demo", (void *)path_permutation_demo);
 
   ExceFunc func = (ExceFunc)hashmap_get(map, fname);
 

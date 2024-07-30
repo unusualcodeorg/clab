@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 int maze_shortest_distance_demo(void);
+int path_permutation_demo(void);
 
 #ifdef __cplusplus
 }

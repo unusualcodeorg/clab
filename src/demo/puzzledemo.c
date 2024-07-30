@@ -6,6 +6,7 @@
 
 #include "../dslib/util.h"
 #include "../puzzle/maze.h"
+#include "../puzzle/util.h"
 
 /*
 #########
@@ -40,3 +41,14 @@ int maze_shortest_distance_demo(void) {
   util_destroy_2d_str_arr(arr, rows, cols);
   return EXIT_SUCCESS;
 }
+
+/*------------PATH PERMUTATION DEMO--------------*/
+
+int path_permutation_demo(void) {
+  int arr[] = {1, 2, 3};
+  int n = sizeof(arr) / sizeof(arr[0]);
+  generate_permutations(arr, n);
+  return EXIT_SUCCESS;
+}
+
+/*------------SPATH PERMUTATION DEMO--------------*/

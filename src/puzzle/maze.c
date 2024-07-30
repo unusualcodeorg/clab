@@ -127,6 +127,7 @@ Graph2DMap *maze_graph_map_create(char ***arr, unsigned int rows, unsigned int c
       }
 
       idstore[i][j] = nid;
+      pathloc->id = nid;
       *mid = nid;
       hashmap_put(idmap, key, mid);
     }
@@ -147,12 +148,11 @@ void maze_find_shortest_distance(char ***arr, unsigned int rows, unsigned int co
   unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, start);
   unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, dest);
 
-  graph_print(gmap->graph, int_data_to_string);
+  graph_print(gmap->graph, location_int_data_to_string);
 
-  Stack *stack =
-      path_shortest_nwg_tree_vis(gmap->graph, srcid, dstid, graph_location_int_data_to_string);
+  Stack *stack = path_shortest(gmap->graph, srcid, dstid);
 
-  graph_print(gmap->graph, int_data_to_string);
+  graph_print(gmap->graph, location_int_data_to_string);
   stack_print(stack, location_int_data_to_string);
   maze_sd_result_print(stack, arr, rows, cols);
 

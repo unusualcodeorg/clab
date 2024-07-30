@@ -74,6 +74,7 @@ Graph2DMap *maze_graph_map_create(char ***arr, unsigned int rows, unsigned int c
 
       unsigned int *data = malloc(sizeof(unsigned int));
       *data = index;
+      Location *pathloc = location_create(data);
 
       char key[10];
       snprintf(key, 10, "%s", arr[i][j]);
@@ -84,7 +85,7 @@ Graph2DMap *maze_graph_map_create(char ***arr, unsigned int rows, unsigned int c
       // add root logic and skip below
       if (graph->size == 0) {
         unsigned int *mid = malloc(sizeof(unsigned int));
-        unsigned int nid = graph_insert(graph, data, 0);
+        unsigned int nid = graph_insert(graph, pathloc, 0);
         *mid = nid;
         hashmap_put(idmap, key, mid);
         idstore[i][j] = nid;
@@ -115,14 +116,14 @@ Graph2DMap *maze_graph_map_create(char ***arr, unsigned int rows, unsigned int c
 
       if (upindex >= 0 && backindex < 0) {  // can link up only
         unsigned int up = idstore[i - 1][j];
-        nid = graph_insert(graph, data, 1, up);
+        nid = graph_insert(graph, pathloc, 1, up);
       } else if (upindex < 0 && backindex >= 0) {  // can link back only
         unsigned int back = idstore[i][j - 1];
-        nid = graph_insert(graph, data, 1, back);
+        nid = graph_insert(graph, pathloc, 1, back);
       } else {  // can link up and back
         unsigned int up = idstore[i - 1][j];
         unsigned int back = idstore[i][j - 1];
-        nid = graph_insert(graph, data, 2, up, back);
+        nid = graph_insert(graph, pathloc, 2, up, back);
       }
 
       idstore[i][j] = nid;
@@ -149,14 +150,14 @@ void maze_find_shortest_distance(char ***arr, unsigned int rows, unsigned int co
   graph_print(gmap->graph, int_data_to_string);
 
   Stack *stack =
-      path_shortest_nwg_tree_vis(gmap->graph, srcid, dstid, graph_node_int_data_to_string);
+      path_shortest_nwg_tree_vis(gmap->graph, srcid, dstid, graph_location_int_data_to_string);
 
   graph_print(gmap->graph, int_data_to_string);
-  stack_print(stack, int_location_data_to_string);
+  stack_print(stack, location_int_data_to_string);
   maze_sd_result_print(stack, arr, rows, cols);
 
-  stack_destroy(stack, free_data_func);
-  graph_destroy(gmap->graph, free_data_func);
+  stack_destroy(stack, NULL);
+  graph_destroy(gmap->graph, free_data_func);  // location data will be free with arr free
   hashmap_destroy(gmap->idmap, free_data_func);
 }
 

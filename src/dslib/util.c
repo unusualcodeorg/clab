@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "graph.h"
+#include "path.h"
 
 /*
 0->1->2->3
@@ -22,30 +23,33 @@ Graph2DMap *util_graph_from_2d_arr(char ***arr, unsigned int rows, unsigned int 
       char key[50];
       char *data = arr[i][j];
       snprintf(key, 50, "%s", data);
+      Location *pathloc = location_create(data);
 
       int id = i * cols + j;
       int upid = id - cols;
       int backid = j > 0 ? id - 1 : -1;
 
-      int *mid = malloc(sizeof(int));
+      unsigned int *mid = malloc(sizeof(unsigned int));
       if (upid < 0 && backid < 0)  // can not link to any
       {
-        int nid = graph_insert(graph, data, 0);
+        unsigned int nid = graph_insert(graph, pathloc, 0);
         *mid = nid;
       } else if (upid >= 0 && backid < 0)  // can link up only
       {
-        int nid = graph_insert(graph, data, 1, (unsigned int)upid);
+        unsigned int nid = graph_insert(graph, pathloc, 1, (unsigned int)upid);
         *mid = nid;
       } else if (upid < 0 && backid >= 0)  // can link back only
       {
-        int nid = graph_insert(graph, data, 1, (unsigned int)backid);
+        unsigned int nid = graph_insert(graph, pathloc, 1, (unsigned int)backid);
         *mid = nid;
       } else  // can link up and back
       {
-        int nid = graph_insert(graph, data, 2, (unsigned int)upid, (unsigned int)backid);
+        unsigned int nid =
+            graph_insert(graph, pathloc, 2, (unsigned int)upid, (unsigned int)backid);
         *mid = nid;
       }
 
+      pathloc->id = *mid;
       hashmap_put(idmap, key, mid);
     }
   }

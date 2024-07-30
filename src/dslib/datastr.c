@@ -33,7 +33,7 @@ char *str_data_to_string(void *arg) {
   return buffer;
 }
 
-char *str_location_data_to_string(void *arg) {
+char *location_str_data_to_string(void *arg) {
   Location *location = (Location *)arg;
   char *data = (char *)location->data;
   char *buffer = malloc(50);
@@ -41,7 +41,15 @@ char *str_location_data_to_string(void *arg) {
   return buffer;
 }
 
-char *int_location_data_to_string(void *arg) {
+char *location_char_data_to_string(void *arg) {
+  Location *location = (Location *)arg;
+  char data = *(char *)arg;
+  char *buffer = malloc(50);
+  snprintf(buffer, 50, "[%d]%c", location->id, data);
+  return buffer;
+}
+
+char *location_int_data_to_string(void *arg) {
   Location *location = (Location *)arg;
   int data = *(int *)location->data;
   char *buffer = malloc(50);
@@ -49,17 +57,32 @@ char *int_location_data_to_string(void *arg) {
   return buffer;
 }
 
-char *graph_node_char_data_to_string(void *arg) {
+char *graph_char_data_to_string(void *arg) {
   GraphNode *node = (GraphNode *)arg;
   return char_data_to_string(node->data);
 }
 
-char *graph_node_int_data_to_string(void *arg) {
+char *graph_int_data_to_string(void *arg) {
   GraphNode *node = (GraphNode *)arg;
   return int_data_to_string(node->data);
 }
 
-char *graph_node_str_data_to_string(void *arg) {
+char *graph_str_data_to_string(void *arg) {
   GraphNode *node = (GraphNode *)arg;
   return str_data_to_string(node->data);
+}
+
+char *graph_location_str_data_to_string(void *arg) {
+  GraphNode *node = (GraphNode *)arg;
+  return location_str_data_to_string(node->data);
+}
+
+char *graph_location_char_data_to_string(void *arg) {
+  GraphNode *node = (GraphNode *)arg;
+  return location_char_data_to_string(node->data);
+}
+
+char *graph_location_int_data_to_string(void *arg) {
+  GraphNode *node = (GraphNode *)arg;
+  return location_int_data_to_string(node->data);
 }

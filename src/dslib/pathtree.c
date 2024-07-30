@@ -1,27 +1,12 @@
-#include "path.h"
-
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "graph.h"
+#include "path.h"
 #include "queue.h"
 #include "stack.h"
 #include "tree.h"
-
-char *path_tree_data_to_string(void *arg) {
-  GraphNode *node = (GraphNode *)arg;
-  char *buffer = malloc(50);
-  snprintf(buffer, 50, "[%d]", node->id);
-  return buffer;
-}
-
-Location *location_from_graph_node(GraphNode *node) {
-  if (node == NULL) return NULL;
-  Location *location = (Location *)malloc(sizeof(Location));
-  location->id = node->id;
-  location->data = node->data;
-  return location;
-}
 
 Stack *path_shortest_nwg_tree(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid) {
   return path_shortest_nwg_tree_vis(graph, srcnodeid, dstnodeid, path_tree_data_to_string);
@@ -43,7 +28,7 @@ Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned
   if (dest == NULL) return stack;
 
   if (start == dest) {
-    stack_push(stack, location_from_graph_node(start));
+    stack_push(stack, start->data);
     return stack;
   }
 
@@ -82,7 +67,8 @@ Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned
 
   // backtrack from the destination to source
   while (found != NULL) {
-    stack_push(stack, location_from_graph_node(found->data));
+    GraphNode *node = (GraphNode *)found->data;
+    stack_push(stack, node->data);
     found = found->parent;
   }
 

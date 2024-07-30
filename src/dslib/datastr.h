@@ -11,11 +11,14 @@ char *char_data_to_string(void *arg);
 char *int_data_to_string(void *arg);
 char *decimal_data_to_string(void *arg);
 char *str_data_to_string(void *arg);
-char *str_location_data_to_string(void *arg);
-char *int_location_data_to_string(void *arg);
-char *graph_node_char_data_to_string(void *arg);
-char *graph_node_int_data_to_string(void *arg);
-char *graph_node_str_data_to_string(void *arg);
+char *location_str_data_to_string(void *arg);
+char *location_int_data_to_string(void *arg);
+char *graph_char_data_to_string(void *arg);
+char *graph_int_data_to_string(void *arg);
+char *graph_str_data_to_string(void *arg);
+char *graph_location_str_data_to_string(void *arg);
+char *graph_location_char_data_to_string(void *arg);
+char *graph_location_int_data_to_string(void *arg);
 
 #ifdef __cplusplus
 }

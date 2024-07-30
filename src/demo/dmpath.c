@@ -39,7 +39,7 @@ int graph_2d_arr_demo(void) {
   // cannot auto free arr[i][j] since arr[i] is a continous memory
   Graph2DMap *gmap = util_graph_from_2d_arr(arr, rows, cols);
   gmap->graph->debug = true;
-  graph_print(gmap->graph, char_data_to_string);
+  graph_print(gmap->graph, location_str_data_to_string);
 
   char *data = (char *)graph_get(gmap->graph, 40);
   printf("Graph found id %d : %c\n", 40, *data);
@@ -134,14 +134,14 @@ void path_shortest_nwg_tree_solution(void *arg) {
   unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, "U");
 
   Stack *stack = path_shortest_nwg_tree_vis(gmap->graph, srcid, dstid,
-                                            graph_node_char_data_to_string);  // G->S
+                                            graph_location_str_data_to_string);  // G->S
 
   runtime_destroy(rnc);
-  graph_print(gmap->graph, str_data_to_string);
-  stack_print(stack, str_location_data_to_string);
+  graph_print(gmap->graph, location_str_data_to_string);
+  stack_print(stack, location_str_data_to_string);
 
-  stack_destroy(stack, free_data_func);
-  graph_destroy(gmap->graph, NULL);  // data will be free using util
+  stack_destroy(stack, NULL);
+  graph_destroy(gmap->graph, free_data_func);  // data will be free using util
   hashmap_destroy(gmap->idmap, free_data_func);
   util_destroy_2d_str_arr(arr, rows, cols);
 }

@@ -87,6 +87,7 @@ Stack *path_shortest_nw_graph_vis(Graph *graph, unsigned int srcnodeid, unsigned
   }
 
   if (graph->debug) tree_print_raw(tree, tostring);
+  if (graph->debug) printf("Tree Node: %d", tree->size);
 
   tree_destroy(tree);
   queue_destroy(queue);

@@ -1,4 +1,6 @@
 
+#include "../dslib/queue.h"
+
 #ifndef CLAB_PUZZLE_MAZE_UTIL_H
 #define CLAB_PUZZLE_MAZE_UTIL_H
 
@@ -12,7 +14,7 @@ typedef struct {
   int right;
 } PermutationState;
 
-void generate_permutations(int *arr, int n);
+Queue *generate_permutations(int *arr, int n);
 
 #ifdef __cplusplus
 }

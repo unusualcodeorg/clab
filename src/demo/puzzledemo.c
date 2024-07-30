@@ -46,8 +46,19 @@ int maze_shortest_distance_demo(void) {
 
 int path_permutation_demo(void) {
   int arr[] = {1, 2, 3};
-  int n = sizeof(arr) / sizeof(arr[0]);
-  generate_permutations(arr, n);
+  int arrsize = sizeof(arr) / sizeof(arr[0]);
+  Queue *queue = generate_permutations(arr, arrsize);
+
+  while (queue->size > 0) {
+    QueueNode *node = queue_dequeue(queue, NULL);
+    int *resultarr = (int *)node->data;
+    for (int i = 0; i < arrsize; i++) {
+      printf("%d ", resultarr[i]);
+    }
+    printf("\n");
+  }
+
+  queue_destroy(queue, free_data_func);
   return EXIT_SUCCESS;
 }
 

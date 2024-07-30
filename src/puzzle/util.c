@@ -4,13 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../dslib/destroy.h"
+#include "../dslib/queue.h"
 #include "../dslib/stack.h"
-
-void free_permutation_state(void *data) {
-  PermutationState *state = (PermutationState *)data;
-  free(state->arr);
-  free(state);
-}
 
 void swap(int *x, int *y) {
   int temp = *x;
@@ -27,8 +23,9 @@ PermutationState *create_permutation_state(int *arr, int n, int left, int right)
   return state;
 }
 
-void generate_permutations(int *arr, int n) {
+Queue *generate_permutations(int *arr, int n) {
   Stack *stack = stack_create();
+  Queue *queue = queue_create();
 
   // Push the initial state onto the stack
   PermutationState *initial = create_permutation_state(arr, n, 0, n - 1);
@@ -38,25 +35,25 @@ void generate_permutations(int *arr, int n) {
     PermutationState *state = (PermutationState *)stack_pop(stack, NULL);
 
     if (state->left == state->right) {
-      for (int i = 0; i <= state->right; i++) {
-        printf("%d ", state->arr[i]);
-      }
-      printf("\n");
-    } else {
-      for (int i = state->left; i <= state->right; i++) {
-        PermutationState *newstate =
-            create_permutation_state(state->arr, n, state->left + 1, state->right);
-
-        // Swap elements in the new state's array
-        swap(&newstate->arr[state->left], &newstate->arr[i]);
-
-        // Push the new state onto the stack
-        stack_push(stack, newstate);
-      }
+      queue_enqueue(queue, &state->arr);
+      continue;
     }
 
-    free_permutation_state(state);
+    for (int i = state->left; i <= state->right; i++) {
+      PermutationState *newstate =
+          create_permutation_state(state->arr, n, state->left + 1, state->right);
+
+      // Swap elements in the new state's array
+      swap(&newstate->arr[state->left], &newstate->arr[i]);
+
+      // Push the new state onto the stack
+      stack_push(stack, newstate);
+    }
+
+    // only free the state and not the arr as it is passed to the queue
+    free_data_func(state);
   }
 
-  stack_destroy(stack, free_permutation_state);
+  stack_destroy(stack, free_data_func);
+  return queue;
 }

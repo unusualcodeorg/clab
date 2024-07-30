@@ -20,7 +20,7 @@
       "id": "runArg",
       "type": "promptString",
       "description": "Enter the debug function name for clabdev",
-      "default": "path_shortest_demo"
+      "default": "path_permutation_demo"
     }
   ]
 }

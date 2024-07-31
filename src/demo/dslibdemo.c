@@ -418,7 +418,7 @@ int linked_list_demo(void) {
   list_print(list, customer_to_string);
 
   list_delete_at(list, 0, free_data_func);
-  printf("List delete at 0 when empty\n");
+  printf("List delete at 0\n");
   list_print(list, customer_to_string);
 
   list_delete_at(list, 1, free_data_func);

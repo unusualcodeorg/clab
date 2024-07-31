@@ -13,6 +13,60 @@
 #include "maze.h"
 #include "util.h"
 
+void maze_solution_step_print(MazeData *mazedata, Stack *stack) {
+  char ***patharr = util_create_2d_str_arr(mazedata->rows, mazedata->cols, 5);
+
+  for (unsigned int i = 0; i < mazedata->rows; i++) {
+    for (unsigned int j = 0; j < mazedata->cols; j++) {
+      if (strcmp(mazedata->arr[i][j], "#") != 0) {
+        *patharr[i][j] = ' ';
+        continue;
+      }
+      strcpy(patharr[i][j], mazedata->arr[i][j]);
+    }
+  }
+
+  StackNode *node = stack->top;
+  while (node) {
+    Location *loc = (Location *)node->data;
+    unsigned int position = *(unsigned int *)loc->data;
+    unsigned i = position / mazedata->cols;
+    unsigned j = position % mazedata->cols;
+    strcpy(patharr[i][j], mazedata->arr[i][j]);
+    node = node->next;
+  }
+
+  for (unsigned int i = 0; i < mazedata->rows; i++) {
+    for (unsigned int j = 0; j < mazedata->cols; j++) {
+      printf("%c", *patharr[i][j]);
+    }
+    printf("\n");
+  }
+
+  util_destroy_2d_str_arr(patharr, mazedata->rows, mazedata->cols);
+}
+
+void maze_solution_result_print(MazeData *mazedata) {
+  QueueNode *node = mazedata->solution->start;
+  int counter = 0;
+  while (node) {
+    printf("Step %d:\n", ++counter);
+    Stack *stack = node->data;
+    // maze_solution_step_print(mazedata, stack);
+    stack_print(stack, location_int_data_to_string);
+    node = node->next;
+  }
+}
+
+void free_queue_stacks(Queue *queue, FreeDataFunc freedatafunc) {
+  Stack *stack = queue_dequeue(queue, NULL);
+  while (stack) {
+    stack_destroy(stack, freedatafunc);
+    stack = queue_dequeue(queue, NULL);
+  }
+  queue_destroy(queue, NULL);
+}
+
 void free_maze_data_func(void *data) {
   MazeData *mazedata = (MazeData *)data;
   list_destroy(mazedata->cpindexes, free_data_func);
@@ -50,6 +104,12 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
       unsigned int destid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, destkey);
 
       Stack *stack = path_find_shortest(mazedata->gmap->graph, srcid, destid);
+      // TODO: check why this can happen
+      if (stack->size <= 1) {
+        stack_destroy(stack, NULL);
+        break;
+      }
+
       Location *dest = stack_get(stack, stack->size - 1);
       distance += dest->cost;
       queue_enqueue(queue, stack);
@@ -57,7 +117,10 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
 
     if (distance < mazedata->mindistance) {
       free_queue_stacks(mazedata->solution, NULL);
-
+      mazedata->mindistance = distance;
+      mazedata->solution = queue;
+    } else {
+      queue_destroy(queue, NULL);
     }
   }
 }
@@ -98,8 +161,8 @@ void maze_search_solution(MazeData *mazedata) {
     pipeline_add_consumer(pipe, maze_permutation_consumer, mazedata);
     pipeline_join_destory(pipe, NULL);
 
-    if (mazedata->solution) {
-      maze_sd_result_print(mazedata->solution, mazedata->arr, mazedata->rows, mazedata->cols);
+    if (mazedata->mindistance < INT_MAX) {
+      maze_solution_result_print(mazedata);
       printf("Maze: shortest travel distance %d :D", mazedata->mindistance);
     } else {
       printf("Maze: can't find shortest travel distance :(");

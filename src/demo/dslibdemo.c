@@ -345,8 +345,6 @@ int graph_concurrent_demo(void) {
   runtime_exec(r1, croutine1, graph);
   runtime_exec(r2, croutine2, graph);
 
-  graph_print(graph, str_data_to_string);
-
   runtime_join_destroy(r1);
   runtime_join_destroy(r2);
 

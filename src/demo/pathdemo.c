@@ -47,7 +47,7 @@ int graph_2d_arr_demo(void) {
   data = (char *)graph_get(gmap->graph, 24);
   printf("Graph found id %d : %c\n", 24, *data);
 
-  graph_destroy(gmap->graph, free_data_func);
+  graph_destroy(gmap->graph, free_location_data_func);
   hashmap_destroy(gmap->idmap, free_data_func);
   util_destroy_2d_str_arr(arr, rows, cols);
 
@@ -140,7 +140,7 @@ void path_shortest_nwg_tree_solution(void *arg) {
   stack_print(stack, location_str_data_to_string);
 
   stack_destroy(stack, NULL);
-  graph_destroy(gmap->graph, free_data_func);
+  graph_destroy(gmap->graph, free_location_data_func);
   hashmap_destroy(gmap->idmap, free_data_func);
   util_destroy_2d_str_arr(arr, rows, cols);
 }
@@ -213,7 +213,7 @@ void path_shortest_solution(void *arg) {
   stack_print(stack, location_str_data_to_string);
 
   stack_destroy(stack, NULL);
-  graph_destroy(gmap->graph, free_data_func);
+  graph_destroy(gmap->graph, free_location_data_func);
   hashmap_destroy(gmap->idmap, free_data_func);
   util_destroy_2d_str_arr(arr, rows, cols);
 }

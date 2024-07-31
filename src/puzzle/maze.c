@@ -157,7 +157,7 @@ void maze_find_shortest_distance(char ***arr, unsigned int rows, unsigned int co
   maze_sd_result_print(stack, arr, rows, cols);
 
   stack_destroy(stack, NULL);
-  graph_destroy(gmap->graph, free_data_func);  // location data will be free with arr free
+  graph_destroy(gmap->graph, free_location_data_func);
   hashmap_destroy(gmap->idmap, free_data_func);
 }
 

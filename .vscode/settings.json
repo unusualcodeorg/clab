@@ -74,6 +74,7 @@
 		"new": "cpp",
 		"list.h": "c",
 		"list": "c",
-		"pipeline.h": "c"
+		"pipeline.h": "c",
+		"destroy.h": "c"
 	}
 }

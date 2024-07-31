@@ -15,12 +15,14 @@ typedef struct {
   char ***arr;
   unsigned int rows;
   unsigned int cols;
-  Queue *solutions;
+  unsigned int mindistance;
+  Queue *solution;  // contain stacks
   List *cpindexes;
   char *start;
   char *cp;  // checkpoints
   char *dest;
   char *skip;
+  Graph2DMap *gmap;
 } MazeData;
 
 void free_maze_data_func(void *data);

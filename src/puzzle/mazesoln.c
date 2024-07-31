@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,6 +7,7 @@
 
 #include "../crun/pipeline.h"
 #include "../dslib/datastr.h"
+#include "../dslib/destroy.h"
 #include "../dslib/path.h"
 #include "../dslib/util.h"
 #include "maze.h"
@@ -13,17 +15,51 @@
 
 void free_maze_data_func(void *data) {
   MazeData *mazedata = (MazeData *)data;
-  free(mazedata->arr);
   list_destroy(mazedata->cpindexes, free_data_func);
+  free_queue_stacks(mazedata->solution, NULL);                    // contains location
+  graph_destroy(mazedata->gmap->graph, free_location_data_func);  // free location
+  hashmap_destroy(mazedata->gmap->idmap, free_data_func);
+  util_destroy_2d_str_arr(mazedata->arr, mazedata->rows, mazedata->cols);
 
-  Stack *stack = queue_dequeue(mazedata->solutions, NULL);
-  while (stack) {
-    stack_destroy(stack, NULL);
-    stack = queue_dequeue(mazedata->solutions, NULL);
-  }
-
-  queue_destroy(mazedata->solutions, free_data_func);
+  free(mazedata->gmap);
   free(mazedata);
+}
+
+void maze_permutation_consumer(BufferQueue *bq, void *context) {
+  MazeData *mazedata = (MazeData *)context;
+
+  while (bufferq_is_open(bq)) {
+    int *arr = (int *)bufferq_consume(bq);
+    if (arr == NULL) continue;
+
+    unsigned int distance = UINT_MAX;
+    Queue *queue = queue_create();
+    for (unsigned int k = 0; k < mazedata->cpindexes->size - 1; k++) {
+      unsigned int index = *(unsigned int *)list_get_at(mazedata->cpindexes, k);
+      unsigned i = index / mazedata->cols;
+      unsigned j = index % mazedata->cols;
+      char *srckey = mazedata->arr[i][j];
+
+      index = *(unsigned int *)list_get_at(mazedata->cpindexes, k + 1);
+      i = index / mazedata->cols;
+      j = index % mazedata->cols;
+      char *destkey = mazedata->arr[i][j];
+
+      // TODO: can be optimized by only calculating the pairs which are new in the permutation
+      unsigned int srcid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, srckey);
+      unsigned int destid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, destkey);
+
+      Stack *stack = path_find_shortest(mazedata->gmap->graph, srcid, destid);
+      Location *dest = stack_get(stack, stack->size - 1);
+      distance += dest->cost;
+      queue_enqueue(queue, stack);
+    }
+
+    if (distance < mazedata->mindistance) {
+      free_queue_stacks(mazedata->solution, NULL);
+
+    }
+  }
 }
 
 void maze_permutation_producer(BufferQueue *bq, void *context) {
@@ -42,48 +78,33 @@ void maze_permutation_producer(BufferQueue *bq, void *context) {
   generate_permutations_buffered(bq, arr, mazedata->cpindexes->size);
 }
 
-void maze_permutation_consumer(BufferQueue *bq, void *context) {
-  MazeData *mazedata = (MazeData *)context;
-
-  while (bufferq_is_open(bq)) {
-    // TODO
-    int *arr = (int *)bufferq_consume(bq);
-    if (arr == NULL) continue;
-
-    for (unsigned int i = 0; i < mazedata->cpindexes->size; i++) {
-      printf("%d ", arr[i]);
-    }
-    printf("\n");
-  }
-}
-
 void maze_search_solution(MazeData *mazedata) {
-  Graph2DMap *gmap =
-      maze_graph_map_create(mazedata->arr, mazedata->rows, mazedata->cols, mazedata->skip);
-
   if (mazedata->cpindexes->size < 2) {
     perror("maze should have both S and G");
     exit(EXIT_FAILURE);
   }
 
+  // only source and destination case
   if (mazedata->cpindexes->size == 2) {
-    unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, mazedata->start);
-    unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, mazedata->dest);
+    unsigned int srcid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, mazedata->start);
+    unsigned int dstid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, mazedata->dest);
 
-    Stack *stack = path_find_shortest(gmap->graph, srcid, dstid);
+    Stack *stack = path_find_shortest(mazedata->gmap->graph, srcid, dstid);
     maze_sd_result_print(stack, mazedata->arr, mazedata->rows, mazedata->cols);
-
     stack_destroy(stack, NULL);
-    graph_destroy(gmap->graph, free_data_func);  // location data will be free with arr free
-    hashmap_destroy(gmap->idmap, free_data_func);
-    return;
+  } else {
+    Pipeline *pipe = pipeline_create(1, 1, 4);
+    pipeline_add_producer(pipe, maze_permutation_producer, mazedata);
+    pipeline_add_consumer(pipe, maze_permutation_consumer, mazedata);
+    pipeline_join_destory(pipe, NULL);
+
+    if (mazedata->solution) {
+      maze_sd_result_print(mazedata->solution, mazedata->arr, mazedata->rows, mazedata->cols);
+      printf("Maze: shortest travel distance %d :D", mazedata->mindistance);
+    } else {
+      printf("Maze: can't find shortest travel distance :(");
+    }
   }
-
-  Pipeline *pipe = pipeline_create(1, 1, 4);
-  pipeline_add_producer(pipe, maze_permutation_producer, mazedata);
-  pipeline_add_consumer(pipe, maze_permutation_consumer, mazedata);
-
-  pipeline_join_destory(pipe, NULL);
 }
 
 MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
@@ -151,12 +172,15 @@ MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
   mazedata->arr = arr;
   mazedata->rows = rows;
   mazedata->cols = cols;
+  mazedata->mindistance = UINT_MAX;
   mazedata->cpindexes = cpindexes;
-  mazedata->solutions = queue_create();  // queue of stacks
+  mazedata->solution = queue_create();
   mazedata->start = start;
   mazedata->dest = dest;
   mazedata->skip = skip;
   mazedata->cp = checkpoint;
+  mazedata->gmap =
+      maze_graph_map_create(mazedata->arr, mazedata->rows, mazedata->cols, mazedata->skip);
 
   return mazedata;
 }
@@ -194,7 +218,7 @@ int maze_solution(void) {
 
   MazeData *mazedata = maze_prepare_data(arr, rows, cols, elemstrlen);
   maze_search_solution(mazedata);
+  free_maze_data_func(mazedata);
 
-  util_destroy_2d_str_arr(arr, rows, cols);
   return EXIT_SUCCESS;
 }

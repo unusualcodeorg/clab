@@ -213,7 +213,8 @@ int maze_solution_demo(void) {
   printf("\n-----------PUZZLE PMAZE SULUTION DEMO-----------\n");
 
   // const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
-  const char maze[] = "##########....#..##.....G.##.#.....##.##.#####....S..##########";
+  const char maze[] = "##########....#..##.....G.##.#..@..##.##@#####....S..##########";
+  // const char maze[] = "##########....#..##.....G.##.#.....##.##.#####....S..##########";
 
   unsigned int rows = 7;
   unsigned int cols = 9;
@@ -236,8 +237,7 @@ int maze_solution_demo(void) {
 
   MazeData *mazedata = maze_prepare_data(arr, rows, cols, elemstrlen);
   maze_search_solution(mazedata);
-
-  util_destroy_2d_str_arr(arr, rows, cols);
+  free_maze_data_func(mazedata);
 
   printf("\n-----------PUZZLE PMAZE SULUTION DEMO-----------\n");
   return EXIT_SUCCESS;

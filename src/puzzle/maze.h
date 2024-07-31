@@ -25,7 +25,10 @@ typedef struct {
 
 void free_maze_data_func(void *data);
 int maze_shortest_distance(void);
+void maze_search_solution(MazeData *mazedata);
 int maze_solution(void);
+MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
+                            unsigned int elemstrlen);
 
 // skip defines the char which can not be traversed
 void maze_find_shortest_distance(char ***arr, unsigned int rows, unsigned int cols, char *start,

@@ -46,7 +46,7 @@ int list_add(List *list, void *data) {
 }
 
 int list_add_at(List *list, void *data, unsigned int index) {
-  if (index >= list->size) return LIST_NULL_INDEX;
+  if (index > list->size) return LIST_NULL_INDEX;
 
   pthread_rwlock_wrlock(&list->rwlock);
   ListNode *node = (ListNode *)malloc(sizeof(ListNode));

@@ -20,7 +20,7 @@
       "id": "runArg",
       "type": "promptString",
       "description": "Enter the debug function name for clabdev",
-      "default": "graph_concurrent_demo"
+      "default": "maze_solution_demo"
     }
   ]
 }

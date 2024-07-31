@@ -206,3 +206,41 @@ int path_permutation_pipeline_demo(void) {
 }
 
 /*--------PUZZLE PERMUTATION PIPELINE DEMO----------*/
+
+/*--------PUZZLE MAZE SULUTION DEMO----------*/
+
+int maze_solution_demo(void) {
+  printf("\n-----------PUZZLE PMAZE SULUTION DEMO-----------\n");
+
+  // const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
+  const char maze[] = "##########....#..##.....G.##.#.....##.##.#####....S..##########";
+
+  unsigned int rows = 7;
+  unsigned int cols = 9;
+  unsigned int elemstrlen = 5;
+
+  char ***arr = util_create_2d_str_arr(rows, cols, elemstrlen);
+
+  for (unsigned int i = 0; i < rows; i++) {
+    for (unsigned int j = 0; j < cols; j++) {
+      char temp[elemstrlen];
+      char data = maze[i * cols + j];
+      snprintf(temp, elemstrlen, "%c", data);
+      strcpy(arr[i][j], temp);
+      printf("%c", data);
+    }
+    printf("\n");
+  }
+
+  printf("\n");
+
+  MazeData *mazedata = maze_prepare_data(arr, rows, cols, elemstrlen);
+  maze_search_solution(mazedata);
+
+  util_destroy_2d_str_arr(arr, rows, cols);
+
+  printf("\n-----------PUZZLE PMAZE SULUTION DEMO-----------\n");
+  return EXIT_SUCCESS;
+}
+
+/*--------PUZZLE PERMUTATION PIPELINE DEMO----------*/

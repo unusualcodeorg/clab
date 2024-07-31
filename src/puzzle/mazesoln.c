@@ -5,6 +5,7 @@
 #include <time.h>
 
 #include "../crun/pipeline.h"
+#include "../dslib/datastr.h"
 #include "../dslib/path.h"
 #include "../dslib/util.h"
 #include "maze.h"
@@ -56,18 +57,27 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
   }
 }
 
-void maze_find_solution(MazeData *mazedata) {
+void maze_search_solution(MazeData *mazedata) {
   Graph2DMap *gmap =
       maze_graph_map_create(mazedata->arr, mazedata->rows, mazedata->cols, mazedata->skip);
 
-  unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, mazedata->start);
-  unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, mazedata->dest);
+  if (mazedata->cpindexes->size < 2) {
+    perror("maze should have both S and G");
+    exit(EXIT_FAILURE);
+  }
 
-  Stack *stack = path_find_shortest(gmap->graph, srcid, dstid);
+  if (mazedata->cpindexes->size == 2) {
+    unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, mazedata->start);
+    unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, mazedata->dest);
 
-  stack_destroy(stack, NULL);
-  graph_destroy(gmap->graph, free_data_func);  // location data will be free with arr free
-  hashmap_destroy(gmap->idmap, free_data_func);
+    Stack *stack = path_find_shortest(gmap->graph, srcid, dstid);
+    maze_sd_result_print(stack, mazedata->arr, mazedata->rows, mazedata->cols);
+
+    stack_destroy(stack, NULL);
+    graph_destroy(gmap->graph, free_data_func);  // location data will be free with arr free
+    hashmap_destroy(gmap->idmap, free_data_func);
+    return;
+  }
 
   Pipeline *pipe = pipeline_create(1, 1, 4);
   pipeline_add_producer(pipe, maze_permutation_producer, mazedata);
@@ -76,37 +86,8 @@ void maze_find_solution(MazeData *mazedata) {
   pipeline_join_destory(pipe, NULL);
 }
 
-int maze_solution(void) {
-  unsigned int rows, cols;
-  unsigned int max = 1000;
-  unsigned int elemstrlen = 5;
-
-  printf("Enter number of rows: ");
-  scanf("%d", &rows);
-
-  printf("Enter number of columns: ");
-  scanf("%d", &cols);
-
-  if (rows > max || cols > max) {
-    printf("Rows and Columns should less than %d", max);
-    return EXIT_FAILURE;
-  }
-
-  printf("Enter elements of the %dx%d array:\n", rows, cols);
-  char maze[rows][cols];
-  for (unsigned int i = 0; i < rows; ++i) {
-    for (unsigned int j = 0; j < cols; ++j) {
-      /**
-       * space before %d tells scanf to ignore any leading whitespace characters
-       * (including newlines)
-       */
-      scanf(" %c", &maze[i][j]);
-    }
-  }
-
-  printf("\nYour input %dx%d array:\n", rows, cols);
-
-  char ***arr = util_create_2d_str_arr(rows, cols, elemstrlen);
+MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
+                            unsigned int elemstrlen) {
   List *cpindexes = list_create();
 
   char *start = "S";
@@ -114,39 +95,39 @@ int maze_solution(void) {
   char *skip = "#";
   char *checkpoint = "@";
 
+  printf("Maze: Make Checkpoint Unique\n");
+
   unsigned int startindex = 0;
   unsigned int destindex = 0;
   unsigned int count = 0;
   for (unsigned int i = 0; i < rows; i++) {
     for (unsigned int j = 0; j < cols; j++) {
-      char data = maze[i][j];
-      char buffer[elemstrlen];
-
-      if (strcmp(buffer, checkpoint) == 0) {
-        snprintf(buffer, elemstrlen, "%c%d", data, ++count);  // rename for search
-      } else {
-        snprintf(buffer, elemstrlen, "%c", data);
-      }
-
+      char *data = arr[i][j];
       unsigned int index = i * cols + j;
 
-      if (strcmp(buffer, start) == 0) {
-        startindex = index;
-      } else if (strcmp(buffer, dest) == 0) {
-        destindex = index;
-      }
-
-      if (strcmp(buffer, checkpoint) == 0) {
+      if (strcmp(data, checkpoint) == 0) {
         unsigned int *cindex = malloc(sizeof(unsigned int));
         *cindex = index;
         list_add(cpindexes, cindex);
       }
 
-      strcpy(arr[i][j], buffer);
-      printf("%c", data);
+      if (strcmp(data, checkpoint) == 0) {
+        snprintf(data, elemstrlen, "%d", ++count);  // rename for search
+      } else {
+        snprintf(data, elemstrlen, "%s", data);
+      }
+
+      if (strcmp(data, start) == 0) {
+        startindex = index;
+      } else if (strcmp(data, dest) == 0) {
+        destindex = index;
+      }
+
+      printf("%s", data);
     }
     printf("\n");
   }
+  printf("\n");
 
   if (startindex == 0) {
     perror("S is not properly placed in the maze");
@@ -177,7 +158,42 @@ int maze_solution(void) {
   mazedata->skip = skip;
   mazedata->cp = checkpoint;
 
-  maze_find_solution(mazedata);
+  return mazedata;
+}
+
+int maze_solution(void) {
+  unsigned int rows, cols;
+  unsigned int max = 1000;
+  unsigned int elemstrlen = 5;
+
+  printf("Enter number of rows: ");
+  scanf("%d", &rows);
+
+  printf("Enter number of columns: ");
+  scanf("%d", &cols);
+
+  if (rows > max || cols > max) {
+    printf("Rows and Columns should less than %d", max);
+    return EXIT_FAILURE;
+  }
+
+  printf("Enter elements of the %dx%d array:\n", rows, cols);
+
+  char ***arr = util_create_2d_str_arr(rows, cols, elemstrlen);
+  for (unsigned int i = 0; i < rows; ++i) {
+    for (unsigned int j = 0; j < cols; ++j) {
+      /**
+       * space before %d tells scanf to ignore any leading whitespace characters
+       * (including newlines)
+       */
+      scanf(" %c", arr[i][j]);
+    }
+  }
+
+  printf("\nYour input %dx%d array:\n", rows, cols);
+
+  MazeData *mazedata = maze_prepare_data(arr, rows, cols, elemstrlen);
+  maze_search_solution(mazedata);
 
   util_destroy_2d_str_arr(arr, rows, cols);
   return EXIT_SUCCESS;

@@ -11,6 +11,7 @@ int path_permutation_demo(void);
 int path_permutation_buffered_demo(void);
 int path_permutation_pool_demo(void);
 int path_permutation_pipeline_demo(void);
+int maze_solution_demo(void);
 
 #ifdef __cplusplus
 }

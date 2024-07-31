@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "../crun/runpool.h"
 #include "../crun/runtime.h"
 #include "../dslib/bufferq.h"
 #include "../dslib/util.h"
@@ -92,15 +93,16 @@ void permutation_consumer(void *context) {
       printf("%d ", arr[i]);
     }
     printf("\n");
+    sleep(2);
   }
 }
 
 int path_permutation_buffered_demo(void) {
   printf("\n--------PUZZLE PERMUTATION BUFFERED DEMO----------\n");
-  int arr[] = {1, 2, 3, 4, 5};
+  int arr[] = {1, 2, 3};
   int size = sizeof(arr) / sizeof(arr[0]);
 
-  BufferQueue *bq = bufferq_create(10);
+  BufferQueue *bq = bufferq_create(4);
   bq->debug = true;
   Runtime *runtime = runtime_create();
 
@@ -119,3 +121,32 @@ int path_permutation_buffered_demo(void) {
 }
 
 /*--------PUZZLE PERMUTATION BUFFERED DEMO----------*/
+
+/*--------PUZZLE PERMUTATION BUFFERED POOL DEMO----------*/
+
+int path_permutation_pool_demo(void) {
+  printf("\n------PUZZLE PERMUTATION BUFFERED POOL DEMO-------\n");
+  int arr[] = {1, 2, 3, 4};
+  int size = sizeof(arr) / sizeof(arr[0]);
+
+  BufferQueue *bq = bufferq_create(10);
+  bq->debug = true;
+  Runpool *runpool = runpool_create(3);
+
+  PermutationContext *context = malloc(sizeof(PermutationContext));
+  context->size = size;
+  context->bq = bq;
+  runpool_exec(runpool, permutation_consumer, context);
+  runpool_exec(runpool, permutation_consumer, context);
+  runpool_exec(runpool, permutation_consumer, context);
+
+  generate_permutations_buffered(bq, arr, size);
+
+  runpool_join_destroy(runpool);  // should be called before bufferq_destroy
+  bufferq_destroy(bq, free_data_func);
+
+  printf("\n------PUZZLE PERMUTATION BUFFERED POOL DEMO------\n");
+  return EXIT_SUCCESS;
+}
+
+/*--------PUZZLE PERMUTATION BUFFERED POOL DEMO----------*/

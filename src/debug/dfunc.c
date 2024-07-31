@@ -6,8 +6,8 @@
 
 #include "../demo/crundemo.h"
 #include "../demo/dslibdemo.h"
-#include "../demo/puzzledemo.h"
 #include "../demo/pathdemo.h"
+#include "../demo/puzzledemo.h"
 #include "../demo/termdemo.h"
 #include "../dslib/hashmap.h"
 #include "../puzzle/maze.h"
@@ -37,7 +37,8 @@ int debugfn(char *fname) {
   hashmap_put(map, "linked_list_demo", (void *)linked_list_demo);
   hashmap_put(map, "path_shortest_demo", (void *)path_shortest_demo);
   hashmap_put(map, "path_permutation_demo", (void *)path_permutation_demo);
-  hashmap_put(map, "path_permutation_buffered_demo", (void *)path_permutation_buffered_demo);
+  hashmap_put(map, "path_permutation_buffered_demo", (void *)path_permutation_demo);
+  hashmap_put(map, "path_permutation_pool_demo", (void *)path_permutation_pool_demo);
 
   ExceFunc func = (ExceFunc)hashmap_get(map, fname);
 

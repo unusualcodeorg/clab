@@ -9,6 +9,7 @@ int maze_shortest_distance_demo(void);
 int path_permutation_demo(void);
 int path_permutation_demo(void);
 int path_permutation_buffered_demo(void);
+int path_permutation_pool_demo(void);
 
 #ifdef __cplusplus
 }

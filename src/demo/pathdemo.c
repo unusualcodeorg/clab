@@ -206,7 +206,7 @@ void path_shortest_solution(void *arg) {
   unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, "I");
   unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, "U");
 
-  Stack *stack = path_shortest(gmap->graph, srcid, dstid);
+  Stack *stack = path_find_shortest(gmap->graph, srcid, dstid);
 
   runtime_join_destroy(rnc);
   graph_print(gmap->graph, location_str_data_to_string);

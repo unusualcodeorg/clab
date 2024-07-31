@@ -16,7 +16,7 @@ typedef struct {
 } PermutationState;
 
 Queue *generate_permutations(int *arr, int n);
-void generate_permutations_buffered(BufferQueue *bq, int *arr, int n);
+void generate_permutations_buffered(BufferQueue *bq, int *arr, unsigned int arrsize);
 
 #ifdef __cplusplus
 }

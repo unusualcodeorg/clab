@@ -30,7 +30,7 @@ Stack *path_shortest_nwg_tree(Graph *graph, unsigned int srcnodeid, unsigned int
 
 // any graph with search better algorithm
 // graph must contain location data
-Stack *path_shortest(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid);
+Stack *path_find_shortest(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid);
 
 #ifdef __cplusplus
 }

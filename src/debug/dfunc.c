@@ -40,6 +40,7 @@ int debugfn(char *fname) {
   hashmap_put(map, "path_permutation_buffered_demo", (void *)path_permutation_demo);
   hashmap_put(map, "path_permutation_pool_demo", (void *)path_permutation_pool_demo);
   hashmap_put(map, "path_permutation_pipeline_demo", (void *)path_permutation_pipeline_demo);
+  hashmap_put(map, "maze_solution", (void *)maze_solution);
 
   ExceFunc func = (ExceFunc)hashmap_get(map, fname);
 

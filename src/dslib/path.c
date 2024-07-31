@@ -107,7 +107,7 @@ Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned
 /**
  * graph should contain data of type location
  */
-Stack *path_shortest(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid) {
+Stack *path_find_shortest(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid) {
   Stack *stack = stack_create();  // store backtrack
 
   GraphNode *start = graph_find_bfs(graph, srcnodeid);

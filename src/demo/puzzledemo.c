@@ -80,7 +80,7 @@ int path_permutation_demo(void) {
 /*--------PUZZLE PERMUTATION BUFFERED DEMO----------*/
 
 typedef struct {
-  int size;
+  unsigned int size;
   BufferQueue *bq;
 } PermutationContext;
 
@@ -90,7 +90,7 @@ void permutation_consumer(void *context) {
     int *arr = (int *)bufferq_consume(ctx->bq);
     if (arr == NULL) continue;
 
-    for (int i = 0; i < ctx->size; i++) {
+    for (unsigned int i = 0; i < ctx->size; i++) {
       printf("%d ", arr[i]);
     }
     printf("\n");
@@ -101,7 +101,7 @@ void permutation_consumer(void *context) {
 int path_permutation_buffered_demo(void) {
   printf("\n--------PUZZLE PERMUTATION BUFFERED DEMO----------\n");
   int arr[] = {1, 2, 3};
-  int size = sizeof(arr) / sizeof(arr[0]);
+  unsigned int size = sizeof(arr) / sizeof(arr[0]);
 
   BufferQueue *bq = bufferq_create(4);
   bq->debug = true;
@@ -128,7 +128,7 @@ int path_permutation_buffered_demo(void) {
 int path_permutation_pool_demo(void) {
   printf("\n------PUZZLE PERMUTATION BUFFERED POOL DEMO-------\n");
   int arr[] = {1, 2, 3, 4};
-  int size = sizeof(arr) / sizeof(arr[0]);
+  unsigned int size = sizeof(arr) / sizeof(arr[0]);
 
   BufferQueue *bq = bufferq_create(10);
   bq->debug = true;
@@ -155,10 +155,12 @@ int path_permutation_pool_demo(void) {
 /*--------PUZZLE PERMUTATION PIPELINE DEMO----------*/
 
 void path_permutation_producer(BufferQueue *bq, void *context) {
-  int arrsize = *(int *)context;
+  unsigned int arrsize = *(unsigned int *)context;
   int arr[arrsize];
 
-  for (int i = 0; i < arrsize; i++) arr[i] = i + 1;
+  for (unsigned int i = 0; i < arrsize; i++) {
+    arr[i] = i + 1;
+  }
 
   generate_permutations_buffered(bq, arr, arrsize);
 }
@@ -185,7 +187,7 @@ int path_permutation_pipeline_demo(void) {
   Pipeline *pipe = pipeline_create(1, 3, 4);
   pipeline_debug(pipe);
 
-  int *arrsize = malloc(sizeof(int));
+  unsigned int *arrsize = malloc(sizeof(unsigned int));
   *arrsize = 4;
 
   // 1 producer

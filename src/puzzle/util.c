@@ -64,14 +64,14 @@ Queue *generate_permutations(int *arr, int n) {
   return queue;
 }
 
-void generate_permutations_buffered(BufferQueue *bq, int *arr, int n) {
-  if (n > 10) {
+void generate_permutations_buffered(BufferQueue *bq, int *arr, unsigned int arrsize) {
+  if (arrsize > 10) {
     perror("permutation larger than 10 will take a lot of memory");
     exit(EXIT_FAILURE);
   }
 
   Stack *stack = stack_create();
-  PermutationState *initial = create_permutation_state(arr, n, 0, n - 1);
+  PermutationState *initial = create_permutation_state(arr, arrsize, 0, arrsize - 1);
   stack_push(stack, initial);
 
   while (stack->size > 0) {
@@ -84,7 +84,7 @@ void generate_permutations_buffered(BufferQueue *bq, int *arr, int n) {
 
     for (int i = state->left; i <= state->right; i++) {
       PermutationState *newstate =
-          create_permutation_state(state->arr, n, state->left + 1, state->right);
+          create_permutation_state(state->arr, arrsize, state->left + 1, state->right);
       swap(&newstate->arr[state->left], &newstate->arr[i]);
       stack_push(stack, newstate);
     }

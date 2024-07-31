@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "../crun/pipeline.h"
 #include "../crun/runpool.h"
 #include "../crun/runtime.h"
 #include "../dslib/bufferq.h"
@@ -150,3 +151,56 @@ int path_permutation_pool_demo(void) {
 }
 
 /*--------PUZZLE PERMUTATION BUFFERED POOL DEMO----------*/
+
+/*--------PUZZLE PERMUTATION PIPELINE DEMO----------*/
+
+void path_permutation_producer(BufferQueue *bq, void *context) {
+  int arrsize = *(int *)context;
+  int arr[arrsize];
+
+  for (int i = 0; i < arrsize; i++) arr[i] = i + 1;
+
+  generate_permutations_buffered(bq, arr, arrsize);
+}
+
+void path_permutation_consumer(BufferQueue *bq, void *context) {
+  int arrsize = *(int *)context;
+
+  while (bufferq_is_open(bq)) {
+    int *arr = (int *)bufferq_consume(bq);
+    if (arr == NULL) continue;
+
+    for (int i = 0; i < arrsize; i++) {
+      printf("%d ", arr[i]);
+    }
+    printf("\n");
+    sleep(2);
+  }
+}
+
+int path_permutation_pipeline_demo(void) {
+  printf("\n------PUZZLE PERMUTATION PIPELINE DEMO-------\n");
+
+  // 1 producer, 3 consumers, 4 work capacity
+  Pipeline *pipe = pipeline_create(1, 3, 4);
+  pipeline_debug(pipe);
+
+  int *arrsize = malloc(sizeof(int));
+  *arrsize = 4;
+
+  // 1 producer
+  pipeline_add_producer(pipe, path_permutation_producer, arrsize);
+
+  // 3 consumers
+  pipeline_add_consumer(pipe, path_permutation_consumer, arrsize);
+  pipeline_add_consumer(pipe, path_permutation_consumer, arrsize);
+  pipeline_add_consumer(pipe, path_permutation_consumer, arrsize);
+
+  pipeline_join_destory(pipe, NULL);
+  free(arrsize);
+
+  printf("\n------PUZZLE PERMUTATION PIPELINE DEMO------\n");
+  return EXIT_SUCCESS;
+}
+
+/*--------PUZZLE PERMUTATION PIPELINE DEMO----------*/

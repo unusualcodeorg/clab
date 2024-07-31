@@ -73,6 +73,7 @@
 		"limits": "cpp",
 		"new": "cpp",
 		"list.h": "c",
-		"list": "c"
+		"list": "c",
+		"pipeline.h": "c"
 	}
 }

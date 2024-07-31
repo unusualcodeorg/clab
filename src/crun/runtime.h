@@ -2,6 +2,7 @@
 #include <stdbool.h>
 
 #include "../dslib/queue.h"
+#include "croutine.h"
 
 #ifndef CLAB_CRUN_RUNTIME_H
 #define CLAB_CRUN_RUNTIME_H
@@ -9,13 +10,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef void (*Croutine)(void *context);
-
-typedef struct {
-  Croutine croutine;
-  void *context;
-} Execution;
 
 typedef struct {
   char *name;

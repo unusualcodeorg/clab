@@ -38,6 +38,7 @@ void runpool_exec(Runpool *pool, Croutine croutine, void *context) {
       continue;
     }
 
+		// puts a new task in the queue with least items
     if (runtime->execs->size < tasksize) {
       preferred = runtime;
       tasksize = runtime->execs->size;

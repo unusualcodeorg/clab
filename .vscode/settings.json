@@ -72,6 +72,7 @@
 		"istream": "cpp",
 		"limits": "cpp",
 		"new": "cpp",
-		"list.h": "c"
+		"list.h": "c",
+		"list": "c"
 	}
 }

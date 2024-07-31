@@ -24,7 +24,7 @@ typedef struct {
 BufferQueue *bufferq_create(unsigned int capacity);
 void bufferq_produce(BufferQueue *bq, void *data);
 void *bufferq_consume(BufferQueue *bq);
-bool bufferq_can_consume(BufferQueue *bq);
+bool bufferq_is_open(BufferQueue *bq);
 void bufferq_close(BufferQueue *bq);
 void bufferq_destroy(BufferQueue *bq, FreeDataFunc freefunc);
 

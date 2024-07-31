@@ -84,7 +84,7 @@ typedef struct {
 
 void permutation_consumer(void *context) {
   PermutationContext *ctx = (PermutationContext *)context;
-  while (bufferq_can_consume(ctx->bq) == true) {
+  while (bufferq_is_open(ctx->bq)) {
     int *arr = (int *)bufferq_consume(ctx->bq);
     if (arr == NULL) continue;
 

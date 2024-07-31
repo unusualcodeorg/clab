@@ -40,7 +40,7 @@ Queue *generate_permutations(int *arr, int n) {
     PermutationState *state = (PermutationState *)stack_pop(stack, NULL);
 
     if (state->left == state->right) {
-      queue_enqueue(queue, &state->arr);
+      queue_enqueue(queue, state->arr);
       continue;
     }
 
@@ -56,9 +56,42 @@ Queue *generate_permutations(int *arr, int n) {
     }
 
     // only free the state and not the arr as it is passed to the queue
-    free_data_func(state);
+    free(state);
+  }
+
+  // only free the state and not the arr as it is passed to the queue
+  stack_destroy(stack, free_data_func);
+  return queue;
+}
+
+void generate_permutations_buffered(BufferQueue *bq, int *arr, int n) {
+  if (n > 10) {
+    perror("permutation larger than 10 will take a lot of memory");
+    exit(EXIT_FAILURE);
+  }
+
+  Stack *stack = stack_create();
+  PermutationState *initial = create_permutation_state(arr, n, 0, n - 1);
+  stack_push(stack, initial);
+
+  while (stack->size > 0) {
+    PermutationState *state = (PermutationState *)stack_pop(stack, NULL);
+
+    if (state->left == state->right) {
+      bufferq_produce(bq, state->arr);
+      continue;
+    }
+
+    for (int i = state->left; i <= state->right; i++) {
+      PermutationState *newstate =
+          create_permutation_state(state->arr, n, state->left + 1, state->right);
+      swap(&newstate->arr[state->left], &newstate->arr[i]);
+      stack_push(stack, newstate);
+    }
+
+    free(state);
   }
 
   stack_destroy(stack, free_data_func);
-  return queue;
+  bufferq_close(bq);
 }

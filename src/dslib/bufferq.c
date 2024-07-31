@@ -39,6 +39,8 @@ void bufferq_produce(BufferQueue *bq, void *data) {
 
   if (bq->debug == true) printf("BufferQueue: producer produce.\n");
   queue_enqueue(bq->queue, data);
+  pthread_cond_signal(&bq->conscond);
+
   pthread_mutex_unlock(&bq->mutex);  // must release after condition
 }
 
@@ -58,10 +60,15 @@ void *bufferq_consume(BufferQueue *bq) {
   }
 
   if (bq->debug == true) printf("BufferQueue: consumer consume.\n");
-  void *data = queue_dequeue(bq->queue, NULL);  // must release after condition
-  pthread_mutex_unlock(&bq->mutex);
+  
+	void *data = queue_dequeue(bq->queue, NULL);  // must release after condition
+  pthread_cond_signal(&bq->prodcond);
+  
+	pthread_mutex_unlock(&bq->mutex);
   return data;
 }
+
+bool bufferq_can_consume(BufferQueue *bq) { return !bq->close; }
 
 void bufferq_close(BufferQueue *bq) {
   pthread_mutex_lock(&bq->mutex);

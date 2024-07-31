@@ -31,7 +31,7 @@ void render(void *context) {
 }
 
 Console *console_create(unsigned int ftime_mills) {
-  Runtime *runtime = runtime_create("Console", false);
+  Runtime *runtime = runtime_create();
   Console *console = (Console *)malloc(sizeof(Console));
   console->runtime = runtime;
   console->ftime = ftime_mills;
@@ -46,6 +46,6 @@ void console_render(Console *console, char *text) {
 }
 
 void console_destroy(Console *console) {
-  runtime_destroy(console->runtime);
+  runtime_join_destroy(console->runtime);
   free(console);
 }

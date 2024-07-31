@@ -4,22 +4,35 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-Runpool *runpool_create(char *name, unsigned short size, bool debug) {
+Runpool *runpool_create(unsigned short size) {
   if (size < 1) return NULL;
 
   Runpool *pool = (Runpool *)malloc(sizeof(Runpool));
-  pool->name = name;
-  pool->debug = debug;
+  pool->name = "Runpool";
+  pool->debug = false;
   pool->size = size;
   pool->runtimes = (Runtime **)malloc(size * sizeof(Runtime *));
 
   for (unsigned short i = 0; i < size; i++) {
     char *rname = malloc(100 * sizeof(char));
-    snprintf(rname, 100, "%s:%s%u", name, "Tread", i + 1);
-    pool->runtimes[i] = runtime_create(rname, debug);
+    snprintf(rname, 100, "%s:%s-%u", pool->name, "Thread", i + 1);
+    pool->runtimes[i] = runtime_create();
+    pool->runtimes[i]->name = rname;
   }
 
   return pool;
+}
+
+void runpool_debug(Runpool *pool, char *poolname) {
+  pool->name = poolname;
+  pool->debug = true;
+
+  for (unsigned short i = 0; i < pool->size; i++) {
+    free(pool->runtimes[i]->name);
+    char *rname = malloc(100 * sizeof(char));
+    snprintf(rname, 100, "%s:%s-%u", pool->name, "Thread", i + 1);
+    runtime_debug(pool->runtimes[i], rname);
+  }
 }
 
 void runpool_exec(Runpool *pool, Croutine croutine, void *context) {
@@ -38,7 +51,7 @@ void runpool_exec(Runpool *pool, Croutine croutine, void *context) {
       continue;
     }
 
-		// puts a new task in the queue with least items
+    // puts a new task in the queue with least items
     if (runtime->execs->size < tasksize) {
       preferred = runtime;
       tasksize = runtime->execs->size;
@@ -48,12 +61,13 @@ void runpool_exec(Runpool *pool, Croutine croutine, void *context) {
   runtime_exec(preferred, croutine, context);
 }
 
-void runpool_destroy(Runpool *pool) {
+void runpool_join_destroy(Runpool *pool) {
   for (unsigned short i = 0; i < pool->size; i++) {
     Runtime *runtime = pool->runtimes[i];
     char *name = runtime->name;
-    runtime_destroy(runtime);
+    runtime_join_destroy(runtime);
     free(name);
   }
+  if (pool->debug == true) printf("Runpool - %s: has destroyed.\n", pool->name);
   free(pool);
 }

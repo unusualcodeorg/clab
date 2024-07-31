@@ -102,7 +102,7 @@ int path_permutation_buffered_demo(void) {
 
   BufferQueue *bq = bufferq_create(10);
   bq->debug = true;
-  Runtime *runtime = runtime_create("Buffer", false);
+  Runtime *runtime = runtime_create();
 
   PermutationContext *context = malloc(sizeof(PermutationContext));
   context->size = size;
@@ -111,7 +111,7 @@ int path_permutation_buffered_demo(void) {
 
   generate_permutations_buffered(bq, arr, size);
 
-  runtime_destroy(runtime);  // should be called before bufferq_destroy
+  runtime_join_destroy(runtime);  // should be called before bufferq_destroy
   bufferq_destroy(bq, free_data_func);
 
   printf("\n--------PUZZLE PERMUTATION BUFFERED DEMO----------\n");

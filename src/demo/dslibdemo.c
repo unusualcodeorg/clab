@@ -329,8 +329,11 @@ void croutine2(void *arg) {
 
 int graph_concurrent_demo(void) {
   printf("\n---------------GRAPH CONCURRENT DEMO----------------\n");
-  Runtime *r1 = runtime_create("Runtime1", true);
-  Runtime *r2 = runtime_create("Runtime2", true);
+  Runtime *r1 = runtime_create();
+  runtime_debug(r1, "Runtime1");
+
+  Runtime *r2 = runtime_create();
+  runtime_debug(r2, "Runtime2");
 
   unsigned long tid = (unsigned long)pthread_self();
   printf("Thread ID: main: %lu\n", tid);
@@ -344,8 +347,8 @@ int graph_concurrent_demo(void) {
 
   graph_print(graph, str_data_to_string);
 
-  runtime_destroy(r1);
-  runtime_destroy(r2);
+  runtime_join_destroy(r1);
+  runtime_join_destroy(r2);
 
   printf("Thread ID: main: %lu\n", tid);
   graph_print(graph, str_data_to_string);

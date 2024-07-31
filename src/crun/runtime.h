@@ -23,11 +23,12 @@ typedef struct {
   bool debug;
 } Runtime;
 
-Runtime *runtime_create(char *name, bool debug);
+Runtime *runtime_create(void);
 void runtime_pause(Runtime *runtime);
 void runtime_resume(Runtime *runtime);
 void runtime_exec(Runtime *runtime, Croutine croutine, void *context);
-void runtime_destroy(Runtime *runtime);
+void runtime_debug(Runtime *runtime, char *name);
+void runtime_join_destroy(Runtime *runtime);
 
 #ifdef __cplusplus
 }

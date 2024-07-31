@@ -17,9 +17,10 @@ typedef struct {
   Runtime **runtimes;
 } Runpool;
 
-Runpool *runpool_create(char *name, unsigned short size, bool debug);
+Runpool *runpool_create(unsigned short size);
 void runpool_exec(Runpool *pool, Croutine croutine, void *context);
-void runpool_destroy(Runpool *pool);
+void runpool_debug(Runpool *pool, char *poolname);
+void runpool_join_destroy(Runpool *pool);
 
 #ifdef __cplusplus
 }

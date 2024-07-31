@@ -42,10 +42,10 @@ void *runner(void *arg) {
   return NULL;
 }
 
-Runtime *runtime_create(char *name, bool debug) {
+Runtime *runtime_create(void) {
   Runtime *runtime = malloc(sizeof(Runtime));
-  runtime->name = name;
-  runtime->debug = debug;
+  runtime->name = "Runtime";
+  runtime->debug = false;
   runtime->execs = queue_create();
   runtime->pause = true;
   runtime->exit = false;
@@ -58,6 +58,11 @@ Runtime *runtime_create(char *name, bool debug) {
 
   if (runtime->debug == true) printf("Runtime - %s: is created.\n", runtime->name);
   return runtime;
+}
+
+void runtime_debug(Runtime *runtime, char *name) {
+  runtime->name = name;
+  runtime->debug = true;
 }
 
 void runtime_pause(Runtime *runtime) {
@@ -90,7 +95,7 @@ void runtime_exec(Runtime *runtime, Croutine croutine, void *context) {
   if (runtime->pause) runtime_resume(runtime);
 }
 
-void runtime_destroy(Runtime *runtime) {
+void runtime_join_destroy(Runtime *runtime) {
   runtime_exit(runtime);
   pthread_join(runtime->thread, NULL);
   queue_destroy(runtime->execs, NULL);

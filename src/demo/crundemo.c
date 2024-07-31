@@ -19,7 +19,8 @@ void work(void *context) {
 
 int runtime_demo(void) {
   printf("\n--------------RUNTIME DEMO----------------\n");
-  Runtime *runtime = runtime_create("Demo", true);
+  Runtime *runtime = runtime_create();
+  runtime_debug(runtime, "Demo");
 
   for (int i = 0; i < 3; i++) {
     printf("work scheduled\n");
@@ -27,7 +28,7 @@ int runtime_demo(void) {
     sleep(2);
   }
 
-  runtime_destroy(runtime);
+  runtime_join_destroy(runtime);
   printf("--------------RUNTIME DEMO----------------\n");
   return EXIT_SUCCESS;
 }
@@ -45,7 +46,8 @@ void poolwork(void *context) {
 
 int runpool_demo(void) {
   printf("\n--------------RUNPOOL DEMO----------------\n");
-  Runpool *pool = runpool_create("Pool", 5, true);
+  Runpool *pool = runpool_create(5);
+  runpool_debug(pool, "Demo");
 
   for (int i = 0; i < 20; i++) {
     printf("work scheduled\n");
@@ -53,7 +55,7 @@ int runpool_demo(void) {
     usleep(500000);
   }
 
-  runpool_destroy(pool);
+  runpool_join_destroy(pool);
   printf("--------------RUNPOOL DEMO----------------\n");
   return EXIT_SUCCESS;
 }

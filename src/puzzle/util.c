@@ -66,7 +66,7 @@ Queue *generate_permutations(unsigned int *arr, unsigned int n) {
 }
 
 void generate_permutations_buffered(BufferQueue *bq, unsigned int *arr, unsigned int arrsize) {
-  if (arrsize > 9) {
+  if (arrsize > 10) {
     perror("permutation larger than 10 will take a lot of memory");
     exit(EXIT_FAILURE);
   }

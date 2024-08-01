@@ -1,3 +1,4 @@
+#include <pthread.h>
 #include <stdbool.h>
 
 #include "datastr.h"
@@ -19,6 +20,7 @@ typedef struct HashNode {
 typedef struct {
   unsigned int size;
   HashNode **buckets;  // Array of pointers to linked lists (HashNode)
+  pthread_rwlock_t rwlock;
 } HashMap;
 
 HashMap *hashmap_create(unsigned int size);

@@ -13,6 +13,8 @@ typedef struct {
   HashMap *idmap;
 } Graph2DMap;
 
+unsigned int cantor_pairing_uid(unsigned int x, unsigned int y);
+char *cantor_pairing_uid_str(unsigned int x, unsigned int y);
 char ***util_create_2d_str_arr(unsigned int rows, unsigned int cols, unsigned int elemstrlen);
 void util_destroy_2d_str_arr(char ***arr, unsigned int rows, unsigned int cols);
 

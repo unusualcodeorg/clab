@@ -16,10 +16,12 @@ HashMap *hashmap_create(unsigned int size) {
   HashMap *map = (HashMap *)malloc(sizeof(HashMap));
   map->buckets = (HashNode **)calloc(size, sizeof(HashNode *));
   map->size = size;
+  pthread_rwlock_init(&map->rwlock, NULL);
   return map;
 }
 
 void hashmap_put(HashMap *map, char *key, void *value) {
+  pthread_rwlock_wrlock(&map->rwlock);
   char *dupkey = strdup(key);
   unsigned int index = hash_function(dupkey, map->size);
   HashNode *new_node = (HashNode *)malloc(sizeof(HashNode));
@@ -27,19 +29,26 @@ void hashmap_put(HashMap *map, char *key, void *value) {
   new_node->value = value;
   new_node->next = map->buckets[index];
   map->buckets[index] = new_node;
+  pthread_rwlock_unlock(&map->rwlock);
 }
 
 void *hashmap_get(HashMap *map, char *key) {
+  pthread_rwlock_rdlock(&map->rwlock);
   unsigned int index = hash_function(key, map->size);
   HashNode *node = map->buckets[index];
   while (node) {
-    if (strcmp(node->key, key) == 0) return node->value;
+    if (strcmp(node->key, key) == 0) {
+      pthread_rwlock_unlock(&map->rwlock);
+      return node->value;
+    }
     node = node->next;
   }
+  pthread_rwlock_unlock(&map->rwlock);
   return NULL;
 }
 
 void hashmap_delete(HashMap *map, char *key, FreeDataFunc freedatafunc) {
+  pthread_rwlock_wrlock(&map->rwlock);
   unsigned int index = hash_function(key, map->size);
   HashNode *node = map->buckets[index];
   HashNode *prev = NULL;
@@ -53,14 +62,17 @@ void hashmap_delete(HashMap *map, char *key, FreeDataFunc freedatafunc) {
       if (freedatafunc != NULL) freedatafunc(node->value);
       free(node->key);
       free(node);
+      pthread_rwlock_unlock(&map->rwlock);
       return;
     }
     prev = node;
     node = node->next;
   }
+  pthread_rwlock_unlock(&map->rwlock);
 }
 
 void hashmap_print(HashMap *map, DataToString tostring) {
+  pthread_rwlock_rdlock(&map->rwlock);
   for (unsigned int i = 0; i < map->size; i++) {
     HashNode *node = map->buckets[i];
     if (node == NULL) {
@@ -75,9 +87,11 @@ void hashmap_print(HashMap *map, DataToString tostring) {
       }
     }
   }
+  pthread_rwlock_unlock(&map->rwlock);
 }
 
 void hashmap_destroy(HashMap *map, FreeDataFunc freedatafunc) {
+  pthread_rwlock_trywrlock(&map->rwlock);
   for (unsigned int i = 0; i < map->size; i++) {
     HashNode *node = map->buckets[i];
     while (node) {
@@ -89,5 +103,7 @@ void hashmap_destroy(HashMap *map, FreeDataFunc freedatafunc) {
     }
   }
   free(map->buckets);
+  pthread_rwlock_unlock(&map->rwlock);
+  pthread_rwlock_destroy(&map->rwlock);
   free(map);
 }

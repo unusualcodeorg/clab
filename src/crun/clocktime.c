@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-ClockTime *clocktime_create() {
+ClockTime *clocktime_create(void) {
   ClockTime *clocktime = (ClockTime *)malloc(sizeof(ClockTime));
   return clocktime;
 }

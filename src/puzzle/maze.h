@@ -16,6 +16,7 @@ typedef struct {
   unsigned int rows;
   unsigned int cols;
   unsigned int mindistance;
+  HashMap *cache;     // contain pair wise sd stack
   Queue *solution;  // contain stacks
   List *cpindexes;
   unsigned int srcindex;

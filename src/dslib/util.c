@@ -7,6 +7,21 @@
 #include "graph.h"
 #include "path.h"
 
+/**
+ *  pair(x, y) = (1/2) (x + y)(x + y + 1) + y
+ *  gives uid using two integers
+ */
+unsigned int cantor_pairing_uid(unsigned int x, unsigned int y) {
+  return ((x + y) * (x + y + 1)) / 2 + y;
+}
+
+char *cantor_pairing_uid_str(unsigned int x, unsigned int y) {
+  unsigned int uid = cantor_pairing_uid(x, y);
+  char *key = (char *)malloc(50 * sizeof(char));
+  snprintf(key, 50, "%d", uid);
+  return key;
+}
+
 /*
 0->1->2->3
 4->5->6->7
@@ -66,7 +81,7 @@ char ***util_create_2d_str_arr(unsigned int rows, unsigned int cols, unsigned in
     arr[i] = malloc(cols * sizeof(char *));
     for (unsigned int j = 0; j < cols; j++) {
       arr[i][j] = malloc(capacity * sizeof(char));
-      *arr[i][j] = '\0';
+      snprintf(arr[i][j], capacity, "%d", 0);
     }
   }
   return arr;

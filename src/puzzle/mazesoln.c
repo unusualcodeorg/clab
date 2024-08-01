@@ -61,22 +61,20 @@ void maze_solution_result_print(MazeData *mazedata) {
   }
 }
 
-void free_queue_stacks(Queue *queue) {
-  Stack *stack = queue_dequeue(queue, NULL);
-  while (stack) {
-    // only free the stack->data (location) and not stack->data->data
-    stack_destroy(stack, free_data_func);
-    stack = queue_dequeue(queue, NULL);
-  }
-  queue_destroy(queue, free_data_func);
+void free_stack_data(void *data) {
+  Stack *stack = (Stack *)data;
+  stack_destroy(stack, free_data_func);
 }
 
 void free_maze_data_func(void *data) {
   MazeData *mazedata = (MazeData *)data;
   list_destroy(mazedata->cpindexes, free_data_func);
-  free_queue_stacks(mazedata->solution);                          // contains location
-  graph_destroy(mazedata->gmap->graph, free_location_data_func);  // free location
+  queue_destroy(mazedata->solution, NULL);  // contains location
+
   hashmap_destroy(mazedata->gmap->idmap, free_data_func);
+  hashmap_destroy(mazedata->cache, free_stack_data);
+
+  graph_destroy(mazedata->gmap->graph, free_location_data_func);  // free location
   util_destroy_2d_str_arr(mazedata->arr, mazedata->rows, mazedata->cols);
 
   free(mazedata->gmap);
@@ -122,22 +120,31 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
       j_second = index_second % mazedata->cols;
       destkey = mazedata->arr[i_second][j_second];
 
-      // TODO: can be optimized by only calculating the pairs which are new in the permutation
       unsigned int srcid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, srckey);
       unsigned int destid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, destkey);
 
-      Stack *stack = path_find_shortest(mazedata->gmap->graph, srcid, destid);
+      /**
+       * caching the pair waise distance since it is quite a small number
+       * but will reduce a lot of processing
+       */
+      char *uidkey = cantor_pairing_uid_str(srcid, destid);
+      Stack *stack = hashmap_get(mazedata->cache, uidkey);
+      if (stack == NULL) {
+        stack = path_find_shortest(mazedata->gmap->graph, srcid, destid);
+        hashmap_put(mazedata->cache, uidkey, stack);
+      }
+
       Location *dest = stack_get(stack, stack->size - 1);
       distance += dest->cost;
       queue_enqueue(queue, stack);
     }
 
     if (distance < mazedata->mindistance) {
-      free_queue_stacks(mazedata->solution);
+      queue_destroy(mazedata->solution, NULL);  // stack lives in hashmap
       mazedata->mindistance = distance;
       mazedata->solution = queue;
     } else {
-      free_queue_stacks(queue);
+      queue_destroy(queue, NULL);
     }
   }
 }
@@ -169,7 +176,7 @@ void maze_search_solution(MazeData *mazedata) {
     maze_sd_result_print(stack, mazedata->arr, mazedata->rows, mazedata->cols);
     stack_destroy(stack, free_data_func);
   } else {
-    unsigned int conscount = 10;
+    unsigned int conscount = 10;  // 10 threads
     unsigned int capacity = 1000;
     Pipeline *pipe = pipeline_create(1, conscount, capacity);
     pipeline_add_producer(pipe, maze_permutation_producer, mazedata);
@@ -240,6 +247,8 @@ MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
     exit(EXIT_FAILURE);
   }
 
+  // nC2 = (n (n - 1)) / 2 [add 1 in pairs for the rounding]
+  unsigned int pairs = ((cpindexes->size + 2) * (cpindexes->size + 1)) / 2 + 1;
   MazeData *mazedata = (MazeData *)malloc(sizeof(MazeData));
   mazedata->arr = arr;
   mazedata->rows = rows;
@@ -247,6 +256,7 @@ MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
   mazedata->mindistance = UINT_MAX;
   mazedata->cpindexes = cpindexes;
   mazedata->solution = queue_create();
+  mazedata->cache = hashmap_create(pairs);
   mazedata->srcindex = srcindex;
   mazedata->destindex = destindex;
   mazedata->src = src;
@@ -288,7 +298,6 @@ int maze_solution(void) {
     }
   }
 
-	// on mac os
   ClockTime *time = clocktime_create();
   clocktime_start(time);
 

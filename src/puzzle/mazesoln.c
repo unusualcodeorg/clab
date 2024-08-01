@@ -90,12 +90,6 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
     int *arr = (int *)bufferq_read(bq);
     if (arr == NULL) continue;
 
-    printf("\n");
-    for (unsigned int i = 0; i < mazedata->cpindexes->size; i++) {
-      printf("%d", arr[i]);
-    }
-    printf("\n");
-
     /**
      * S 1 2 3 G : mazedata->cpindexes contains indexes for - 1, 2, 3
      * We generate permisations on mazedata->cpindexes

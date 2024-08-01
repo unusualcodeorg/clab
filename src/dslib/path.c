@@ -121,22 +121,22 @@ Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned
  * graph should contain data of type location
  */
 Stack *path_find_shortest(Graph *igraph, unsigned int srcnodeid, unsigned int dstnodeid) {
-  Stack *stack = stack_create();  // store backtrack
+  // making copy to allow multiple threads works concurrently
+  Graph *graph = graph_clone(igraph, location_as_data_clone);
 
-  GraphNode *start = graph_find_bfs(igraph, srcnodeid);
+  // store backtrack
+  Stack *stack = stack_create();
+
+  GraphNode *start = graph_find_bfs(graph, srcnodeid);
   if (start == NULL) return stack;
 
-  GraphNode *dest = graph_find_bfs(igraph, dstnodeid);
+  GraphNode *dest = graph_find_bfs(graph, dstnodeid);
   if (dest == NULL) return stack;
 
   if (start == dest) {
-    // to persist the location data as copy
     stack_push(stack, location_clone(start->data));
     return stack;
   }
-
-  // making copy to allow multiple threads works concurrently
-  Graph *graph = graph_clone(igraph, location_as_data_clone);
 
   GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
 
@@ -172,7 +172,7 @@ Stack *path_find_shortest(Graph *igraph, unsigned int srcnodeid, unsigned int ds
   GraphNode *current = dest;
   while (current != NULL) {
     Location *loc = (Location *)current->data;
-    stack_push(stack, location_clone(loc)); // persist the data
+    stack_push(stack, location_clone(loc));  // persist the data
     if (loc->cost == 0) break;
 
     GraphNode *next = NULL;

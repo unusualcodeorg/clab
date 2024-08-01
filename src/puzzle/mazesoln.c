@@ -170,7 +170,7 @@ void maze_search_solution(MazeData *mazedata) {
     stack_destroy(stack, free_data_func);
   } else {
     unsigned int conscount = 10;
-    unsigned int capacity = 100;
+    unsigned int capacity = 1000;
     Pipeline *pipe = pipeline_create(1, conscount, capacity);
     pipeline_add_producer(pipe, maze_permutation_producer, mazedata);
     for (unsigned int i = 0; i < conscount; i++) {

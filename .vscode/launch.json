@@ -8,7 +8,7 @@
       "program": "${workspaceFolder}/bin/clabdev",
       "args": ["debug", "${input:runArg}"],
       "stopAtEntry": false,
-      "cwd": "${fileDirname}",
+      "cwd": "${workspaceFolder}",
       "environment": [],
       "externalConsole": false,
       "MIMode": "lldb",

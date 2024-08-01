@@ -74,7 +74,7 @@ void *bufferq_read(BufferQueue *bq) {
   return data;
 }
 
-bool bufferq_can_read(BufferQueue *bq) { return !bq->writerclosed; }
+bool bufferq_can_read(BufferQueue *bq) { return !bq->readerclosed; }
 
 void bufferq_close_writer(BufferQueue *bq) {
   pthread_mutex_lock(&bq->mutex);

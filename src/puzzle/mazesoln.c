@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
+#include "../crun/clocktime.h"
 #include "../crun/pipeline.h"
 #include "../dslib/datastr.h"
 #include "../dslib/destroy.h"
@@ -288,7 +288,9 @@ int maze_solution(void) {
     }
   }
 
-  clock_t startclock = clock();
+	// on mac os
+  ClockTime *time = clocktime_create();
+  clocktime_start(time);
 
   printf("\nYour input %dx%d array:\n", rows, cols);
 
@@ -296,8 +298,8 @@ int maze_solution(void) {
   maze_search_solution(mazedata);
   free_maze_data_func(mazedata);
 
-  clock_t endclock = clock();
-  printf("Time taken: %f sec\n", ((double)(endclock - startclock)) / CLOCKS_PER_SEC);
+  printf("Time taken: %f sec\n", clocktime_stop(time));
+  clocktime_destroy(time);
 
   return EXIT_SUCCESS;
 }

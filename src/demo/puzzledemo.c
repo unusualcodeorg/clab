@@ -6,6 +6,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "../crun/clocktime.h"
 #include "../crun/pipeline.h"
 #include "../crun/runpool.h"
 #include "../crun/runtime.h"
@@ -213,7 +214,8 @@ int path_permutation_pipeline_demo(void) {
 int maze_solution_demo(void) {
   printf("\n-----------PUZZLE PMAZE SULUTION DEMO-----------\n");
 
-  clock_t startclock = clock();
+  ClockTime *time = clocktime_create();
+  clocktime_start(time);
 
   const char maze[] = "##########....#.@##.@...G.##.#.....##.##@#####....S..##########";
   // const char maze[] = "##########..@.#.@##@....G.##.#@...@##.##@#####..@.S..##########";
@@ -243,8 +245,8 @@ int maze_solution_demo(void) {
   maze_search_solution(mazedata);
   free_maze_data_func(mazedata);
 
-  clock_t endclock = clock();
-  printf("Time taken: %f sec", ((double)(endclock - startclock)) / CLOCKS_PER_SEC);
+  printf("Time taken: %f sec\n", clocktime_stop(time));
+  clocktime_destroy(time);
 
   printf("\n-----------PUZZLE PMAZE SULUTION DEMO-----------\n");
   return EXIT_SUCCESS;

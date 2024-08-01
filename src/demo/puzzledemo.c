@@ -212,8 +212,8 @@ int path_permutation_pipeline_demo(void) {
 int maze_solution_demo(void) {
   printf("\n-----------PUZZLE PMAZE SULUTION DEMO-----------\n");
 
-  // const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
-  const char maze[] = "##########....#..##.....G.##.#..@..##.##.#####....S..##########";
+  const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
+  // const char maze[] = "##########....#..##.....G.##.#..@..##.##.#####....S..##########";
   // const char maze[] = "##########....#..##.....G.##.#.....##.##.#####....S..##########";
 
   unsigned int rows = 7;

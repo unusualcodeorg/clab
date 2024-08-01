@@ -147,6 +147,8 @@ Stack *path_find_shortest(Graph *graph, unsigned int srcnodeid, unsigned int dst
     if (visited_nodes[node->id] == node) continue;
     visited_nodes[node->id] = node;
 
+    if (node == dest) break;  // reached the destination
+
     Location *loc = (Location *)node->data;
 
     for (unsigned short i = 0; i < node->esize; i++) {

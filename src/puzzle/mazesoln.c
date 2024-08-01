@@ -73,7 +73,7 @@ void free_queue_stacks(Queue *queue) {
 void free_maze_data_func(void *data) {
   MazeData *mazedata = (MazeData *)data;
   list_destroy(mazedata->cpindexes, free_data_func);
-  free_queue_stacks(mazedata->solution);                    // contains location
+  free_queue_stacks(mazedata->solution);                          // contains location
   graph_destroy(mazedata->gmap->graph, free_location_data_func);  // free location
   hashmap_destroy(mazedata->gmap->idmap, free_data_func);
   util_destroy_2d_str_arr(mazedata->arr, mazedata->rows, mazedata->cols);
@@ -151,7 +151,7 @@ void maze_search_solution(MazeData *mazedata) {
 
     Stack *stack = path_find_shortest(mazedata->gmap->graph, srcid, dstid);
     maze_sd_result_print(stack, mazedata->arr, mazedata->rows, mazedata->cols);
-    stack_destroy(stack, NULL);
+    stack_destroy(stack, free_data_func);
   } else {
     Pipeline *pipe = pipeline_create(1, 1, 4);
     pipeline_add_producer(pipe, maze_permutation_producer, mazedata);

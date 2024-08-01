@@ -324,10 +324,10 @@ void graph_traverse(Graph *graph, GraphDataCallback callback) {
     arg->counter++;
   }
 
+  if (graph->debug == true) printf("\nGraph: Destroy DFS Traversal = %u\n", arg->counter);
+
   free(visited_nodes);
   free(arg);
-
-  if (graph->debug == true) printf("\nGraph: Destroy DFS Traversal = %u\n", arg->counter);
   pthread_rwlock_unlock(&graph->rwlock);
 }
 

@@ -212,7 +212,7 @@ void path_shortest_solution(void *arg) {
   graph_print(gmap->graph, location_str_data_to_string);
   stack_print(stack, location_str_data_to_string);
 
-  stack_destroy(stack, NULL);
+  stack_destroy(stack, free_data_func);
   graph_destroy(gmap->graph, free_location_data_func);
   hashmap_destroy(gmap->idmap, free_data_func);
   util_destroy_2d_str_arr(arr, rows, cols);

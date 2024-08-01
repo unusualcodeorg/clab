@@ -89,18 +89,37 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
     int *arr = (int *)bufferq_consume(bq);
     if (arr == NULL) continue;
 
+    /**
+     * S 1 2 3 G : mazedata->cpindexes contains indexes for - 1, 2, 3
+     * We generate permisations on mazedata->cpindexes
+     * We find pair waise short distances: (S, 1),(1, 2),(2, 3), (3, G)
+     */
     unsigned int distance = 0;
     Queue *queue = queue_create();
-    for (unsigned int k = 0; k < mazedata->cpindexes->size - 1; k++) {
-      unsigned int index = arr[k];
-      unsigned i = index / mazedata->cols;
-      unsigned j = index % mazedata->cols;
-      char *srckey = mazedata->arr[i][j];
+    for (unsigned int k = 0; k < mazedata->cpindexes->size + 1; k++) {
+      char *srckey, *destkey;
+      unsigned int index_first, index_second;
+      unsigned int i_first, j_first;
+      unsigned int i_second, j_second;
 
-      index = arr[k + 1];
-      i = index / mazedata->cols;
-      j = index % mazedata->cols;
-      char *destkey = mazedata->arr[i][j];
+      if (k == 0) {
+        index_first = mazedata->srcindex;
+        index_second = arr[k];
+      } else if (k == mazedata->cpindexes->size) {
+        index_first = arr[k - 1];
+        index_second = mazedata->destindex;
+      } else {
+        index_first = arr[k - 1];
+        index_second = arr[k];
+      }
+
+      i_first = index_first / mazedata->cols;
+      j_first = index_first % mazedata->cols;
+      srckey = mazedata->arr[i_first][j_first];
+
+      i_second = index_second / mazedata->cols;
+      j_second = index_second % mazedata->cols;
+      destkey = mazedata->arr[i_second][j_second];
 
       // TODO: can be optimized by only calculating the pairs which are new in the permutation
       unsigned int srcid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, srckey);
@@ -146,7 +165,7 @@ void maze_search_solution(MazeData *mazedata) {
 
   // only source and destination case
   if (mazedata->cpindexes->size == 2) {
-    unsigned int srcid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, mazedata->start);
+    unsigned int srcid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, mazedata->src);
     unsigned int dstid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, mazedata->dest);
 
     Stack *stack = path_find_shortest(mazedata->gmap->graph, srcid, dstid);
@@ -171,14 +190,14 @@ MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
                             unsigned int elemstrlen) {
   List *cpindexes = list_create();
 
-  char *start = "S";
+  char *src = "S";
   char *dest = "G";
   char *skip = "#";
   char *checkpoint = "@";
 
   printf("Maze: Making Checkpoint Unique\n");
 
-  unsigned int startindex = 0;
+  unsigned int srcindex = 0;
   unsigned int destindex = 0;
   unsigned int count = 0;
   for (unsigned int i = 0; i < rows; i++) {
@@ -198,8 +217,8 @@ MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
         snprintf(data, elemstrlen, "%s", data);
       }
 
-      if (strcmp(data, start) == 0) {
-        startindex = index;
+      if (strcmp(data, src) == 0) {
+        srcindex = index;
       } else if (strcmp(data, dest) == 0) {
         destindex = index;
       }
@@ -210,22 +229,14 @@ MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
   }
   printf("\n");
 
-  if (startindex == 0) {
+  if (srcindex == 0) {
     perror("S is not properly placed in the maze");
     exit(EXIT_FAILURE);
-  } else {
-    unsigned int *cindex = malloc(sizeof(unsigned int));
-    *cindex = startindex;
-    list_add_at(cpindexes, cindex, 0);
   }
 
   if (destindex == 0) {
     perror("G is not properly placed in the maze");
     exit(EXIT_FAILURE);
-  } else {
-    unsigned int *cindex = malloc(sizeof(unsigned int));
-    *cindex = destindex;
-    list_add(cpindexes, cindex);
   }
 
   MazeData *mazedata = (MazeData *)malloc(sizeof(MazeData));
@@ -235,7 +246,9 @@ MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
   mazedata->mindistance = UINT_MAX;
   mazedata->cpindexes = cpindexes;
   mazedata->solution = queue_create();
-  mazedata->start = start;
+  mazedata->srcindex = srcindex;
+  mazedata->destindex = destindex;
+  mazedata->src = src;
   mazedata->dest = dest;
   mazedata->skip = skip;
   mazedata->cp = checkpoint;

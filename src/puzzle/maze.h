@@ -18,9 +18,11 @@ typedef struct {
   unsigned int mindistance;
   Queue *solution;  // contain stacks
   List *cpindexes;
-  char *start;
-  char *cp;  // checkpoints
+  unsigned int srcindex;
+  unsigned int destindex;
+  char *src;
   char *dest;
+  char *cp;  // checkpoints
   char *skip;
   Graph2DMap *gmap;
 } MazeData;

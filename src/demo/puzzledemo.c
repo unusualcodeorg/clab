@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "../crun/pipeline.h"
@@ -212,6 +213,8 @@ int path_permutation_pipeline_demo(void) {
 int maze_solution_demo(void) {
   printf("\n-----------PUZZLE PMAZE SULUTION DEMO-----------\n");
 
+  clock_t startclock = clock();
+
   const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
   // const char maze[] = "##########....#..##.....G.##.#..@..##.##.#####....S..##########";
   // const char maze[] = "##########....#..##.....G.##.#.....##.##.#####....S..##########";
@@ -238,6 +241,9 @@ int maze_solution_demo(void) {
   MazeData *mazedata = maze_prepare_data(arr, rows, cols, elemstrlen);
   maze_search_solution(mazedata);
   free_maze_data_func(mazedata);
+
+  clock_t endclock = clock();
+  printf("Time taken: %f sec", ((double)(endclock - startclock)) / CLOCKS_PER_SEC);
 
   printf("\n-----------PUZZLE PMAZE SULUTION DEMO-----------\n");
   return EXIT_SUCCESS;

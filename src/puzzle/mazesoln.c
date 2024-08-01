@@ -57,6 +57,7 @@ void maze_solution_result_print(MazeData *mazedata) {
     Stack *stack = qnode->data;
     maze_solution_step_print(mazedata, stack);
     qnode = qnode->next;
+    printf("\n");
   }
 }
 
@@ -179,9 +180,9 @@ void maze_search_solution(MazeData *mazedata) {
 
     if (mazedata->mindistance < INT_MAX) {
       maze_solution_result_print(mazedata);
-      printf("Maze: shortest travel distance %d :D", mazedata->mindistance);
+      printf("Maze: shortest travel distance %d\n", mazedata->mindistance);
     } else {
-      printf("Maze: can't find shortest travel distance :(");
+      printf("Maze: can't find shortest travel distance\n");
     }
   }
 }
@@ -287,11 +288,16 @@ int maze_solution(void) {
     }
   }
 
+  clock_t startclock = clock();
+
   printf("\nYour input %dx%d array:\n", rows, cols);
 
   MazeData *mazedata = maze_prepare_data(arr, rows, cols, elemstrlen);
   maze_search_solution(mazedata);
   free_maze_data_func(mazedata);
+
+  clock_t endclock = clock();
+  printf("Time taken: %f sec\n", ((double)(endclock - startclock)) / CLOCKS_PER_SEC);
 
   return EXIT_SUCCESS;
 }

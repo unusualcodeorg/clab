@@ -333,7 +333,6 @@ void graph_traverse(Graph *graph, GraphDataCallback callback) {
 }
 
 Graph *graph_clone(Graph *graph, GraphDataCopier datacopier) {
-  pthread_rwlock_wrlock(&graph->rwlock);
   GraphCallbackArg *arg = graph_default_callback_arg(graph);
   // visited_nodes arr position is the node id
   GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
@@ -363,8 +362,6 @@ Graph *graph_clone(Graph *graph, GraphDataCopier datacopier) {
 
   free(visited_nodes);
   free(arg);
-  pthread_rwlock_unlock(&graph->rwlock);
-
   return gcopy;
 }
 

@@ -159,6 +159,7 @@ void maze_permutation_producer(BufferQueue *bq, void *context) {
 }
 
 void maze_search_solution(MazeData *mazedata) {
+  printf("\nSearching: please wait...\n");
   // only source and destination case
   if (mazedata->cpindexes->size == 0) {
     unsigned int srcid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, mazedata->src);
@@ -168,8 +169,8 @@ void maze_search_solution(MazeData *mazedata) {
     maze_sd_result_print(stack, mazedata->arr, mazedata->rows, mazedata->cols);
     stack_destroy(stack, free_data_func);
   } else {
-    unsigned int conscount = 1;
-    unsigned int capacity = 10;
+    unsigned int conscount = 10;
+    unsigned int capacity = 100;
     Pipeline *pipe = pipeline_create(1, conscount, capacity);
     pipeline_add_producer(pipe, maze_permutation_producer, mazedata);
     for (unsigned int i = 0; i < conscount; i++) {

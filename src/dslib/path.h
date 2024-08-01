@@ -17,7 +17,7 @@ typedef struct {
 } Location;
 
 Location *location_create(void *data);
-Location *location_copy(Location *loc);
+Location *location_clone(Location *loc);
 
 void free_location_data_func(void *data);
 

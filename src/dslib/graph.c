@@ -1,5 +1,6 @@
 #include "graph.h"
 
+#include <limits.h>
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -171,6 +172,21 @@ bool graph_isolated_node_matcher(void *item, void *match) {
 }
 
 int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...) {
+  va_list args;
+  va_start(args, linkcount);
+
+  unsigned int nodeids[linkcount];
+  for (unsigned int i = 0; i < linkcount; i++) {
+    nodeids[i] = va_arg(args, unsigned int);
+  }
+
+  int id = graph_insert_arr(graph, data, linkcount, nodeids);
+
+  va_end(args);
+  return id;
+}
+
+int graph_insert_arr(Graph *graph, void *data, unsigned int linkcount, unsigned int *nodeids) {
   pthread_rwlock_wrlock(&graph->rwlock);
   if (graph->debug == true) printf("\nGraph: Add To %u Node\n", linkcount);
 
@@ -183,14 +199,6 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...) {
   if (linkcount == 0) {
     pthread_rwlock_unlock(&graph->rwlock);
     return GRAPH_ERROR;
-  }
-
-  unsigned int nodeids[linkcount];
-  va_list args;
-  va_start(args, linkcount);
-
-  for (unsigned int i = 0; i < linkcount; i++) {
-    nodeids[i] = va_arg(args, unsigned int);
   }
 
   GraphNode *node = (GraphNode *)malloc(sizeof(GraphNode));
@@ -248,16 +256,9 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...) {
 
   if (isolated == true) list_add(graph->inodes, node);
 
-  va_end(args);
   pthread_rwlock_unlock(&graph->rwlock);
   return node->id;
 }
-
-// TODO
-// int graph_insert_weighted(Graph *graph, void *data, unsigned int linkcount,
-//                           unsigned int *linknodeids, unsigned int *edgeweights) {
-//   return -1;
-// }
 
 int graph_delete(Graph *graph, unsigned int nodeid, FreeDataFunc freedatafunc) {
   pthread_rwlock_wrlock(&graph->rwlock);
@@ -331,6 +332,42 @@ void graph_traverse(Graph *graph, GraphDataCallback callback) {
   pthread_rwlock_unlock(&graph->rwlock);
 }
 
+Graph *graph_clone(Graph *graph, GraphDataCopier datacopier) {
+  pthread_rwlock_wrlock(&graph->rwlock);
+  GraphCallbackArg *arg = graph_default_callback_arg(graph);
+  // visited_nodes arr position is the node id
+  GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
+  graph_node_find_dfs(graph->root, -1, visited_nodes, NULL, arg);
+
+  Graph *gcopy = graph_create();
+
+  for (unsigned int i = 0; i < graph->size; i++) {
+    GraphNode *node = visited_nodes[i];
+    if (node == NULL) continue;
+
+    void *datacopy = datacopier(node->data);
+
+    if (i == 0) {
+      graph_insert_root(gcopy, datacopy);
+      continue;
+    }
+
+    unsigned int linknodeids[node->esize];
+    for (unsigned short j = 0; j < node->esize; j++) {
+      GraphEdge *edge = node->edges[j];
+      linknodeids[j] = edge != NULL ? edge->end->id : UINT_MAX;
+    }
+
+    graph_insert_arr(gcopy, datacopy, node->esize, linknodeids);
+  }
+
+  free(visited_nodes);
+  free(arg);
+  pthread_rwlock_unlock(&graph->rwlock);
+
+  return gcopy;
+}
+
 void graph_print(Graph *graph, DataToString tostring) {
   pthread_rwlock_rdlock(&graph->rwlock);
   unsigned int counter = 0;
@@ -351,17 +388,16 @@ void graph_print(Graph *graph, DataToString tostring) {
   pthread_rwlock_unlock(&graph->rwlock);
 }
 
-void graph_node_destroy(GraphNode *node, bool autofree) {
+void graph_node_destroy(GraphNode *node, FreeDataFunc freedatafunc) {
   if (node == NULL) return;
 
   for (unsigned short i = 0; i < node->esize; i++) {
     GraphEdge *edge = node->edges[i];
     if (edge != NULL) free(edge);
   }
+
   free(node->edges);
-
-  if (autofree) free(node->data);
-
+  if (freedatafunc != NULL) freedatafunc(node->data);
   free(node);
 }
 

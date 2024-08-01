@@ -25,7 +25,7 @@ Location *location_create(void *data) {
   return location;
 }
 
-Location *location_copy(Location *loc) {
+Location *location_clone(Location *loc) {
   Location *location = (Location *)malloc(sizeof(Location));
   location->cost = loc->cost;
   location->id = loc->id;
@@ -33,9 +33,9 @@ Location *location_copy(Location *loc) {
   return location;
 }
 
-void location_cost_reset(void *data) {
+void *location_as_data_clone(void *data) {
   Location *loc = (Location *)data;
-  loc->cost = UINT_MAX;
+  return location_clone(loc);
 }
 
 void free_location_data_func(void *data) {
@@ -120,19 +120,23 @@ Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned
 /**
  * graph should contain data of type location
  */
-Stack *path_find_shortest(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid) {
+Stack *path_find_shortest(Graph *igraph, unsigned int srcnodeid, unsigned int dstnodeid) {
   Stack *stack = stack_create();  // store backtrack
 
-  GraphNode *start = graph_find_bfs(graph, srcnodeid);
+  GraphNode *start = graph_find_bfs(igraph, srcnodeid);
   if (start == NULL) return stack;
 
-  GraphNode *dest = graph_find_bfs(graph, dstnodeid);
+  GraphNode *dest = graph_find_bfs(igraph, dstnodeid);
   if (dest == NULL) return stack;
 
   if (start == dest) {
-    stack_push(stack, start->data);
+    // to persist the location data as copy
+    stack_push(stack, location_clone(start->data));
     return stack;
   }
+
+  // making copy to allow multiple threads works concurrently
+  Graph *graph = graph_clone(igraph, location_as_data_clone);
 
   GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
 
@@ -168,7 +172,7 @@ Stack *path_find_shortest(Graph *graph, unsigned int srcnodeid, unsigned int dst
   GraphNode *current = dest;
   while (current != NULL) {
     Location *loc = (Location *)current->data;
-    stack_push(stack, location_copy(loc));
+    stack_push(stack, location_clone(loc)); // persist the data
     if (loc->cost == 0) break;
 
     GraphNode *next = NULL;
@@ -188,9 +192,8 @@ Stack *path_find_shortest(Graph *graph, unsigned int srcnodeid, unsigned int dst
   }
 
   // reset the location cost updated in the algo
-  graph_traverse(graph, location_cost_reset);
-
-  queue_destroy(queue, NULL);
   free(visited_nodes);
+  queue_destroy(queue, NULL);
+  graph_destroy(graph, free_data_func);
   return stack;
 }

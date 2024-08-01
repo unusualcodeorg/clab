@@ -18,17 +18,14 @@ void maze_sd_result_print(Stack *stack, char ***arr, unsigned int rows, unsigned
   StackNode *node = stack->top;
   char ***patharr = util_create_2d_str_arr(rows, cols, 5);
 
-  printf("\nMaze\n");
   for (unsigned int i = 0; i < rows; i++) {
     for (unsigned int j = 0; j < cols; j++) {
-      printf("%c", *arr[i][j]);
       if (strcmp(arr[i][j], "#") != 0) {
         *patharr[i][j] = ' ';
         continue;
       }
       strcpy(patharr[i][j], arr[i][j]);
     }
-    printf("\n");
   }
 
   while (node) {
@@ -51,7 +48,7 @@ void maze_sd_result_print(Stack *stack, char ***arr, unsigned int rows, unsigned
     }
     printf("\n");
   }
-
+  printf("\n");
   util_destroy_2d_str_arr(patharr, rows, cols);
 }
 

@@ -12,20 +12,21 @@ extern "C" {
 
 typedef struct {
   bool debug;
-  bool close;
+  bool writerclosed;
+  bool readerclosed;
   unsigned int capacity;
   Queue *queue;
   pthread_mutexattr_t mutexattr;
   pthread_mutex_t mutex;
-  pthread_cond_t prodcond;
-  pthread_cond_t conscond;
+  pthread_cond_t writecond;
+  pthread_cond_t readcond;
 } BufferQueue;
 
 BufferQueue *bufferq_create(unsigned int capacity);
-void bufferq_produce(BufferQueue *bq, void *data);
-void *bufferq_consume(BufferQueue *bq);
-bool bufferq_is_open(BufferQueue *bq);
-void bufferq_close(BufferQueue *bq);
+void bufferq_write(BufferQueue *bq, void *data);
+void *bufferq_read(BufferQueue *bq);
+bool bufferq_can_read(BufferQueue *bq);
+void bufferq_close_writer(BufferQueue *bq);
 void bufferq_destroy(BufferQueue *bq, FreeDataFunc freefunc);
 
 #ifdef __cplusplus

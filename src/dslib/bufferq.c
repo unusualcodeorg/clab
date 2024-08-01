@@ -9,7 +9,8 @@
 BufferQueue *bufferq_create(unsigned int capacity) {
   BufferQueue *bq = (BufferQueue *)malloc(sizeof(BufferQueue));
   bq->debug = false;
-  bq->close = false;
+  bq->writerclosed = false;
+  bq->readerclosed = false;
   bq->capacity = capacity;
   bq->queue = queue_create();
 
@@ -17,75 +18,81 @@ BufferQueue *bufferq_create(unsigned int capacity) {
   pthread_mutexattr_settype(&bq->mutexattr, PTHREAD_MUTEX_RECURSIVE);
   pthread_mutex_init(&bq->mutex, &bq->mutexattr);
 
-  pthread_cond_init(&bq->prodcond, NULL);
-  pthread_cond_init(&bq->conscond, NULL);
+  pthread_cond_init(&bq->writecond, NULL);
+  pthread_cond_init(&bq->readcond, NULL);
   return bq;
 }
 
-void bufferq_produce(BufferQueue *bq, void *data) {
+void bufferq_write(BufferQueue *bq, void *data) {
   pthread_mutex_lock(&bq->mutex);
 
   if (bq->queue->size == bq->capacity) {
-    if (bq->debug == true) printf("BufferQueue: producer pause.\n");
-    pthread_cond_wait(&bq->prodcond, &bq->mutex);  // atomically unlock mutex
-    if (bq->debug == true) printf("BufferQueue: producer resume.\n");
+    if (bq->debug == true) printf("BufferQueue: writer pause.\n");
+    pthread_cond_wait(&bq->writecond, &bq->mutex);  // atomically unlock mutex
+    if (bq->debug == true) printf("BufferQueue: writer resume.\n");
   }
 
-  if (bq->close == true) {
-    if (bq->debug == true) printf("BufferQueue: producer close.\n");
+  if (bq->writerclosed == true) {
+    if (bq->debug == true) printf("BufferQueue: writer close.\n");
     pthread_mutex_unlock(&bq->mutex);  // must release after condition
     return;
   }
 
-  if (bq->debug == true) printf("BufferQueue: producer produce.\n");
+  if (bq->debug == true) printf("BufferQueue: writer write.\n");
   queue_enqueue(bq->queue, data);
-  pthread_cond_signal(&bq->conscond);
+  pthread_cond_signal(&bq->readcond);
 
   pthread_mutex_unlock(&bq->mutex);  // must release after condition
 }
 
-void *bufferq_consume(BufferQueue *bq) {
+void *bufferq_read(BufferQueue *bq) {
   pthread_mutex_lock(&bq->mutex);
 
   if (bq->queue->size == 0) {
-    if (bq->debug == true) printf("BufferQueue: consumer pause.\n");
-    pthread_cond_wait(&bq->conscond, &bq->mutex);  // atomically unlock mutex
-    if (bq->debug == true) printf("BufferQueue: consumer resume.\n");
+    if (bq->writerclosed == true) {
+      bq->readerclosed = true;
+      if (bq->debug == true) printf("BufferQueue: reader close read.\n");
+    } else {
+      if (bq->debug == true) printf("BufferQueue: reader pause.\n");
+      pthread_cond_wait(&bq->readcond, &bq->mutex);  // atomically unlock mutex
+      if (bq->debug == true) printf("BufferQueue: reader resume.\n");
+    }
   }
 
-  if (bq->close == true) {
-    if (bq->debug == true) printf("BufferQueue: consumer close.\n");
+  if (bq->readerclosed == true) {
+    if (bq->debug == true) printf("BufferQueue: reader close.\n");
     pthread_mutex_unlock(&bq->mutex);  // must release after condition
     return NULL;
   }
 
-  if (bq->debug == true) printf("BufferQueue: consumer consume.\n");
+  if (bq->debug == true) printf("BufferQueue: reader read.\n");
 
   void *data = queue_dequeue(bq->queue, NULL);  // must release after condition
-  pthread_cond_signal(&bq->prodcond);
+  pthread_cond_signal(&bq->writecond);
 
   pthread_mutex_unlock(&bq->mutex);
   return data;
 }
 
-bool bufferq_is_open(BufferQueue *bq) { return !bq->close; }
+bool bufferq_can_read(BufferQueue *bq) { return !bq->writerclosed; }
 
-void bufferq_close(BufferQueue *bq) {
+void bufferq_close_writer(BufferQueue *bq) {
   pthread_mutex_lock(&bq->mutex);
-  bq->close = true;
-  pthread_cond_signal(&bq->prodcond);
-  pthread_cond_signal(&bq->conscond);
+  bq->writerclosed = true;
+  if (bq->debug == true) printf("BufferQueue: writer close write.\n");
+  pthread_cond_signal(&bq->writecond);
+  pthread_cond_signal(&bq->readcond);
   pthread_mutex_unlock(&bq->mutex);
 }
 
 void bufferq_destroy(BufferQueue *bq, FreeDataFunc freedatafunc) {
-  bufferq_close(bq);
+  bufferq_close_writer(bq);
   queue_destroy(bq->queue, freedatafunc);
 
   pthread_mutex_destroy(&bq->mutex);
   pthread_mutexattr_destroy(&bq->mutexattr);
-  pthread_cond_destroy(&bq->prodcond);
-  pthread_cond_destroy(&bq->conscond);
+  pthread_cond_destroy(&bq->writecond);
+  pthread_cond_destroy(&bq->readcond);
 
   if (bq->debug == true) printf("BufferQueue: has destroyed.\n");
   free(bq);

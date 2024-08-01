@@ -79,7 +79,7 @@ void generate_permutations_buffered(BufferQueue *bq, unsigned int *arr, unsigned
     PermutationState *state = (PermutationState *)stack_pop(stack, NULL);
 
     if (state->left == state->right) {
-      bufferq_produce(bq, state->arr);
+      bufferq_write(bq, state->arr);
       continue;
     }
 
@@ -94,5 +94,5 @@ void generate_permutations_buffered(BufferQueue *bq, unsigned int *arr, unsigned
   }
 
   stack_destroy(stack, free_data_func);
-  bufferq_close(bq);
+  bufferq_close_writer(bq);
 }

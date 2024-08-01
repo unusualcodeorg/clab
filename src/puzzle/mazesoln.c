@@ -86,18 +86,24 @@ void free_maze_data_func(void *data) {
 void maze_permutation_consumer(BufferQueue *bq, void *context) {
   MazeData *mazedata = (MazeData *)context;
 
-  while (bufferq_is_open(bq)) {
-    int *arr = (int *)bufferq_consume(bq);
+  while (bufferq_can_read(bq)) {
+    int *arr = (int *)bufferq_read(bq);
     if (arr == NULL) continue;
+
+    printf("\n");
+    for (unsigned int i = 0; i < mazedata->cpindexes->size; i++) {
+      printf("%d", arr[i]);
+    }
+    printf("\n");
 
     /**
      * S 1 2 3 G : mazedata->cpindexes contains indexes for - 1, 2, 3
      * We generate permisations on mazedata->cpindexes
-     * We find pair waise short distances: (S, 1),(1, 2),(2, 3), (3, G)
+     * We find pair waise short distances: (S, 1),(1, 2),(2, 3),(3, G)
      */
     unsigned int distance = 0;
     Queue *queue = queue_create();
-    for (unsigned int k = 0; k < mazedata->cpindexes->size + 1; k++) {
+    for (unsigned int k = 0; k <= mazedata->cpindexes->size; k++) {
       char *srckey, *destkey;
       unsigned int index_first, index_second;
       unsigned int i_first, j_first;
@@ -159,13 +165,8 @@ void maze_permutation_producer(BufferQueue *bq, void *context) {
 }
 
 void maze_search_solution(MazeData *mazedata) {
-  if (mazedata->cpindexes->size < 2) {
-    perror("maze should have both S and G");
-    exit(EXIT_FAILURE);
-  }
-
   // only source and destination case
-  if (mazedata->cpindexes->size == 2) {
+  if (mazedata->cpindexes->size == 0) {
     unsigned int srcid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, mazedata->src);
     unsigned int dstid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, mazedata->dest);
 
@@ -173,10 +174,15 @@ void maze_search_solution(MazeData *mazedata) {
     maze_sd_result_print(stack, mazedata->arr, mazedata->rows, mazedata->cols);
     stack_destroy(stack, free_data_func);
   } else {
-    Pipeline *pipe = pipeline_create(10, 1, 20);
+    unsigned int conscount = 1;
+    unsigned int capacity = 10;
+    Pipeline *pipe = pipeline_create(1, conscount, capacity);
     pipeline_add_producer(pipe, maze_permutation_producer, mazedata);
-    pipeline_add_consumer(pipe, maze_permutation_consumer, mazedata);
-    pipeline_join_destory(pipe, NULL);
+    for (unsigned int i = 0; i < conscount; i++) {
+      pipeline_add_consumer(pipe, maze_permutation_consumer, mazedata);
+    }
+
+    pipeline_join_destory(pipe, free_data_func);
 
     if (mazedata->mindistance < INT_MAX) {
       maze_solution_result_print(mazedata);
@@ -228,7 +234,6 @@ MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
     }
     printf("\n");
   }
-  printf("\n");
 
   if (srcindex == 0) {
     perror("S is not properly placed in the maze");

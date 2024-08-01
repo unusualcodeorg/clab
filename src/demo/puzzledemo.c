@@ -58,7 +58,7 @@ int maze_shortest_distance_demo(void) {
 
 int path_permutation_demo(void) {
   printf("\n------------PUZZLE PERMUTATION DEMO--------------\n");
-  unsigned int arr[] = {1, 2, 3, 4, 5};
+  unsigned int arr[] = {1, 2, 3};
   unsigned int size = sizeof(arr) / sizeof(arr[0]);
   Queue *queue = generate_permutations(arr, size);
 
@@ -87,8 +87,8 @@ typedef struct {
 
 void permutation_consumer(void *context) {
   PermutationContext *ctx = (PermutationContext *)context;
-  while (bufferq_is_open(ctx->bq)) {
-    int *arr = (int *)bufferq_consume(ctx->bq);
+  while (bufferq_can_read(ctx->bq)) {
+    int *arr = (int *)bufferq_read(ctx->bq);
     if (arr == NULL) continue;
 
     for (unsigned int i = 0; i < ctx->size; i++) {
@@ -169,8 +169,8 @@ void path_permutation_producer(BufferQueue *bq, void *context) {
 void path_permutation_consumer(BufferQueue *bq, void *context) {
   unsigned int arrsize = *(unsigned int *)context;
 
-  while (bufferq_is_open(bq)) {
-    unsigned int *arr = (unsigned int *)bufferq_consume(bq);
+  while (bufferq_can_read(bq)) {
+    unsigned int *arr = (unsigned int *)bufferq_read(bq);
     if (arr == NULL) continue;
 
     for (unsigned int i = 0; i < arrsize; i++) {
@@ -215,8 +215,9 @@ int maze_solution_demo(void) {
 
   clock_t startclock = clock();
 
-  const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
-  // const char maze[] = "##########....#..##.....G.##.#..@..##.##.#####....S..##########";
+  const char maze[] = "##########....#.@##.@...G.##.#.....##.##@#####....S..##########";
+  // const char maze[] = "##########..@.#.@##@....G.##.#@...@##.##@#####..@.S..##########";
+  // const char maze[] = "##########..@.#.@##@.@..G.##.#@.@.@##.##@#####..@.S..##########";
   // const char maze[] = "##########....#..##.....G.##.#.....##.##.#####....S..##########";
 
   unsigned int rows = 7;

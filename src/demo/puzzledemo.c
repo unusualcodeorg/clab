@@ -57,13 +57,13 @@ int maze_shortest_distance_demo(void) {
 
 int path_permutation_demo(void) {
   printf("\n------------PUZZLE PERMUTATION DEMO--------------\n");
-  int arr[] = {1, 2, 3, 4, 5};
-  int size = sizeof(arr) / sizeof(arr[0]);
+  unsigned int arr[] = {1, 2, 3, 4, 5};
+  unsigned int size = sizeof(arr) / sizeof(arr[0]);
   Queue *queue = generate_permutations(arr, size);
 
   while (queue->size > 0) {
-    int *arr = (int *)queue_dequeue(queue, NULL);
-    for (int i = 0; i < size; i++) {
+    unsigned int *arr = (unsigned int *)queue_dequeue(queue, NULL);
+    for (unsigned int i = 0; i < size; i++) {
       printf("%d ", arr[i]);
     }
     printf("\n");
@@ -100,7 +100,7 @@ void permutation_consumer(void *context) {
 
 int path_permutation_buffered_demo(void) {
   printf("\n--------PUZZLE PERMUTATION BUFFERED DEMO----------\n");
-  int arr[] = {1, 2, 3};
+  unsigned int arr[] = {1, 2, 3};
   unsigned int size = sizeof(arr) / sizeof(arr[0]);
 
   BufferQueue *bq = bufferq_create(4);
@@ -127,7 +127,7 @@ int path_permutation_buffered_demo(void) {
 
 int path_permutation_pool_demo(void) {
   printf("\n------PUZZLE PERMUTATION BUFFERED POOL DEMO-------\n");
-  int arr[] = {1, 2, 3, 4};
+  unsigned int arr[] = {1, 2, 3, 4};
   unsigned int size = sizeof(arr) / sizeof(arr[0]);
 
   BufferQueue *bq = bufferq_create(10);
@@ -156,7 +156,7 @@ int path_permutation_pool_demo(void) {
 
 void path_permutation_producer(BufferQueue *bq, void *context) {
   unsigned int arrsize = *(unsigned int *)context;
-  int arr[arrsize];
+  unsigned int arr[arrsize];
 
   for (unsigned int i = 0; i < arrsize; i++) {
     arr[i] = i + 1;
@@ -166,13 +166,13 @@ void path_permutation_producer(BufferQueue *bq, void *context) {
 }
 
 void path_permutation_consumer(BufferQueue *bq, void *context) {
-  int arrsize = *(int *)context;
+  unsigned int arrsize = *(unsigned int *)context;
 
   while (bufferq_is_open(bq)) {
-    int *arr = (int *)bufferq_consume(bq);
+    unsigned int *arr = (unsigned int *)bufferq_consume(bq);
     if (arr == NULL) continue;
 
-    for (int i = 0; i < arrsize; i++) {
+    for (unsigned int i = 0; i < arrsize; i++) {
       printf("%d ", arr[i]);
     }
     printf("\n");

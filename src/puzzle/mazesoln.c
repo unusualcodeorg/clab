@@ -92,12 +92,12 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
     unsigned int distance = 0;
     Queue *queue = queue_create();
     for (unsigned int k = 0; k < mazedata->cpindexes->size - 1; k++) {
-      unsigned int index = *(unsigned int *)list_get_at(mazedata->cpindexes, k);
+      unsigned int index = arr[k];
       unsigned i = index / mazedata->cols;
       unsigned j = index % mazedata->cols;
       char *srckey = mazedata->arr[i][j];
 
-      index = *(unsigned int *)list_get_at(mazedata->cpindexes, k + 1);
+      index = arr[k + 1];
       i = index / mazedata->cols;
       j = index % mazedata->cols;
       char *destkey = mazedata->arr[i][j];
@@ -124,7 +124,7 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
 
 void maze_permutation_producer(BufferQueue *bq, void *context) {
   MazeData *mazedata = (MazeData *)context;
-  int arr[mazedata->cpindexes->size];
+  unsigned int arr[mazedata->cpindexes->size];
 
   for (unsigned int i = 0; i < mazedata->cpindexes->size; i++) {
     unsigned int *index = list_get_at(mazedata->cpindexes, i);
@@ -153,7 +153,7 @@ void maze_search_solution(MazeData *mazedata) {
     maze_sd_result_print(stack, mazedata->arr, mazedata->rows, mazedata->cols);
     stack_destroy(stack, free_data_func);
   } else {
-    Pipeline *pipe = pipeline_create(1, 1, 4);
+    Pipeline *pipe = pipeline_create(10, 1, 20);
     pipeline_add_producer(pipe, maze_permutation_producer, mazedata);
     pipeline_add_consumer(pipe, maze_permutation_consumer, mazedata);
     pipeline_join_destory(pipe, NULL);
@@ -176,7 +176,7 @@ MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
   char *skip = "#";
   char *checkpoint = "@";
 
-  printf("Maze: Make Checkpoint Unique\n");
+  printf("Maze: Making Checkpoint Unique\n");
 
   unsigned int startindex = 0;
   unsigned int destindex = 0;

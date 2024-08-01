@@ -38,7 +38,7 @@ void maze_solution_step_print(MazeData *mazedata, Stack *stack) {
 
   for (unsigned int i = 0; i < mazedata->rows; i++) {
     for (unsigned int j = 0; j < mazedata->cols; j++) {
-      printf("%c", *patharr[i][j]);
+      printf("%s", patharr[i][j]);
     }
     printf("\n");
   }

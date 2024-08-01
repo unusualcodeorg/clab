@@ -46,31 +46,34 @@ void maze_solution_step_print(MazeData *mazedata, Stack *stack) {
   util_destroy_2d_str_arr(patharr, mazedata->rows, mazedata->cols);
 }
 
+/**
+ * Q : S1: A-x-x-x-B, S2: B-x-x-C, S3: C-x-x-x-D
+ */
 void maze_solution_result_print(MazeData *mazedata) {
-  QueueNode *node = mazedata->solution->start;
+  QueueNode *qnode = mazedata->solution->start;
   int counter = 0;
-  while (node) {
+  while (qnode) {
     printf("Step %d:\n", ++counter);
-    Stack *stack = node->data;
-    // maze_solution_step_print(mazedata, stack);
-    stack_print(stack, location_int_data_to_string);
-    node = node->next;
+    Stack *stack = qnode->data;
+    maze_solution_step_print(mazedata, stack);
+    qnode = qnode->next;
   }
 }
 
-void free_queue_stacks(Queue *queue, FreeDataFunc freedatafunc) {
+void free_queue_stacks(Queue *queue) {
   Stack *stack = queue_dequeue(queue, NULL);
   while (stack) {
-    stack_destroy(stack, freedatafunc);
+    // only free the stack->data (location) and not stack->data->data
+    stack_destroy(stack, free_data_func);
     stack = queue_dequeue(queue, NULL);
   }
-  queue_destroy(queue, NULL);
+  queue_destroy(queue, free_data_func);
 }
 
 void free_maze_data_func(void *data) {
   MazeData *mazedata = (MazeData *)data;
   list_destroy(mazedata->cpindexes, free_data_func);
-  free_queue_stacks(mazedata->solution, NULL);                    // contains location
+  free_queue_stacks(mazedata->solution);                    // contains location
   graph_destroy(mazedata->gmap->graph, free_location_data_func);  // free location
   hashmap_destroy(mazedata->gmap->idmap, free_data_func);
   util_destroy_2d_str_arr(mazedata->arr, mazedata->rows, mazedata->cols);
@@ -86,7 +89,7 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
     int *arr = (int *)bufferq_consume(bq);
     if (arr == NULL) continue;
 
-    unsigned int distance = UINT_MAX;
+    unsigned int distance = 0;
     Queue *queue = queue_create();
     for (unsigned int k = 0; k < mazedata->cpindexes->size - 1; k++) {
       unsigned int index = *(unsigned int *)list_get_at(mazedata->cpindexes, k);
@@ -104,23 +107,17 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
       unsigned int destid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, destkey);
 
       Stack *stack = path_find_shortest(mazedata->gmap->graph, srcid, destid);
-      // TODO: check why this can happen
-      if (stack->size <= 1) {
-        stack_destroy(stack, NULL);
-        break;
-      }
-
       Location *dest = stack_get(stack, stack->size - 1);
       distance += dest->cost;
       queue_enqueue(queue, stack);
     }
 
     if (distance < mazedata->mindistance) {
-      free_queue_stacks(mazedata->solution, NULL);
+      free_queue_stacks(mazedata->solution);
       mazedata->mindistance = distance;
       mazedata->solution = queue;
     } else {
-      queue_destroy(queue, NULL);
+      free_queue_stacks(queue);
     }
   }
 }

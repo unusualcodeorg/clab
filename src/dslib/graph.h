@@ -37,6 +37,7 @@ typedef struct {
 } GraphCallbackArg;
 
 typedef void (*GraphCallback)(GraphNode *, GraphCallbackArg *arg);
+typedef void (*GraphDataCallback)(void *data);
 
 /**
  * Think as if a 1D array of nodes, in which a node can connect with other nodes via connections
@@ -59,6 +60,7 @@ int graph_insert_weighted(Graph *graph, void *data, unsigned int linkcount,
                           unsigned int *linknodeids, unsigned int *edgeweights);
 int graph_delete(Graph *graph, unsigned int nodeid, FreeDataFunc freedatafunc);
 void graph_print(Graph *graph, DataToString tostring);
+void graph_traverse(Graph *graph, GraphDataCallback callback);
 void graph_destroy(Graph *graph, FreeDataFunc freedatafunc);
 
 #ifdef __cplusplus

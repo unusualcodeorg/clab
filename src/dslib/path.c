@@ -25,6 +25,19 @@ Location *location_create(void *data) {
   return location;
 }
 
+Location *location_copy(Location *loc) {
+  Location *location = (Location *)malloc(sizeof(Location));
+  location->cost = loc->cost;
+  location->id = loc->id;
+  location->data = loc->data;
+  return location;
+}
+
+void location_cost_reset(void *data) {
+  Location *loc = (Location *)data;
+  loc->cost = UINT_MAX;
+}
+
 void free_location_data_func(void *data) {
   Location *loc = (Location *)data;
   free(loc->data);
@@ -128,6 +141,7 @@ Stack *path_find_shortest(Graph *graph, unsigned int srcnodeid, unsigned int dst
   Queue *queue = queue_create();
   queue_enqueue(queue, start);
 
+  // we have to visit all the nodes and update all the graph locations
   while (queue->size > 0) {
     GraphNode *node = queue_dequeue(queue, NULL);
     if (visited_nodes[node->id] == node) continue;
@@ -148,10 +162,11 @@ Stack *path_find_shortest(Graph *graph, unsigned int srcnodeid, unsigned int dst
     }
   }
 
+  // backtrack to find the shortest path
   GraphNode *current = dest;
   while (current != NULL) {
     Location *loc = (Location *)current->data;
-    stack_push(stack, loc);
+    stack_push(stack, location_copy(loc));
     if (loc->cost == 0) break;
 
     GraphNode *next = NULL;
@@ -167,9 +182,11 @@ Stack *path_find_shortest(Graph *graph, unsigned int srcnodeid, unsigned int dst
         next = edge->end;
       }
     }
-
     current = next;
   }
+
+  // reset the location cost updated in the algo
+  graph_traverse(graph, location_cost_reset);
 
   queue_destroy(queue, NULL);
   free(visited_nodes);

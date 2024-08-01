@@ -312,6 +312,25 @@ void graph_print_node(GraphNode *node, GraphCallbackArg *arg) {
   printf(",\n");
 }
 
+void graph_traverse(Graph *graph, GraphDataCallback callback) {
+  pthread_rwlock_rdlock(&graph->rwlock);
+  GraphCallbackArg *arg = graph_default_callback_arg(graph);
+  GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
+  graph_node_find_dfs(graph->root, -1, visited_nodes, graph_traversal_callback, arg);
+
+  for (unsigned int i = 0; i < graph->size; i++) {
+    GraphNode *node = visited_nodes[i];
+    callback(node->data);
+    arg->counter++;
+  }
+
+  free(visited_nodes);
+  free(arg);
+
+  if (graph->debug == true) printf("\nGraph: Destroy DFS Traversal = %u\n", arg->counter);
+  pthread_rwlock_unlock(&graph->rwlock);
+}
+
 void graph_print(Graph *graph, DataToString tostring) {
   pthread_rwlock_rdlock(&graph->rwlock);
   unsigned int counter = 0;

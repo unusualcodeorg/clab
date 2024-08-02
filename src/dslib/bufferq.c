@@ -61,6 +61,7 @@ void *bufferq_read(BufferQueue *bq) {
 
   if (bq->readerclosed == true) {
     if (bq->debug == true) printf("BufferQueue: reader close.\n");
+    pthread_cond_signal(&bq->readcond); // awake the other readers
     pthread_mutex_unlock(&bq->mutex);  // must release after condition
     return NULL;
   }

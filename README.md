@@ -28,7 +28,7 @@ make runclabdev cmd1=debug cmd2=maze_shortest_distance
 # or
 ./bin/clabdev stack
 # or
-./bin/clabdev stack maze_shortest_distance
+./bin/clabdev debug maze_shortest_distance
 ```
 
 To run the release binary, run:
@@ -39,6 +39,6 @@ make runclab cmd1=debug cmd2=maze_shortest_distance
 # or
 ./bin/clab stack
 # or
-./bin/clab stack maze_shortest_distance
+./bin/clab debug maze_shortest_distance
 ```
 

@@ -59,9 +59,11 @@ debug: $(BIN_DEV)
 
 # Run the program
 runclabdev: dev
+	pkill clabdev || true
 	./$(BIN_DEV) $(cmd1) $(cmd2)
 
 runclab: release
+	pkill clab || true
 	./$(BIN_RELEASE) $(cmd1) $(cmd2)
 
 # Phony targets

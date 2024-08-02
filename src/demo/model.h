@@ -13,7 +13,7 @@ typedef struct {
   bool verified;
 } Customer;
 
-Customer *new_customer(int id, char name[50], int salary, bool verified);
+Customer *new_customer(int id, char *name, int salary, bool verified);
 char *customer_to_string(void *cust);
 
 #ifdef __cplusplus

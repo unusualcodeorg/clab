@@ -216,18 +216,12 @@ int graph_insert_arr(Graph *graph, void *data, unsigned int linkcount, unsigned 
   bool isolated = true;
   for (unsigned int i = 0; i < linkcount; i++) {
     GraphNode *gnode = graph_find_bfs(graph, nodeids[i]);
-    if (gnode == NULL) {
-      // check in isolated nodes
-      unsigned int *nid = malloc(sizeof(unsigned int));
-      *nid = nodeids[i];
-      int index = list_index_of(graph->inodes, nid, graph_isolated_node_matcher);
-      free(nid);
-      if (index >= 0) {
-        gnode = list_delete_at(graph->inodes, index, NULL);
-      }
-    } else {
-      // if no node exits in the graph
+    if (gnode != NULL) {
       isolated = false;
+    } else {
+      // check in isolated nodes
+      int index = list_index_of(graph->inodes, &nodeids[i], graph_isolated_node_matcher);
+      gnode = list_get_at(graph->inodes, index);
     }
 
     if (gnode == NULL) continue;
@@ -409,6 +403,10 @@ void graph_destroy(Graph *graph, FreeDataFunc freedatafunc) {
 
   for (unsigned int i = 0; i < graph->size; i++) {
     GraphNode *node = visited_nodes[i];
+
+    int index = list_index_of(graph->inodes, &node->id, graph_isolated_node_matcher);
+    if (index >= 0) list_delete_at(graph->inodes, index, NULL);
+
     graph_node_destroy(node, freedatafunc);
     arg->counter++;
   }

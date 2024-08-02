@@ -266,6 +266,8 @@ MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
   mazedata->gmap =
       maze_graph_map_create(mazedata->arr, mazedata->rows, mazedata->cols, mazedata->skip);
 
+  graph_print(mazedata->gmap->graph, location_int_data_to_string);
+
   return mazedata;
 }
 

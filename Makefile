@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = gcc
-CFLAGS_COMMON = -std=c18 -Wall -Wextra -Wpedantic -pthread
+CFLAGS_COMMON = -std=c18 -D_GNU_SOURCE -Wall -Wextra -Wpedantic -pthread
 CFLAGS_DEV = -g -Werror -fsanitize=address
 CFLAGS_RELEASE = -O2
 

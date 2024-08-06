@@ -1,7 +1,7 @@
 #include "util.h"
 
-#include <limits.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 

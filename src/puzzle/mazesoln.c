@@ -1,5 +1,5 @@
-#include <limits.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -186,7 +186,7 @@ void maze_search_solution(MazeData *mazedata) {
 
     pipeline_join_destory(pipe, free_data_func);
 
-    if (mazedata->mindistance < INT_MAX) {
+    if (mazedata->mindistance < SIZE_MAX) {
       maze_solution_result_print(mazedata);
       printf("Maze: shortest travel distance %zu\n", mazedata->mindistance);
     } else {

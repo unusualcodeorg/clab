@@ -1,6 +1,6 @@
 #include "path.h"
 
-#include <limits.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 

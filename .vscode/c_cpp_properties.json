@@ -7,10 +7,10 @@
           "macFrameworkPath": [
             "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
           ],
-          "compilerPath": "/usr/bin/clang",
+          "compilerPath": "/usr/bin/gcc",
           "cStandard": "c17",
           "cppStandard": "c++17",
-          "intelliSenseMode": "macos-clang-arm64",
+          "intelliSenseMode": "macos-gcc-arm64",
           "compilerArgs": [
             "-g",
             "-Wall",

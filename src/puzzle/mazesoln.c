@@ -221,9 +221,6 @@ MazeData *maze_prepare_data(char ***arr, size_t rows, size_t cols, size_t elemst
 
       if (strcmp(data, checkpoint) == 0) {
         snprintf(data, elemstrlen, "%zu", ++count);  // rename for search
-      } else {
-				char* temp = data;
-        snprintf(data, elemstrlen, "%s", temp);
       }
 
       if (strcmp(data, src) == 0) {

@@ -9,8 +9,7 @@
 #ifndef CLAB_DS_LIB_GRAPH_H
 #define CLAB_DS_LIB_GRAPH_H
 
-#define GRAPH_NODE_NULL_ID -1;
-#define GRAPH_ERROR -1;
+#define GRAPH_NODE_NULL_ID 0;
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,7 +31,7 @@ typedef struct GraphNode {
 typedef struct {
   bool debug;
   size_t counter;
-  pthread_rwlock_t rwlock;
+  pthread_rwlock_t *rwlock;
   DataToString tostring;
 } GraphCallbackArg;
 
@@ -56,15 +55,15 @@ GraphNode *graph_find_bfs(Graph *graph, size_t nodeid);
 GraphNode *graph_find_dfs(Graph *graph, size_t nodeid);
 void *graph_get(Graph *graph, size_t nodeid);
 // var arg for node ids to link with other nodes
-int graph_insert(Graph *graph, void *data, size_t linkcount, ...);
-int graph_insert_arr(Graph *graph, void *data, size_t linkcount, size_t *nodeids);
-int graph_delete(Graph *graph, size_t nodeid, FreeDataFunc freedatafunc);
+size_t graph_insert(Graph *graph, void *data, size_t linkcount, ...);
+size_t graph_insert_arr(Graph *graph, void *data, size_t linkcount, size_t *nodeids);
+size_t graph_delete(Graph *graph, size_t nodeid, FreeDataFunc freedatafunc);
 void graph_print(Graph *graph, DataToString tostring);
 void graph_traverse(Graph *graph, GraphDataCallback callback);
 Graph *graph_clone(Graph *graph, GraphDataCopier datacopier);
 void graph_destroy(Graph *graph, FreeDataFunc freedatafunc);
 
-// int graph_insert_weighted(Graph *graph, void *data, size_t linkcount,
+// size_t graph_insert_weighted(Graph *graph, void *data, size_t linkcount,
 //                           size_t *linknodeids, size_t *edgeweights);
 
 #ifdef __cplusplus

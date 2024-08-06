@@ -134,8 +134,8 @@ int queue_demo(void) {
 
   printf("Queue: Size = %zu\n", queue->size);
 
-  char *data = queue_get(queue, 2);
-  printf("Queue: Get - Position 2 = %s\n", data);
+  Customer *data = queue_get(queue, 2);
+  printf("Queue: Get - Position 2 = %s\n", customer_to_string(data));
 
   queue_dequeue(queue, free_data_func);
   printf("Queue Dequeue: Size = %zu\n", queue->size);
@@ -233,15 +233,15 @@ int queue_concurrent_demo(void) {
 [6]G----[7]H----[8]I
 
 Graph[
- [0]A --> [1]B [5]F,
- [5]F --> [0]A [4]E [6]G,
- [6]G --> [5]F [7]H,
- [7]H --> [4]E [6]G [8]I,
- [8]I --> [3]D [7]H,
- [3]D --> [2]C [4]E [8]I,
- [4]E --> [1]B [3]D [5]F [7]H,
- [1]B --> [0]A [2]C [4]E,
- [2]C --> [1]B [3]D,
+ [1]A --> [2]B [6]F,
+ [2]B --> [1]A [3]C [5]E,
+ [6]F --> [1]A [5]E [7]G,
+ [3]C --> [2]B [4]D,
+ [5]E --> [2]B [4]D [6]F [8]H,
+ [7]G --> [6]F [8]H,
+ [4]D --> [3]C [5]E [9]I,
+ [8]H --> [5]E [7]G [9]I,
+ [9]I --> [4]D [8]H,
 ]
  */
 
@@ -276,7 +276,7 @@ void croutine1(void *arg) {
   printf("Thread ID: croutine1: %lu\n", tid);
 
   Graph *graph = arg;
-  size_t id_A = 0;
+  size_t id_A = 1;
   size_t id_B = graph_insert(graph, "B", 1, id_A);
 
   usleep(1250000);

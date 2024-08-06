@@ -22,12 +22,12 @@ int graph_2d_arr_demo(void) {
   printf("\n---------------GRAPH 2D ARR DEMO----------------\n");
   const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
 
-  int rows = 7;
-  int cols = 9;
+  size_t rows = 7;
+  size_t cols = 9;
   char ***arr = util_create_2d_str_arr(rows, cols, 5);
 
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       char temp[50];
       char data = maze[i * cols + j];
       snprintf(temp, 50, "%c", data);
@@ -47,7 +47,7 @@ int graph_2d_arr_demo(void) {
   data = (char *)graph_get(gmap->graph, 24);
   printf("Graph found id %d : %c\n", 24, *data);
 
-  graph_destroy(gmap->graph, free_location_data_func);
+  graph_destroy(gmap->graph, free_data_func);
   hashmap_destroy(gmap->idmap, free_data_func);
   util_destroy_2d_str_arr(arr, rows, cols);
 
@@ -100,19 +100,19 @@ void path_shortest_console(void *arg) {
 void path_shortest_nwg_tree_solution(void *arg) {
   Runtime *rnc = (Runtime *)arg;
 
-  // int rows = 30;
-  // int cols = 30;
+  // size_t rows = 30;
+  // size_t cols = 30;
 
-  int rows = 5;
-  int cols = 5;
+  size_t rows = 5;
+  size_t cols = 5;
 
   char ***arr = util_create_2d_str_arr(rows, cols, 5);
 
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       // char str[50];
-      // int num = i * cols + j;
-      // snprintf(str, 50, "N%d", num);
+      // size_t num = i * cols + j;
+      // size_t(str, 50, "N%d", num);
 
       char str[2];
       char num = 65 + i * cols + j;
@@ -140,7 +140,7 @@ void path_shortest_nwg_tree_solution(void *arg) {
   stack_print(stack, location_str_data_to_string);
 
   stack_destroy(stack, NULL);
-  graph_destroy(gmap->graph, free_location_data_func);
+  graph_destroy(gmap->graph, free_data_func);
   hashmap_destroy(gmap->idmap, free_data_func);
   util_destroy_2d_str_arr(arr, rows, cols);
 }
@@ -182,16 +182,16 @@ int path_shortest_nwg_tree_demo(void) {
 void path_shortest_solution(void *arg) {
   Runtime *rnc = (Runtime *)arg;
 
-  int rows = 5;
-  int cols = 5;
+  size_t rows = 5;
+  size_t cols = 5;
 
   char ***arr = util_create_2d_str_arr(rows, cols, 5);
 
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       // char str[50];
-      // int num = i * cols + j;
-      // snprintf(str, 50, "N%d", num);
+      // size_t num = i * cols + j;
+      // snprintf(str, 50, "N%zu", num);
 
       char str[2];
       char num = 65 + i * cols + j;
@@ -213,7 +213,7 @@ void path_shortest_solution(void *arg) {
   stack_print(stack, location_str_data_to_string);
 
   stack_destroy(stack, free_data_func);
-  graph_destroy(gmap->graph, free_location_data_func);
+  graph_destroy(gmap->graph, free_data_func);
   hashmap_destroy(gmap->idmap, free_data_func);
   util_destroy_2d_str_arr(arr, rows, cols);
 }

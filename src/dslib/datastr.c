@@ -37,7 +37,7 @@ char *str_data_to_string(void *arg) {
 char *location_str_data_to_string(void *arg) {
   Location *location = (Location *)arg;
   char *data = (char *)location->data;
-  long cost = location->cost == UINT_MAX ? -1 : (long)location->cost;
+  long cost = location->cost == SIZE_MAX ? -1 : (long)location->cost;
   char *buffer = malloc(50);
   snprintf(buffer, 50, "[%zu]-%ld-%s", location->id, cost, data);
   return buffer;
@@ -46,7 +46,7 @@ char *location_str_data_to_string(void *arg) {
 char *location_char_data_to_string(void *arg) {
   Location *location = (Location *)arg;
   char data = *(char *)arg;
-  long cost = location->cost == UINT_MAX ? -1 : (long)location->cost;
+  long cost = location->cost == SIZE_MAX ? -1 : (long)location->cost;
   char *buffer = malloc(50);
   snprintf(buffer, 50, "[%zu]-%ld-%c", location->id, cost, data);
   return buffer;
@@ -55,7 +55,7 @@ char *location_char_data_to_string(void *arg) {
 char *location_int_data_to_string(void *arg) {
   Location *location = (Location *)arg;
   int data = *(int *)location->data;
-  long cost = location->cost == UINT_MAX ? -1 : (long)location->cost;
+  long cost = location->cost == SIZE_MAX ? -1 : (long)location->cost;
   char *buffer = malloc(50);
   snprintf(buffer, 50, "[%zu]-%ld-%d", location->id, cost, data);
   return buffer;

@@ -10,13 +10,13 @@ extern "C" {
 #endif
 
 typedef struct {
-  size_t *arr;
+  int *arr;
   size_t left;
   size_t right;
 } PermutationState;
 
-Queue *generate_permutations(size_t *arr, size_t n);
-void generate_permutations_buffered(BufferQueue *bq, size_t *arr, size_t arrsize);
+Queue *generate_permutations(int *arr, size_t arrsize);
+void generate_permutations_buffered(BufferQueue *bq, int *arr, size_t arrsize);
 
 #ifdef __cplusplus
 }

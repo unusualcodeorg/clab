@@ -151,7 +151,7 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
 
 void maze_permutation_producer(BufferQueue *bq, void *context) {
   MazeData *mazedata = (MazeData *)context;
-  size_t arr[mazedata->cpindexes->size];
+  int arr[mazedata->cpindexes->size];
 
   for (size_t i = 0; i < mazedata->cpindexes->size; i++) {
     size_t *index = list_get_at(mazedata->cpindexes, i);
@@ -195,8 +195,7 @@ void maze_search_solution(MazeData *mazedata) {
   }
 }
 
-MazeData *maze_prepare_data(char ***arr, size_t rows, size_t cols,
-                            size_t elemstrlen) {
+MazeData *maze_prepare_data(char ***arr, size_t rows, size_t cols, size_t elemstrlen) {
   List *cpindexes = list_create();
 
   char *src = "S";
@@ -253,7 +252,7 @@ MazeData *maze_prepare_data(char ***arr, size_t rows, size_t cols,
   mazedata->arr = arr;
   mazedata->rows = rows;
   mazedata->cols = cols;
-  mazedata->mindistance = UINT_MAX;
+  mazedata->mindistance = SIZE_MAX;
   mazedata->cpindexes = cpindexes;
   mazedata->solution = queue_create();
   mazedata->cache = hashmap_create(pairs);

@@ -19,7 +19,7 @@ List *list_create(void) {
   return list;
 }
 
-int list_add(List *list, void *data) {
+size_t list_add(List *list, void *data) {
   pthread_rwlock_wrlock(&list->rwlock);
 
   ListNode *node = (ListNode *)malloc(sizeof(ListNode));
@@ -45,7 +45,7 @@ int list_add(List *list, void *data) {
   return list->size - 1;
 }
 
-int list_add_at(List *list, void *data, size_t index) {
+size_t list_add_at(List *list, void *data, size_t index) {
   if (index > list->size) return LIST_NULL_INDEX;
 
   pthread_rwlock_wrlock(&list->rwlock);
@@ -149,7 +149,7 @@ void list_print(List *list, DataToString tostring) {
   pthread_rwlock_unlock(&list->rwlock);
 }
 
-int list_index_of(List *list, void *match, ListMatcher matcher) {
+long list_index_of(List *list, void *match, ListMatcher matcher) {
   pthread_rwlock_rdlock(&list->rwlock);
   ListNode *current = NULL;
   for (size_t i = 0; i < list->size; i++) {

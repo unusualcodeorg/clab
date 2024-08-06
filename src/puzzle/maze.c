@@ -1,5 +1,6 @@
 #include "maze.h"
 
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,7 +62,7 @@ Graph2DMap *maze_graph_map_create(char ***arr, size_t rows, size_t cols, char *s
   size_t idstore[rows][cols];
   for (size_t i = 0; i < rows; i++) {
     for (size_t j = 0; j < cols; j++) {
-      idstore[i][j] = rows * cols + 1;  // set max value which can not be asigned to any graph node
+      idstore[i][j] = SIZE_MAX;  // set max value which can not be asigned to any graph node
     }
   }
 
@@ -136,8 +137,8 @@ Graph2DMap *maze_graph_map_create(char ***arr, size_t rows, size_t cols, char *s
   return gmap;
 }
 
-void maze_find_shortest_distance(char ***arr, size_t rows, size_t cols, char *start,
-                                 char *dest, char *skip) {
+void maze_find_shortest_distance(char ***arr, size_t rows, size_t cols, char *start, char *dest,
+                                 char *skip) {
   // cannot auto free arr[i][j] since arr[i] is a continous memory
   Graph2DMap *gmap = maze_graph_map_create(arr, rows, cols, skip);
   gmap->graph->debug = true;

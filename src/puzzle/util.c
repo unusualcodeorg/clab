@@ -8,24 +8,23 @@
 #include "../dslib/queue.h"
 #include "../dslib/stack.h"
 
-void swap(size_t *x, size_t *y) {
-  size_t temp = *x;
+void swap(int *x, int *y) {
+  int temp = *x;
   *x = *y;
   *y = temp;
 }
 
-PermutationState *create_permutation_state(size_t *arr, size_t n, size_t left,
-                                           size_t right) {
+PermutationState *create_permutation_state(int *arr, size_t arrsize, size_t left, size_t right) {
   PermutationState *state = (PermutationState *)malloc(sizeof(PermutationState));
-  state->arr = (size_t *)malloc(n * sizeof(size_t));
-  memcpy(state->arr, arr, n * sizeof(size_t));  // Copy the array to avoid aliasing
+  state->arr = (int *)malloc(arrsize * sizeof(int));
+  memcpy(state->arr, arr, arrsize * sizeof(int));  // Copy the array to avoid aliasing
   state->left = left;
   state->right = right;
   return state;
 }
 
-Queue *generate_permutations(size_t *arr, size_t n) {
-  if (n > 10) {
+Queue *generate_permutations(int *arr, size_t arrsize) {
+  if (arrsize > 10) {
     perror("permutation larger than 10 will take a lot of memory");
     exit(EXIT_FAILURE);
   }
@@ -34,7 +33,7 @@ Queue *generate_permutations(size_t *arr, size_t n) {
   Queue *queue = queue_create();
 
   // Push the initial state onto the stack
-  PermutationState *initial = create_permutation_state(arr, n, 0, n - 1);
+  PermutationState *initial = create_permutation_state(arr, arrsize, 0, arrsize - 1);
   stack_push(stack, initial);
 
   while (stack->size > 0) {
@@ -47,7 +46,7 @@ Queue *generate_permutations(size_t *arr, size_t n) {
 
     for (size_t i = state->left; i <= state->right; i++) {
       PermutationState *newstate =
-          create_permutation_state(state->arr, n, state->left + 1, state->right);
+          create_permutation_state(state->arr, arrsize, state->left + 1, state->right);
 
       // Swap elements in the new state's array
       swap(&newstate->arr[state->left], &newstate->arr[i]);
@@ -65,7 +64,7 @@ Queue *generate_permutations(size_t *arr, size_t n) {
   return queue;
 }
 
-void generate_permutations_buffered(BufferQueue *bq, size_t *arr, size_t arrsize) {
+void generate_permutations_buffered(BufferQueue *bq, int *arr, size_t arrsize) {
   if (arrsize > 10) {
     perror("permutation larger than 10 will take a lot of memory");
     exit(EXIT_FAILURE);

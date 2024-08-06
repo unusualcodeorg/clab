@@ -59,14 +59,14 @@ int maze_shortest_distance_demo(void) {
 
 int path_permutation_demo(void) {
   printf("\n------------PUZZLE PERMUTATION DEMO--------------\n");
-  size_t arr[] = {1, 2, 3};
+  int arr[] = {1, 2, 3};
   size_t size = sizeof(arr) / sizeof(arr[0]);
   Queue *queue = generate_permutations(arr, size);
 
   while (queue->size > 0) {
-    size_t *arr = (size_t *)queue_dequeue(queue, NULL);
+    int *arr = (int *)queue_dequeue(queue, NULL);
     for (size_t i = 0; i < size; i++) {
-      printf("%zu ", arr[i]);
+      printf("%d ", arr[i]);
     }
     printf("\n");
   }
@@ -102,7 +102,7 @@ void permutation_consumer(void *context) {
 
 int path_permutation_buffered_demo(void) {
   printf("\n--------PUZZLE PERMUTATION BUFFERED DEMO----------\n");
-  size_t arr[] = {1, 2, 3};
+  int arr[] = {1, 2, 3};
   size_t size = sizeof(arr) / sizeof(arr[0]);
 
   BufferQueue *bq = bufferq_create(4);
@@ -129,7 +129,7 @@ int path_permutation_buffered_demo(void) {
 
 int path_permutation_pool_demo(void) {
   printf("\n------PUZZLE PERMUTATION BUFFERED POOL DEMO-------\n");
-  size_t arr[] = {1, 2, 3, 4};
+  int arr[] = {1, 2, 3, 4};
   size_t size = sizeof(arr) / sizeof(arr[0]);
 
   BufferQueue *bq = bufferq_create(10);
@@ -158,7 +158,7 @@ int path_permutation_pool_demo(void) {
 
 void path_permutation_producer(BufferQueue *bq, void *context) {
   size_t arrsize = *(size_t *)context;
-  size_t arr[arrsize];
+  int arr[arrsize];
 
   for (size_t i = 0; i < arrsize; i++) {
     arr[i] = i + 1;
@@ -171,11 +171,11 @@ void path_permutation_consumer(BufferQueue *bq, void *context) {
   size_t arrsize = *(size_t *)context;
 
   while (bufferq_can_read(bq)) {
-    size_t *arr = (size_t *)bufferq_read(bq);
+    int *arr = (int *)bufferq_read(bq);
     if (arr == NULL) continue;
 
     for (size_t i = 0; i < arrsize; i++) {
-      printf("%zu ", arr[i]);
+      printf("%d ", arr[i]);
     }
     printf("\n");
     sleep(2);

@@ -28,11 +28,11 @@ typedef struct {
 } List;
 
 List *list_create(void);
-int list_add(List *list, void *data);
-int list_add_at(List *list, void *data, size_t index);
+size_t list_add(List *list, void *data);
+size_t list_add_at(List *list, void *data, size_t index);
 void *list_delete_at(List *list, size_t index, FreeDataFunc freedatafunc);
 void *list_get_at(List *list, size_t index);
-int list_index_of(List *list, void *match, ListMatcher matcher);
+long list_index_of(List *list, void *match, ListMatcher matcher);
 void list_print(List *list, DataToString tostring);
 void list_destroy(List *list, FreeDataFunc freedatafunc);
 

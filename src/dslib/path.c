@@ -19,7 +19,7 @@ char *path_tree_data_to_string(void *arg) {
 
 Location *location_create(void *data) {
   Location *location = (Location *)malloc(sizeof(Location));
-  location->cost = UINT_MAX;
+  location->cost = SIZE_MAX;
   location->id = 0;
   location->data = data;
   return location;
@@ -138,7 +138,7 @@ Stack *path_find_shortest(Graph *igraph, size_t srcnodeid, size_t dstnodeid) {
     return stack;
   }
 
-  GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
+  GraphNode **visited_nodes = (GraphNode **)calloc(graph->size + 1, sizeof(GraphNode *));
 
   ((Location *)start->data)->cost = 0;
 
@@ -176,7 +176,7 @@ Stack *path_find_shortest(Graph *igraph, size_t srcnodeid, size_t dstnodeid) {
     if (loc->cost == 0) break;
 
     GraphNode *next = NULL;
-    size_t min = UINT_MAX;
+    size_t min = SIZE_MAX;
 
     for (size_t i = 0; i < current->esize; i++) {
       GraphEdge *edge = current->edges[i];

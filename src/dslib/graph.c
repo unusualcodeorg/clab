@@ -214,7 +214,10 @@ size_t graph_insert_arr(Graph *graph, void *data, size_t linkcount, size_t *node
   size_t edgecount = 0;
   bool isolated = true;
   for (size_t i = 0; i < linkcount; i++) {
+    pthread_rwlock_unlock(&graph->rwlock);
     GraphNode *gnode = graph_find_bfs(graph, nodeids[i]);
+    pthread_rwlock_wrlock(&graph->rwlock);
+
     if (gnode != NULL) {
       isolated = false;
     } else {
@@ -253,12 +256,12 @@ size_t graph_insert_arr(Graph *graph, void *data, size_t linkcount, size_t *node
 }
 
 size_t graph_delete(Graph *graph, size_t nodeid, FreeDataFunc freedatafunc) {
-  pthread_rwlock_wrlock(&graph->rwlock);
   GraphNode *node = graph_find_dfs(graph, nodeid);
   if (node == NULL) {
-    pthread_rwlock_unlock(&graph->rwlock);
     return GRAPH_NODE_NULL_ID;
   }
+
+  pthread_rwlock_wrlock(&graph->rwlock);
 
   for (size_t i = 0; i < node->esize; i++) {
     GraphEdge *edge = node->edges[i];

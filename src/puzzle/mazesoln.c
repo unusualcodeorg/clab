@@ -275,10 +275,10 @@ int maze_solution(void) {
   unsigned int elemstrlen = 5;
 
   printf("Enter number of rows: ");
-  scanf("%d", &rows);
+  scanf("%u", &rows);
 
   printf("Enter number of columns: ");
-  scanf("%d", &cols);
+  scanf("%u", &cols);
 
   if (rows > max || cols > max) {
     printf("Rows and Columns should less than %d", max);

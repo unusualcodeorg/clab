@@ -27,7 +27,7 @@ typedef struct {
   bool debug;
   unsigned int counter;
   pthread_rwlock_t rwlock;
-  void *lambda;
+  DataToString tostring;
 } TreeCallbackArg;
 
 typedef void (*TreeCallback)(TreeNode *, TreeCallbackArg *arg);

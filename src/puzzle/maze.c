@@ -90,12 +90,12 @@ Graph2DMap *maze_graph_map_create(char ***arr, unsigned int rows, unsigned int c
       }
 
       long upindex = index - cols;
-      long backindex = j == 0 ? -1 : index - 1;
+      long backindex = j == 0 ? -1 : (long)index - 1;
 
       // skip trapped node
       if (upindex >= 0 && backindex >= 0) {
-        long downindex = i == rows - 1 ? -1 : index + cols;
-        long frontindex = j == cols - 1 ? -1 : index + 1;
+        long downindex = i == rows - 1 ? -1 : (long)(index + cols);
+        long frontindex = j == cols - 1 ? -1 : (long)index + 1;
 
         if (downindex >= 0 && frontindex >= 0) {
           if (strcmp(arr[i - 1][j], skip) == 0 && strcmp(arr[i][j - 1], skip) == 0 &&
@@ -164,10 +164,10 @@ int maze_shortest_distance(void) {
   unsigned int elemstrlen = 5;
 
   printf("Enter number of rows: ");
-  scanf("%d", &rows);
+  scanf("%u", &rows);
 
   printf("Enter number of columns: ");
-  scanf("%d", &cols);
+  scanf("%u", &cols);
 
   if (rows > max || cols > max) {
     printf("Rows and Columns should less than %d", max);

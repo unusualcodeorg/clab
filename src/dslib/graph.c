@@ -290,9 +290,7 @@ void graph_print_node(GraphNode *node, GraphCallbackArg *arg) {
 
   if (arg->debug == true) arg->counter++;
 
-  DataToString tostring = (DataToString)arg->lambda;
-
-  char *str = tostring(node->data);
+  char *str = arg->tostring(node->data);
   printf(" [%d]%s -->", node->id, str);
   free(str);
 
@@ -300,7 +298,7 @@ void graph_print_node(GraphNode *node, GraphCallbackArg *arg) {
     GraphEdge *edge = node->edges[i];
     if (edge == NULL || edge->end == NULL) continue;
 
-    char *s = tostring(edge->end->data);
+    char *s = arg->tostring(edge->end->data);
     printf(" [%d]%s", edge->end->id, s);
     free(s);
   }
@@ -365,7 +363,7 @@ void graph_print(Graph *graph, DataToString tostring) {
   printf("\nGraph[\n");
   if (graph->root != NULL) {
     GraphCallbackArg *arg = graph_default_callback_arg(graph);
-    arg->lambda = (void *)tostring;
+    arg->tostring = tostring;
 
     GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
     graph_node_find_bfs(graph->root, -1, visited_nodes, graph_print_node, arg);

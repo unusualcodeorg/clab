@@ -33,7 +33,7 @@ typedef struct {
   bool debug;
   unsigned int counter;
   pthread_rwlock_t rwlock;
-  void *lambda;
+  DataToString tostring;
 } GraphCallbackArg;
 
 typedef void (*GraphCallback)(GraphNode *, GraphCallbackArg *arg);

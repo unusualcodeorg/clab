@@ -9,7 +9,6 @@
 #include "../demo/pathdemo.h"
 #include "../demo/puzzledemo.h"
 #include "../demo/termdemo.h"
-#include "../dslib/hashmap.h"
 #include "../puzzle/maze.h"
 
 int debugfn(char *fname) {
@@ -18,39 +17,58 @@ int debugfn(char *fname) {
     return EXIT_FAILURE;
   }
 
-  HashMap *map = hashmap_create(50);
-  hashmap_put(map, "stack_demo", (void *)stack_demo);
-  hashmap_put(map, "stack_concurrent_demo", (void *)stack_concurrent_demo);
-  hashmap_put(map, "queue_demo", (void *)queue_demo);
-  hashmap_put(map, "queue_concurrent_demo", (void *)queue_concurrent_demo);
-  hashmap_put(map, "runtime_demo", (void *)runtime_demo);
-  hashmap_put(map, "runpool_demo", (void *)runpool_demo);
-  hashmap_put(map, "tree_demo", (void *)tree_demo);
-  hashmap_put(map, "graph_demo", (void *)graph_demo);
-  hashmap_put(map, "graph_concurrent_demo", (void *)graph_concurrent_demo);
-  hashmap_put(map, "graph_2d_arr_demo", (void *)graph_2d_arr_demo);
-  hashmap_put(map, "hashmap_demo", (void *)hashmap_demo);
-  hashmap_put(map, "path_shortest_nwg_tree_demo", (void *)path_shortest_nwg_tree_demo);
-  hashmap_put(map, "console_demo", (void *)console_demo);
-  hashmap_put(map, "maze_shortest_distance_demo", (void *)maze_shortest_distance_demo);
-  hashmap_put(map, "maze_shortest_distance", (void *)maze_shortest_distance);
-  hashmap_put(map, "linked_list_demo", (void *)linked_list_demo);
-  hashmap_put(map, "path_shortest_demo", (void *)path_shortest_demo);
-  hashmap_put(map, "path_permutation_demo", (void *)path_permutation_demo);
-  hashmap_put(map, "path_permutation_buffered_demo", (void *)path_permutation_demo);
-  hashmap_put(map, "path_permutation_pool_demo", (void *)path_permutation_pool_demo);
-  hashmap_put(map, "path_permutation_pipeline_demo", (void *)path_permutation_pipeline_demo);
-  hashmap_put(map, "maze_solution_demo", (void *)maze_solution_demo);
-  hashmap_put(map, "maze_solution", (void *)maze_solution);
+  ExceFunc func = NULL;
 
-  ExceFunc func = (ExceFunc)hashmap_get(map, fname);
+  if (strcmp(fname, "stack_demo") == 0)
+    func = stack_demo;
+  else if (strcmp(fname, "stack_concurrent_demo") == 0)
+    func = stack_concurrent_demo;
+  else if (strcmp(fname, "queue_demo") == 0)
+    func = queue_demo;
+  else if (strcmp(fname, "queue_concurrent_demo") == 0)
+    func = queue_concurrent_demo;
+  else if (strcmp(fname, "runtime_demo") == 0)
+    func = runtime_demo;
+  else if (strcmp(fname, "runpool_demo") == 0)
+    func = runpool_demo;
+  else if (strcmp(fname, "tree_demo") == 0)
+    func = tree_demo;
+  else if (strcmp(fname, "graph_demo") == 0)
+    func = graph_demo;
+  else if (strcmp(fname, "graph_concurrent_demo") == 0)
+    func = graph_concurrent_demo;
+  else if (strcmp(fname, "graph_2d_arr_demo") == 0)
+    func = graph_2d_arr_demo;
+  else if (strcmp(fname, "hashmap_demo") == 0)
+    func = hashmap_demo;
+  else if (strcmp(fname, "path_shortest_nwg_tree_demo") == 0)
+    func = path_shortest_nwg_tree_demo;
+  else if (strcmp(fname, "console_demo") == 0)
+    func = console_demo;
+  else if (strcmp(fname, "maze_shortest_distance_demo") == 0)
+    func = maze_shortest_distance_demo;
+  else if (strcmp(fname, "maze_shortest_distance") == 0)
+    func = maze_shortest_distance;
+  else if (strcmp(fname, "path_shortest_demo") == 0)
+    func = path_shortest_demo;
+  else if (strcmp(fname, "path_permutation_demo") == 0)
+    func = path_permutation_demo;
+  else if (strcmp(fname, "path_permutation_buffered_demo") == 0)
+    func = path_permutation_buffered_demo;
+  else if (strcmp(fname, "path_permutation_pool_demo") == 0)
+    func = path_permutation_pool_demo;
+  else if (strcmp(fname, "path_permutation_pipeline_demo") == 0)
+    func = path_permutation_pipeline_demo;
+  else if (strcmp(fname, "maze_solution_demo") == 0)
+    func = maze_solution_demo;
+  else if (strcmp(fname, "maze_solution") == 0)
+    func = maze_solution;
 
-  if (!func) {
+  if (func == NULL) {
     fprintf(stderr, "%s not found \n", fname);
     return EXIT_FAILURE;
   }
   func();
 
-  hashmap_destroy(map, NULL);
   return EXIT_SUCCESS;
 }

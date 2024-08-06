@@ -173,7 +173,7 @@ TreeNode *tree_insert_node(Tree *tree, void *data, TreeNode *parent) {
 int tree_insert(Tree *tree, void *data, unsigned int parentid) {
   TreeNode *parent = tree_find_bfs(tree, parentid);
   TreeNode *node = tree_insert_node(tree, data, parent);
-  return node != NULL ? node->id : TREE_NODE_NULL_ID;
+  return node != NULL ? (int)node->id : TREE_NODE_NULL_ID;
 }
 
 int tree_max_depth(Tree *tree) {
@@ -216,15 +216,13 @@ void tree_print_node(TreeNode *node, TreeCallbackArg *arg) {
 
   if (arg->debug == true) arg->counter++;
 
-  DataToString tostring = (DataToString)arg->lambda;
-
-  char *str = tostring(node->data);
+  char *str = arg->tostring(node->data);
   printf(" [%d]%s -->", node->id, str);
   free(str);
 
   for (unsigned short i = 0; i < node->csize; i++) {
     TreeNode *child = node->children[i];
-    char *s = tostring(child->data);
+    char *s = arg->tostring(child->data);
     printf(" [%d]%s", child->id, s);
     free(s);
   }
@@ -237,7 +235,7 @@ void tree_print_raw(Tree *tree, DataToString tostring) {
   printf("\nTree[\n");
   if (tree->root != NULL) {
     TreeCallbackArg *arg = tree_default_callback_arg(tree);
-    arg->lambda = (void *)tostring;
+    arg->tostring = tostring;
     tree_node_find_bfs(tree->root, -1, tree_print_node, arg);
     counter = arg->counter;
     free(arg);

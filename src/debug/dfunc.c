@@ -27,6 +27,8 @@ int debugfn(char *fname) {
     func = queue_demo;
   else if (strcmp(fname, "queue_concurrent_demo") == 0)
     func = queue_concurrent_demo;
+  else if (strcmp(fname, "linked_list_demo") == 0)
+    func = linked_list_demo;
   else if (strcmp(fname, "runtime_demo") == 0)
     func = runtime_demo;
   else if (strcmp(fname, "runpool_demo") == 0)

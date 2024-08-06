@@ -444,9 +444,11 @@ int linked_list_demo(void) {
   list_print(list, customer_to_string);
 
   Customer *deleted = list_delete_at(list, 2, NULL);
-  printf("List delete at 2 result = %s\n",
-         deleted == NULL ? "Not found" : customer_to_string(deleted));
+  char *str = customer_to_string(deleted);
+  printf("List delete at 2 result = %s\n", deleted == NULL ? "Not found" : str);
+  free(str);
   free(deleted);
+  str = NULL;
   deleted = NULL;
   list_print(list, customer_to_string);
 
@@ -459,13 +461,19 @@ int linked_list_demo(void) {
   list_print(list, customer_to_string);
 
   Customer *item = list_get_at(list, 2);
-  printf("List get at 2 result = %s\n", item == NULL ? "Not found" : customer_to_string(item));
+  str = customer_to_string(item);
+  printf("List get at 2 result = %s\n", item == NULL ? "Not found" : str);
+	free(str);
+  str = NULL;
 
   item = list_get_at(list, 20);
-  printf("List get at 20 result = %s\n", item == NULL ? "Not found" : customer_to_string(item));
+  printf("List get at 20 result = %s\n", item == NULL ? "Not found" : "Some value");
 
   result = list_index_of(list, customer, list_customer_matcher);
-  printf("List index of %s = %d\n", customer_to_string(customer), result);
+  str = customer_to_string(customer);
+  printf("List index of %s = %d\n", str, result);
+	free(str);
+  str = NULL;
 
   list_destroy(list, free_data_func);
 

@@ -31,7 +31,6 @@ typedef struct GraphNode {
 typedef struct {
   bool debug;
   size_t counter;
-  pthread_rwlock_t *rwlock;
   DataToString tostring;
 } GraphCallbackArg;
 

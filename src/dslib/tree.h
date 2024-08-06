@@ -25,7 +25,6 @@ typedef struct TreeNode {
 typedef struct {
   bool debug;
   size_t counter;
-  pthread_rwlock_t *rwlock;
   DataToString tostring;
 } TreeCallbackArg;
 

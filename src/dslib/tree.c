@@ -21,7 +21,6 @@ TreeCallbackArg *tree_default_callback_arg(Tree *tree) {
   TreeCallbackArg *arg = (TreeCallbackArg *)malloc(sizeof(TreeCallbackArg));
   arg->counter = 0;
   arg->debug = tree->debug;
-  arg->rwlock = &tree->rwlock;
   return arg;
 }
 
@@ -31,7 +30,6 @@ void tree_traversal_callback(TreeNode *node, TreeCallbackArg *arg) {
 
 TreeNode *tree_node_find_bfs(TreeNode *start, size_t nodeid, TreeCallback callback,
                              TreeCallbackArg *arg) {
-  pthread_rwlock_rdlock(arg->rwlock);
   TreeNode *found = NULL;
 
   Queue *queue = queue_create();
@@ -62,13 +60,11 @@ TreeNode *tree_node_find_bfs(TreeNode *start, size_t nodeid, TreeCallback callba
   }
 
   queue_destroy(queue, NULL);
-  pthread_rwlock_unlock(arg->rwlock);
   return found;
 }
 
 TreeNode *tree_node_find_dfs(TreeNode *start, size_t nodeid, TreeCallback callback,
                              TreeCallbackArg *arg) {
-  pthread_rwlock_rdlock(arg->rwlock);
   TreeNode *found = NULL;
 
   Stack *stack = stack_create();
@@ -99,7 +95,6 @@ TreeNode *tree_node_find_dfs(TreeNode *start, size_t nodeid, TreeCallback callba
   }
 
   stack_destroy(stack, NULL);
-  pthread_rwlock_unlock(arg->rwlock);
   return found;
 }
 
@@ -107,6 +102,7 @@ TreeNode *tree_node_find_dfs(TreeNode *start, size_t nodeid, TreeCallback callba
 //  depth level.
 TreeNode *tree_find_bfs(Tree *tree, size_t nodeid) {
   if (tree->root == NULL || nodeid > tree->size) return NULL;
+  pthread_rwlock_rdlock(&tree->rwlock);
 
   TreeCallbackArg *arg = tree_default_callback_arg(tree);
   TreeNode *node = tree_node_find_bfs(tree->root, nodeid, tree_traversal_callback, arg);
@@ -114,12 +110,14 @@ TreeNode *tree_find_bfs(Tree *tree, size_t nodeid) {
   if (tree->debug == true) printf("\nTree: Find BFS Traversal = %zu\n", arg->counter);
 
   free(arg);
+  pthread_rwlock_unlock(&tree->rwlock);
   return node;
 }
 
 //  DFS explores as far down a branch as possible before backtracking
 TreeNode *tree_find_dfs(Tree *tree, size_t nodeid) {
   if (tree->root == NULL || nodeid > tree->size) return NULL;
+  pthread_rwlock_rdlock(&tree->rwlock);
 
   TreeCallbackArg *arg = tree_default_callback_arg(tree);
   TreeNode *node = tree_node_find_dfs(tree->root, nodeid, tree_traversal_callback, arg);
@@ -127,6 +125,7 @@ TreeNode *tree_find_dfs(Tree *tree, size_t nodeid) {
   if (tree->debug == true) printf("\nTree: Find DFS Traversal = %zu\n", arg->counter);
 
   free(arg);
+  pthread_rwlock_unlock(&tree->rwlock);
   return node;
 }
 

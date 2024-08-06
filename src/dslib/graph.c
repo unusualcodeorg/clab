@@ -25,7 +25,6 @@ GraphCallbackArg *graph_default_callback_arg(Graph *graph) {
   GraphCallbackArg *arg = (GraphCallbackArg *)malloc(sizeof(GraphCallbackArg));
   arg->counter = 0;
   arg->debug = graph->debug;
-  arg->rwlock = &graph->rwlock;
   return arg;
 }
 
@@ -35,7 +34,6 @@ void graph_traversal_callback(GraphNode *node, GraphCallbackArg *arg) {
 
 GraphNode *graph_node_find_bfs(GraphNode *start, size_t nodeid, GraphNode **visited_nodes,
                                GraphCallback callback, GraphCallbackArg *arg) {
-  pthread_rwlock_rdlock(arg->rwlock);
   GraphNode *found = NULL;
 
   Queue *queue = queue_create();
@@ -71,13 +69,11 @@ GraphNode *graph_node_find_bfs(GraphNode *start, size_t nodeid, GraphNode **visi
   }
 
   queue_destroy(queue, NULL);
-  pthread_rwlock_unlock(arg->rwlock);
   return found;
 }
 
 GraphNode *graph_node_find_dfs(GraphNode *start, size_t nodeid, GraphNode **visited_nodes,
                                GraphCallback callback, GraphCallbackArg *arg) {
-  pthread_rwlock_rdlock(arg->rwlock);
   GraphNode *found = NULL;
 
   Stack *stack = stack_create();
@@ -113,12 +109,12 @@ GraphNode *graph_node_find_dfs(GraphNode *start, size_t nodeid, GraphNode **visi
   }
 
   stack_destroy(stack, NULL);
-  pthread_rwlock_unlock(arg->rwlock);
   return found;
 }
 
 GraphNode *graph_find_dfs(Graph *graph, size_t nodeid) {
   if (graph->root == NULL || nodeid > graph->size) return NULL;
+  pthread_rwlock_rdlock(&graph->rwlock);
 
   GraphCallbackArg *arg = graph_default_callback_arg(graph);
   GraphNode **visited_nodes = (GraphNode **)calloc(graph->size + 1, sizeof(GraphNode *));
@@ -129,11 +125,13 @@ GraphNode *graph_find_dfs(Graph *graph, size_t nodeid) {
 
   free(visited_nodes);
   free(arg);
+  pthread_rwlock_unlock(&graph->rwlock);
   return node;
 }
 
 GraphNode *graph_find_bfs(Graph *graph, size_t nodeid) {
   if (graph->root == NULL || nodeid > graph->size) return NULL;
+  pthread_rwlock_rdlock(&graph->rwlock);
 
   GraphCallbackArg *arg = graph_default_callback_arg(graph);
   GraphNode **visited_nodes = (GraphNode **)calloc(graph->size + 1, sizeof(GraphNode *));
@@ -144,6 +142,7 @@ GraphNode *graph_find_bfs(Graph *graph, size_t nodeid) {
 
   free(visited_nodes);
   free(arg);
+  pthread_rwlock_unlock(&graph->rwlock);
   return node;
 }
 
@@ -311,7 +310,7 @@ void graph_traverse(Graph *graph, GraphDataCallback callback) {
   // 0 id means traverse the whole graph
   graph_node_find_dfs(graph->root, 0, visited_nodes, graph_traversal_callback, arg);
 
-	// at i = 0 node is null since graph id starts with 1
+  // at i = 0 node is null since graph id starts with 1
   for (size_t i = 1; i < graph->size; i++) {
     GraphNode *node = visited_nodes[i];
     callback(node->data);

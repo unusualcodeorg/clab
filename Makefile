@@ -1,5 +1,5 @@
 # Compiler and flags
-# CC = gcc-14 # GNU gcc on MacOS
+# CC = gcc-14 # GNU gcc on MacOS: remove -fsanitize=address to run
 CC = gcc
 CFLAGS_COMMON = -std=c17 -D_GNU_SOURCE -Wall -Wextra -Wpedantic -pthread
 CFLAGS_DEV = -g -Werror -fsanitize=address

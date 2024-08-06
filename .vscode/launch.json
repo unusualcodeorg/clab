@@ -13,6 +13,19 @@
       "externalConsole": false,
       "MIMode": "lldb",
       "preLaunchTask": "build"
+    },
+    {
+      "name": "(gdb) Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/clabdev",
+      "args": ["debug", "${input:runArg}"],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": []
     }
   ],
   "inputs": [

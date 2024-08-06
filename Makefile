@@ -1,5 +1,5 @@
 # Compiler and flags
-CC = gcc
+CC = clang
 CFLAGS_COMMON = -std=c18 -Wall -Wextra -Wpedantic -pthread
 CFLAGS_DEV = -g -Werror -fsanitize=address
 CFLAGS_RELEASE = -O2

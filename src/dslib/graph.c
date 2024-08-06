@@ -314,7 +314,7 @@ void graph_traverse(Graph *graph, GraphDataCallback callback) {
   graph_node_find_dfs(graph->root, 0, visited_nodes, graph_traversal_callback, arg);
 
   // at i = 0 node is null since graph id starts with 1
-  for (size_t i = 1; i < graph->size; i++) {
+  for (size_t i = 1; i <= graph->size; i++) {
     GraphNode *node = visited_nodes[i];
     callback(node->data);
     arg->counter++;
@@ -337,7 +337,7 @@ Graph *graph_clone(Graph *graph, GraphDataCopier datacopier) {
   Graph *gcopy = graph_create();
 
   // at i = 0 node is null since graph id starts with 1
-  for (size_t i = 1; i < graph->size; i++) {
+  for (size_t i = 1; i <= graph->size; i++) {
     GraphNode *node = visited_nodes[i];
     if (node == NULL) continue;
 
@@ -407,7 +407,7 @@ void graph_destroy(Graph *graph, FreeDataFunc freedatafunc) {
   graph_node_find_dfs(graph->root, 0, visited_nodes, graph_traversal_callback, arg);
 
   // at i = 0 node is null since graph id starts with 1
-  for (size_t i = 1; i < graph->size; i++) {
+  for (size_t i = 1; i <= graph->size; i++) {
     GraphNode *node = visited_nodes[i];
 
     long index = list_index_of(graph->inodes, &node->id, graph_isolated_node_matcher);

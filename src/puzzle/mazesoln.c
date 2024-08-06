@@ -275,10 +275,10 @@ int maze_solution(void) {
   size_t elemstrlen = 5;
 
   printf("Enter number of rows: ");
-  scanf("%zu", &rows);
+  (void)scanf("%zu", &rows);
 
   printf("Enter number of columns: ");
-  scanf("%zu", &cols);
+  (void)scanf("%zu", &cols);
 
   if (rows > max || cols > max) {
     printf("Rows and Columns should less than %zu", max);
@@ -294,7 +294,7 @@ int maze_solution(void) {
        * space before %d tells scanf to ignore any leading whitespace characters
        * (including newlines)
        */
-      scanf(" %c", arr[i][j]);
+      (void)scanf(" %c", arr[i][j]);
     }
   }
 

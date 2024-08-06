@@ -165,10 +165,10 @@ int maze_shortest_distance(void) {
   size_t elemstrlen = 5;
 
   printf("Enter number of rows: ");
-  scanf("%zu", &rows);
+  (void)scanf("%zu", &rows);  // (void) to ignore returned value
 
   printf("Enter number of columns: ");
-  scanf("%zu", &cols);
+  (void)scanf("%zu", &cols);
 
   if (rows > max || cols > max) {
     printf("Rows and Columns should less than %zu", max);
@@ -183,7 +183,7 @@ int maze_shortest_distance(void) {
        * space before %d tells scanf to ignore any leading whitespace characters
        * (including newlines)
        */
-      scanf(" %c", &maze[i][j]);
+      (void)scanf(" %c", &maze[i][j]);
     }
   }
 

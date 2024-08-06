@@ -5,14 +5,14 @@
 #include <string.h>
 
 // DJB2 hash function for strings
-unsigned int hash_function(char *key, unsigned int size) {
+size_t hash_function(char *key, size_t size) {
   unsigned long hash = 5381;
   int c;
   while ((c = *key++)) hash = ((hash << 5) + hash) + c;
   return hash % size;
 }
 
-HashMap *hashmap_create(unsigned int size) {
+HashMap *hashmap_create(size_t size) {
   HashMap *map = (HashMap *)malloc(sizeof(HashMap));
   map->buckets = (HashNode **)calloc(size, sizeof(HashNode *));
   map->size = size;
@@ -23,7 +23,7 @@ HashMap *hashmap_create(unsigned int size) {
 void hashmap_put(HashMap *map, char *key, void *value) {
   pthread_rwlock_wrlock(&map->rwlock);
   char *dupkey = strdup(key);
-  unsigned int index = hash_function(dupkey, map->size);
+  size_t index = hash_function(dupkey, map->size);
   HashNode *new_node = (HashNode *)malloc(sizeof(HashNode));
   new_node->key = dupkey;
   new_node->value = value;
@@ -34,7 +34,7 @@ void hashmap_put(HashMap *map, char *key, void *value) {
 
 void *hashmap_get(HashMap *map, char *key) {
   pthread_rwlock_rdlock(&map->rwlock);
-  unsigned int index = hash_function(key, map->size);
+  size_t index = hash_function(key, map->size);
   HashNode *node = map->buckets[index];
   while (node) {
     if (strcmp(node->key, key) == 0) {
@@ -49,7 +49,7 @@ void *hashmap_get(HashMap *map, char *key) {
 
 void hashmap_delete(HashMap *map, char *key, FreeDataFunc freedatafunc) {
   pthread_rwlock_wrlock(&map->rwlock);
-  unsigned int index = hash_function(key, map->size);
+  size_t index = hash_function(key, map->size);
   HashNode *node = map->buckets[index];
   HashNode *prev = NULL;
   while (node != NULL) {
@@ -73,12 +73,12 @@ void hashmap_delete(HashMap *map, char *key, FreeDataFunc freedatafunc) {
 
 void hashmap_print(HashMap *map, DataToString tostring) {
   pthread_rwlock_rdlock(&map->rwlock);
-  for (unsigned int i = 0; i < map->size; i++) {
+  for (size_t i = 0; i < map->size; i++) {
     HashNode *node = map->buckets[i];
     if (node == NULL) {
-      printf("HashMap %d: Empty\n", i);
+      printf("HashMap %zu: Empty\n", i);
     } else {
-      printf("HashMap %d:\n", i);
+      printf("HashMap %zu:\n", i);
       while (node != NULL) {
         char *datastr = tostring(node->value);
         printf("    Key: %s, Value: %s\n", node->key, datastr);
@@ -92,7 +92,7 @@ void hashmap_print(HashMap *map, DataToString tostring) {
 
 void hashmap_destroy(HashMap *map, FreeDataFunc freedatafunc) {
   pthread_rwlock_trywrlock(&map->rwlock);
-  for (unsigned int i = 0; i < map->size; i++) {
+  for (size_t i = 0; i < map->size; i++) {
     HashNode *node = map->buckets[i];
     while (node) {
       HashNode *temp = node;

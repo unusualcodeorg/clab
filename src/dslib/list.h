@@ -23,15 +23,15 @@ typedef struct ListNode {
 typedef struct {
   ListNode *tail;  // keeps the insertion order
   ListNode *head;
-  unsigned int size;
+  size_t size;
   pthread_rwlock_t rwlock;
 } List;
 
 List *list_create(void);
 int list_add(List *list, void *data);
-int list_add_at(List *list, void *data, unsigned int index);
-void *list_delete_at(List *list, unsigned int index, FreeDataFunc freedatafunc);
-void *list_get_at(List *list, unsigned int index);
+int list_add_at(List *list, void *data, size_t index);
+void *list_delete_at(List *list, size_t index, FreeDataFunc freedatafunc);
+void *list_get_at(List *list, size_t index);
 int list_index_of(List *list, void *match, ListMatcher matcher);
 void list_print(List *list, DataToString tostring);
 void list_destroy(List *list, FreeDataFunc freedatafunc);

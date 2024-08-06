@@ -9,7 +9,7 @@ void graph_traverse_recursive(GraphNode *node, GraphNode **visited_nodes, GraphC
 
   visited_nodes[node->id] = node;
 
-  for (unsigned short i = 0; i < node->esize; i++) {
+  for (size_t i = 0; i < node->esize; i++) {
     GraphEdge *edge = node->edges[i];
     if (edge == NULL || edge->end == NULL) continue;
     graph_traverse_recursive(edge->end, visited_nodes, callback, arg);
@@ -18,7 +18,7 @@ void graph_traverse_recursive(GraphNode *node, GraphNode **visited_nodes, GraphC
   if (arg->debug == true && callback != NULL) callback(node, arg);
 }
 
-GraphNode *graph_node_find_recursive(GraphNode *node, unsigned int nodeid,
+GraphNode *graph_node_find_recursive(GraphNode *node, size_t nodeid,
                                      GraphNode **visited_nodes, GraphCallback callback,
                                      GraphCallbackArg *arg) {
   if (arg->debug == true) arg->counter++;
@@ -31,7 +31,7 @@ GraphNode *graph_node_find_recursive(GraphNode *node, unsigned int nodeid,
 
   if (node->id == nodeid) return node;
 
-  for (unsigned short i = 0; i < node->esize; i++) {
+  for (size_t i = 0; i < node->esize; i++) {
     GraphEdge *edge = node->edges[i];
     if (edge == NULL || edge->end == NULL) continue;
     if (edge->end->id == nodeid) return edge->end;

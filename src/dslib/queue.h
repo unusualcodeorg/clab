@@ -19,7 +19,7 @@ typedef struct QueueNode {
 typedef struct {
   QueueNode *start;
   QueueNode *end;
-  unsigned int size;
+  size_t size;
   pthread_rwlock_t rwlock;
 } Queue;
 
@@ -27,7 +27,7 @@ Queue *queue_create(void);
 void queue_enqueue(Queue *queue, void *data);
 void *queue_dequeue(Queue *queue, FreeDataFunc freedatafunc);
 void *queue_peek(Queue *queue);
-void *queue_get(Queue *queue, unsigned int position);
+void *queue_get(Queue *queue, size_t position);
 void queue_print(Queue *queue, DataToString tostring);
 void queue_destroy(Queue *queue, FreeDataFunc freedatafunc);
 

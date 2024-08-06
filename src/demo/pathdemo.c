@@ -126,11 +126,11 @@ void path_shortest_nwg_tree_solution(void *arg) {
   Graph2DMap *gmap = util_graph_from_2d_arr(arr, rows, cols);
   gmap->graph->debug = false;
 
-  // unsigned int srcid = hashmap_get(gmap->idmap, "N6");
-  // unsigned int dstid = hashmap_get(gmap->idmap, "N300");
+  // size_t srcid = hashmap_get(gmap->idmap, "N6");
+  // size_t dstid = hashmap_get(gmap->idmap, "N300");
 
-  unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, "I");
-  unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, "U");
+  size_t srcid = *(size_t *)hashmap_get(gmap->idmap, "I");
+  size_t dstid = *(size_t *)hashmap_get(gmap->idmap, "U");
 
   Stack *stack = path_shortest_nwg_tree_vis(gmap->graph, srcid, dstid,
                                             graph_location_str_data_to_string);  // G->S
@@ -203,8 +203,8 @@ void path_shortest_solution(void *arg) {
   Graph2DMap *gmap = util_graph_from_2d_arr(arr, rows, cols);
   gmap->graph->debug = false;
 
-  unsigned int srcid = *(unsigned int *)hashmap_get(gmap->idmap, "I");
-  unsigned int dstid = *(unsigned int *)hashmap_get(gmap->idmap, "U");
+  size_t srcid = *(size_t *)hashmap_get(gmap->idmap, "I");
+  size_t dstid = *(size_t *)hashmap_get(gmap->idmap, "U");
 
   Stack *stack = path_find_shortest(gmap->graph, srcid, dstid);
 

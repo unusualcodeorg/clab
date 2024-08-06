@@ -2,8 +2,8 @@
 
 #include <stdlib.h>
 
-Pipeline* pipeline_create(unsigned short prodworkers, unsigned short consworkers,
-                          unsigned int capacity) {
+Pipeline* pipeline_create(size_t prodworkers, size_t consworkers,
+                          size_t capacity) {
   Pipeline* pipe = (Pipeline*)malloc(sizeof(Pipeline));
   pipe->debug = false;
   pipe->bq = bufferq_create(capacity);

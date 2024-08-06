@@ -30,7 +30,7 @@ GraphCallbackArg *graph_default_callback_arg(Graph *graph) {
 }
 
 void graph_traversal_callback(GraphNode *node, GraphCallbackArg *arg) {
-  if (arg->debug == true) printf("[%u]->", node->id);
+  if (arg->debug == true) printf("[%zu]->", node->id);
 }
 
 GraphNode *graph_node_find_bfs(GraphNode *start, long nodeid, GraphNode **visited_nodes,
@@ -50,16 +50,16 @@ GraphNode *graph_node_find_bfs(GraphNode *start, long nodeid, GraphNode **visite
 
     if (callback != NULL) callback(node, arg);
 
-    if (node->id == nodeid) {
+    if ((long)node->id == nodeid) {
       found = node;
       break;
     }
 
-    for (unsigned short i = 0; i < node->esize; i++) {
+    for (size_t i = 0; i < node->esize; i++) {
       GraphEdge *edge = node->edges[i];
       if (edge == NULL || edge->end == NULL) continue;
 
-      if (edge->end->id == nodeid) {
+      if ((long)edge->end->id == nodeid) {
         found = edge->end;
         break;
       }
@@ -75,7 +75,7 @@ GraphNode *graph_node_find_bfs(GraphNode *start, long nodeid, GraphNode **visite
   return found;
 }
 
-GraphNode *graph_node_find_dfs(GraphNode *start, long nodeid, GraphNode **visited_nodes,
+GraphNode *graph_node_find_dfs(GraphNode *start, long long nodeid, GraphNode **visited_nodes,
                                GraphCallback callback, GraphCallbackArg *arg) {
   pthread_rwlock_rdlock(&arg->rwlock);
   GraphNode *found = NULL;
@@ -92,16 +92,16 @@ GraphNode *graph_node_find_dfs(GraphNode *start, long nodeid, GraphNode **visite
 
     if (callback != NULL) callback(node, arg);
 
-    if (node->id == nodeid) {
+    if ((long)node->id == nodeid) {
       found = node;
       break;
     }
 
-    for (unsigned short i = 0; i < node->esize; i++) {
+    for (size_t i = 0; i < node->esize; i++) {
       GraphEdge *edge = node->edges[i];
       if (edge == NULL || edge->end == NULL) continue;
 
-      if (edge->end->id == nodeid) {
+      if ((long)edge->end->id == nodeid) {
         found = edge->end;
         break;
       }
@@ -117,7 +117,7 @@ GraphNode *graph_node_find_dfs(GraphNode *start, long nodeid, GraphNode **visite
   return found;
 }
 
-GraphNode *graph_find_dfs(Graph *graph, unsigned int nodeid) {
+GraphNode *graph_find_dfs(Graph *graph, size_t nodeid) {
   if (graph->root == NULL || nodeid >= graph->size) return NULL;
 
   GraphCallbackArg *arg = graph_default_callback_arg(graph);
@@ -125,14 +125,14 @@ GraphNode *graph_find_dfs(Graph *graph, unsigned int nodeid) {
   GraphNode *node =
       graph_node_find_dfs(graph->root, nodeid, visited_nodes, graph_traversal_callback, arg);
 
-  if (graph->debug == true) printf("\nGraph: Find DFS Traversal = %u\n", arg->counter);
+  if (graph->debug == true) printf("\nGraph: Find DFS Traversal = %zu\n", arg->counter);
 
   free(visited_nodes);
   free(arg);
   return node;
 }
 
-GraphNode *graph_find_bfs(Graph *graph, unsigned int nodeid) {
+GraphNode *graph_find_bfs(Graph *graph, size_t nodeid) {
   if (graph->root == NULL || nodeid >= graph->size) return NULL;
 
   GraphCallbackArg *arg = graph_default_callback_arg(graph);
@@ -140,14 +140,14 @@ GraphNode *graph_find_bfs(Graph *graph, unsigned int nodeid) {
   GraphNode *node =
       graph_node_find_bfs(graph->root, nodeid, visited_nodes, graph_traversal_callback, arg);
 
-  if (graph->debug == true) printf("\nGraph: Find BFS Traversal = %u\n", arg->counter);
+  if (graph->debug == true) printf("\nGraph: Find BFS Traversal = %zu\n", arg->counter);
 
   free(visited_nodes);
   free(arg);
   return node;
 }
 
-void *graph_get(Graph *graph, unsigned int nodeid) {
+void *graph_get(Graph *graph, size_t nodeid) {
   GraphNode *node = graph_find_bfs(graph, nodeid);
   return node != NULL ? node->data : NULL;
 }
@@ -167,17 +167,17 @@ int graph_insert_root(Graph *graph, void *data) {
 
 bool graph_isolated_node_matcher(void *item, void *match) {
   GraphNode *node = (GraphNode *)item;
-  unsigned int id = *(unsigned int *)match;
+  size_t id = *(size_t *)match;
   return node->id == id;
 }
 
-int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...) {
+int graph_insert(Graph *graph, void *data, size_t linkcount, ...) {
   va_list args;
   va_start(args, linkcount);
 
-  unsigned int nodeids[linkcount];
-  for (unsigned int i = 0; i < linkcount; i++) {
-    nodeids[i] = va_arg(args, unsigned int);
+  size_t nodeids[linkcount];
+  for (size_t i = 0; i < linkcount; i++) {
+    nodeids[i] = va_arg(args, size_t);
   }
 
   int id = graph_insert_arr(graph, data, linkcount, nodeids);
@@ -186,12 +186,12 @@ int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...) {
   return id;
 }
 
-int graph_insert_arr(Graph *graph, void *data, unsigned int linkcount, unsigned int *nodeids) {
+int graph_insert_arr(Graph *graph, void *data, size_t linkcount, size_t *nodeids) {
   pthread_rwlock_wrlock(&graph->rwlock);
-  if (graph->debug == true) printf("\nGraph: Add To %u Node\n", linkcount);
+  if (graph->debug == true) printf("\nGraph: Add To %zu Node\n", linkcount);
 
   if (graph->root == NULL) {
-    unsigned int id = graph_insert_root(graph, data);
+    size_t id = graph_insert_root(graph, data);
     pthread_rwlock_unlock(&graph->rwlock);
     return id;
   }
@@ -208,13 +208,13 @@ int graph_insert_arr(Graph *graph, void *data, unsigned int linkcount, unsigned 
   node->edges = NULL;
 
   GraphEdge *edges[linkcount];
-  for (unsigned int i = 0; i < linkcount; i++) {
+  for (size_t i = 0; i < linkcount; i++) {
     edges[i] = NULL;
   }
 
-  unsigned int edgecount = 0;
+  size_t edgecount = 0;
   bool isolated = true;
-  for (unsigned int i = 0; i < linkcount; i++) {
+  for (size_t i = 0; i < linkcount; i++) {
     GraphNode *gnode = graph_find_bfs(graph, nodeids[i]);
     if (gnode != NULL) {
       isolated = false;
@@ -243,7 +243,7 @@ int graph_insert_arr(Graph *graph, void *data, unsigned int linkcount, unsigned 
 
   if (edgecount > 0) {
     node->edges = (GraphEdge **)malloc(edgecount * sizeof(GraphEdge *));
-    for (unsigned int i = 0; i < linkcount; i++) {
+    for (size_t i = 0; i < linkcount; i++) {
       if (edges[i]) node->edges[node->esize++] = edges[i];
     }
   }
@@ -254,7 +254,7 @@ int graph_insert_arr(Graph *graph, void *data, unsigned int linkcount, unsigned 
   return node->id;
 }
 
-int graph_delete(Graph *graph, unsigned int nodeid, FreeDataFunc freedatafunc) {
+int graph_delete(Graph *graph, size_t nodeid, FreeDataFunc freedatafunc) {
   pthread_rwlock_wrlock(&graph->rwlock);
   GraphNode *node = graph_find_dfs(graph, nodeid);
   if (node == NULL) {
@@ -262,11 +262,11 @@ int graph_delete(Graph *graph, unsigned int nodeid, FreeDataFunc freedatafunc) {
     return GRAPH_NODE_NULL_ID;
   }
 
-  for (unsigned short i = 0; i < node->esize; i++) {
+  for (size_t i = 0; i < node->esize; i++) {
     GraphEdge *edge = node->edges[i];
     if (edge == NULL || edge->end == NULL) continue;
 
-    for (unsigned short j = 0; j < edge->end->esize; j++) {
+    for (size_t j = 0; j < edge->end->esize; j++) {
       GraphEdge *ez = node->edges[j];
       if (ez == NULL || ez->end == NULL) continue;
 
@@ -291,15 +291,15 @@ void graph_print_node(GraphNode *node, GraphCallbackArg *arg) {
   if (arg->debug == true) arg->counter++;
 
   char *str = arg->tostring(node->data);
-  printf(" [%d]%s -->", node->id, str);
+  printf(" [%zd]%s -->", node->id, str);
   free(str);
 
-  for (unsigned short i = 0; i < node->esize; i++) {
+  for (size_t i = 0; i < node->esize; i++) {
     GraphEdge *edge = node->edges[i];
     if (edge == NULL || edge->end == NULL) continue;
 
     char *s = arg->tostring(edge->end->data);
-    printf(" [%d]%s", edge->end->id, s);
+    printf(" [%zd]%s", edge->end->id, s);
     free(s);
   }
   printf(",\n");
@@ -311,13 +311,13 @@ void graph_traverse(Graph *graph, GraphDataCallback callback) {
   GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
   graph_node_find_dfs(graph->root, -1, visited_nodes, graph_traversal_callback, arg);
 
-  for (unsigned int i = 0; i < graph->size; i++) {
+  for (size_t i = 0; i < graph->size; i++) {
     GraphNode *node = visited_nodes[i];
     callback(node->data);
     arg->counter++;
   }
 
-  if (graph->debug == true) printf("\nGraph: Destroy DFS Traversal = %u\n", arg->counter);
+  if (graph->debug == true) printf("\nGraph: Destroy DFS Traversal = %zu\n", arg->counter);
 
   free(visited_nodes);
   free(arg);
@@ -332,7 +332,7 @@ Graph *graph_clone(Graph *graph, GraphDataCopier datacopier) {
 
   Graph *gcopy = graph_create();
 
-  for (unsigned int i = 0; i < graph->size; i++) {
+  for (size_t i = 0; i < graph->size; i++) {
     GraphNode *node = visited_nodes[i];
     if (node == NULL) continue;
 
@@ -343,8 +343,8 @@ Graph *graph_clone(Graph *graph, GraphDataCopier datacopier) {
       continue;
     }
 
-    unsigned int linknodeids[node->esize];
-    for (unsigned short j = 0; j < node->esize; j++) {
+    size_t linknodeids[node->esize];
+    for (size_t j = 0; j < node->esize; j++) {
       GraphEdge *edge = node->edges[j];
       linknodeids[j] = edge != NULL ? edge->end->id : UINT_MAX;
     }
@@ -359,7 +359,7 @@ Graph *graph_clone(Graph *graph, GraphDataCopier datacopier) {
 
 void graph_print(Graph *graph, DataToString tostring) {
   pthread_rwlock_rdlock(&graph->rwlock);
-  unsigned int counter = 0;
+  size_t counter = 0;
   printf("\nGraph[\n");
   if (graph->root != NULL) {
     GraphCallbackArg *arg = graph_default_callback_arg(graph);
@@ -373,14 +373,14 @@ void graph_print(Graph *graph, DataToString tostring) {
   }
   printf("]\n");
 
-  if (graph->debug == true) printf("Graph: Print BFS Traversal = %u\n\n", counter);
+  if (graph->debug == true) printf("Graph: Print BFS Traversal = %zu\n\n", counter);
   pthread_rwlock_unlock(&graph->rwlock);
 }
 
 void graph_node_destroy(GraphNode *node, FreeDataFunc freedatafunc) {
   if (node == NULL) return;
 
-  for (unsigned short i = 0; i < node->esize; i++) {
+  for (size_t i = 0; i < node->esize; i++) {
     GraphEdge *edge = node->edges[i];
     if (edge != NULL) free(edge);
   }
@@ -399,7 +399,7 @@ void graph_destroy(Graph *graph, FreeDataFunc freedatafunc) {
   GraphNode **visited_nodes = (GraphNode **)calloc(graph->size, sizeof(GraphNode *));
   graph_node_find_dfs(graph->root, -1, visited_nodes, graph_traversal_callback, arg);
 
-  for (unsigned int i = 0; i < graph->size; i++) {
+  for (size_t i = 0; i < graph->size; i++) {
     GraphNode *node = visited_nodes[i];
 
     int index = list_index_of(graph->inodes, &node->id, graph_isolated_node_matcher);
@@ -411,7 +411,7 @@ void graph_destroy(Graph *graph, FreeDataFunc freedatafunc) {
 
   list_destroy(graph->inodes, free_data_func);
 
-  if (graph->debug == true) printf("\nGraph: Destroy DFS Traversal = %u\n", arg->counter);
+  if (graph->debug == true) printf("\nGraph: Destroy DFS Traversal = %zu\n", arg->counter);
 
   free(visited_nodes);
   free(arg);

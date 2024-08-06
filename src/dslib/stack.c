@@ -51,12 +51,12 @@ void *stack_peek(Stack *stack) {
   return data;
 }
 
-void *stack_get(Stack *stack, unsigned int position) {
+void *stack_get(Stack *stack, size_t position) {
   if (position >= stack->size) return NULL;
 
   pthread_rwlock_rdlock(&stack->rwlock);
   StackNode *node = stack->top;
-  unsigned int counter = 1;
+  size_t counter = 1;
 
   while (node) {
     if (counter > position) break;

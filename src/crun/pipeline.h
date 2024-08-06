@@ -27,8 +27,8 @@ typedef struct {
   Runpool* conspool;
 } Pipeline;
 
-Pipeline* pipeline_create(unsigned short prodworkers, unsigned short consworkers,
-                          unsigned int capacity);
+Pipeline* pipeline_create(size_t prodworkers, size_t consworkers,
+                          size_t capacity);
 
 void pipeline_add_producer(Pipeline* pipe, PipelineWork work, void* context);
 void pipeline_add_consumer(Pipeline* pipe, PipelineWork work, void* context);

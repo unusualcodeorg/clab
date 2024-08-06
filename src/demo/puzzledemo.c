@@ -28,14 +28,14 @@
 int maze_shortest_distance_demo(void) {
   printf("\n------------PUZZLE SHORTEST DISTANCE DEMO--------------\n");
   const char maze[] = "##########..@.#.@##@....G.##.#..@.@##.##@#####..@.S..##########";
-  unsigned int rows = 7;
-  unsigned int cols = 9;
-  unsigned int elemstrlen = 5;
+  size_t rows = 7;
+  size_t cols = 9;
+  size_t elemstrlen = 5;
 
   char ***arr = util_create_2d_str_arr(rows, cols, elemstrlen);
 
-  for (unsigned int i = 0; i < rows; i++) {
-    for (unsigned int j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       char temp[elemstrlen];
       char data = maze[i * cols + j];
       snprintf(temp, elemstrlen, "%c", data);
@@ -59,14 +59,14 @@ int maze_shortest_distance_demo(void) {
 
 int path_permutation_demo(void) {
   printf("\n------------PUZZLE PERMUTATION DEMO--------------\n");
-  unsigned int arr[] = {1, 2, 3};
-  unsigned int size = sizeof(arr) / sizeof(arr[0]);
+  size_t arr[] = {1, 2, 3};
+  size_t size = sizeof(arr) / sizeof(arr[0]);
   Queue *queue = generate_permutations(arr, size);
 
   while (queue->size > 0) {
-    unsigned int *arr = (unsigned int *)queue_dequeue(queue, NULL);
-    for (unsigned int i = 0; i < size; i++) {
-      printf("%d ", arr[i]);
+    size_t *arr = (size_t *)queue_dequeue(queue, NULL);
+    for (size_t i = 0; i < size; i++) {
+      printf("%zu ", arr[i]);
     }
     printf("\n");
   }
@@ -82,7 +82,7 @@ int path_permutation_demo(void) {
 /*--------PUZZLE PERMUTATION BUFFERED DEMO----------*/
 
 typedef struct {
-  unsigned int size;
+  size_t size;
   BufferQueue *bq;
 } PermutationContext;
 
@@ -92,7 +92,7 @@ void permutation_consumer(void *context) {
     int *arr = (int *)bufferq_read(ctx->bq);
     if (arr == NULL) continue;
 
-    for (unsigned int i = 0; i < ctx->size; i++) {
+    for (size_t i = 0; i < ctx->size; i++) {
       printf("%d ", arr[i]);
     }
     printf("\n");
@@ -102,8 +102,8 @@ void permutation_consumer(void *context) {
 
 int path_permutation_buffered_demo(void) {
   printf("\n--------PUZZLE PERMUTATION BUFFERED DEMO----------\n");
-  unsigned int arr[] = {1, 2, 3};
-  unsigned int size = sizeof(arr) / sizeof(arr[0]);
+  size_t arr[] = {1, 2, 3};
+  size_t size = sizeof(arr) / sizeof(arr[0]);
 
   BufferQueue *bq = bufferq_create(4);
   bq->debug = true;
@@ -129,8 +129,8 @@ int path_permutation_buffered_demo(void) {
 
 int path_permutation_pool_demo(void) {
   printf("\n------PUZZLE PERMUTATION BUFFERED POOL DEMO-------\n");
-  unsigned int arr[] = {1, 2, 3, 4};
-  unsigned int size = sizeof(arr) / sizeof(arr[0]);
+  size_t arr[] = {1, 2, 3, 4};
+  size_t size = sizeof(arr) / sizeof(arr[0]);
 
   BufferQueue *bq = bufferq_create(10);
   bq->debug = true;
@@ -157,10 +157,10 @@ int path_permutation_pool_demo(void) {
 /*--------PUZZLE PERMUTATION PIPELINE DEMO----------*/
 
 void path_permutation_producer(BufferQueue *bq, void *context) {
-  unsigned int arrsize = *(unsigned int *)context;
-  unsigned int arr[arrsize];
+  size_t arrsize = *(size_t *)context;
+  size_t arr[arrsize];
 
-  for (unsigned int i = 0; i < arrsize; i++) {
+  for (size_t i = 0; i < arrsize; i++) {
     arr[i] = i + 1;
   }
 
@@ -168,14 +168,14 @@ void path_permutation_producer(BufferQueue *bq, void *context) {
 }
 
 void path_permutation_consumer(BufferQueue *bq, void *context) {
-  unsigned int arrsize = *(unsigned int *)context;
+  size_t arrsize = *(size_t *)context;
 
   while (bufferq_can_read(bq)) {
-    unsigned int *arr = (unsigned int *)bufferq_read(bq);
+    size_t *arr = (size_t *)bufferq_read(bq);
     if (arr == NULL) continue;
 
-    for (unsigned int i = 0; i < arrsize; i++) {
-      printf("%d ", arr[i]);
+    for (size_t i = 0; i < arrsize; i++) {
+      printf("%zu ", arr[i]);
     }
     printf("\n");
     sleep(2);
@@ -189,7 +189,7 @@ int path_permutation_pipeline_demo(void) {
   Pipeline *pipe = pipeline_create(1, 3, 4);
   pipeline_debug(pipe);
 
-  unsigned int *arrsize = malloc(sizeof(unsigned int));
+  size_t *arrsize = malloc(sizeof(size_t));
   *arrsize = 4;
 
   // 1 producer
@@ -220,8 +220,8 @@ int maze_solution_demo(void) {
   // const char maze[] = "##########....#.@##.@...G.##.#.....##.##@#####....S..##########";
   // const char maze[] = "##########..@.#.@##@....G.##.#@...@##.##@#####..@.S..##########";
   // const char maze[] = "##########..@.#.@##@..@.G.##.#@...@##.##@#####..@.S.@##########";
-  // unsigned int rows = 7;
-  // unsigned int cols = 9;
+  // size_t rows = 7;
+  // size_t cols = 9;
 
   const char maze[] =
       "###################................##...S............##................##.############...##"
@@ -231,15 +231,15 @@ int maze_solution_demo(void) {
   //     "###################................##...S............##................##.############...##"
   //     "................##....##############..#######..G....##................##................###"
   //     "################";
-  unsigned int rows = 11;
-  unsigned int cols = 18;
+  size_t rows = 11;
+  size_t cols = 18;
 
-  unsigned int elemstrlen = 5;
+  size_t elemstrlen = 5;
 
   char ***arr = util_create_2d_str_arr(rows, cols, elemstrlen);
 
-  for (unsigned int i = 0; i < rows; i++) {
-    for (unsigned int j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       char temp[elemstrlen];
       char data = maze[i * cols + j];
       snprintf(temp, elemstrlen, "%c", data);

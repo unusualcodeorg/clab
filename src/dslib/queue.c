@@ -66,12 +66,12 @@ void *queue_peek(Queue *queue) {
   return data;
 }
 
-void *queue_get(Queue *queue, unsigned int position) {
+void *queue_get(Queue *queue, size_t position) {
   if (position >= queue->size) return NULL;
 
   pthread_rwlock_rdlock(&queue->rwlock);
   QueueNode *node = queue->start;
-  unsigned int counter = 1;
+  size_t counter = 1;
 
   while (node) {
     if (counter > position) break;

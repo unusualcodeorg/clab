@@ -13,11 +13,11 @@ extern "C" {
 typedef struct {
   char *name;
   bool debug;
-  unsigned short size;
+  size_t size;
   Runtime **runtimes;
 } Runpool;
 
-Runpool *runpool_create(unsigned short size);
+Runpool *runpool_create(size_t size);
 void runpool_exec(Runpool *pool, Croutine croutine, void *context);
 void runpool_debug(Runpool *pool, char *poolname);
 void runpool_join_destroy(Runpool *pool);

@@ -31,13 +31,13 @@ int stack_demo(void) {
   stack_push(stack, new_customer(3, "Janishar Ali 3", 5, true));
   stack_push(stack, new_customer(4, "Janishar Ali 4", 87, true));
 
-  printf("Stack: Size = %d\n", stack->size);
+  printf("Stack: Size = %zu\n", stack->size);
 
   char *data = stack_get(stack, 2);
   printf("Stack: Get - Position 2 = %s\n", customer_to_string(data));
 
   stack_pop(stack, free_data_func);
-  printf("Stack: Pop - Size = %d\n", stack->size);
+  printf("Stack: Pop - Size = %zu\n", stack->size);
 
   Customer *customer = stack_peek(stack);
   printf("Stack: Peek = %s\n", customer_to_string(customer));
@@ -69,7 +69,7 @@ void *s_thread_1_push_function(void *arg) {
     usleep(1500000);
   }
 
-  printf("Thread:%lu, Stack: Size = %d\n", tid, stack->size);
+  printf("Thread:%lu, Stack: Size = %zu\n", tid, stack->size);
   return NULL;
 }
 
@@ -83,12 +83,12 @@ void *s_thread_2_push_function(void *arg) {
     usleep(2000000);
   }
 
-  printf("Thread:%lu, Stack: Size = %d\n", tid, stack->size);
+  printf("Thread:%lu, Stack: Size = %zu\n", tid, stack->size);
 
   Customer *cust = stack_peek(stack);
   printf("Thread:%lu, Stack: Pop = %s\n", tid, customer_to_string(cust));
   stack_pop(stack, free_data_func);
-  printf("Thread:%lu, Stack: Size = %d\n", tid, stack->size);
+  printf("Thread:%lu, Stack: Size = %zu\n", tid, stack->size);
 
   return NULL;
 }
@@ -104,14 +104,14 @@ int stack_concurrent_demo(void) {
   pthread_create(&thread1, NULL, s_thread_1_push_function, stack);
   pthread_create(&thread2, NULL, s_thread_2_push_function, stack);
 
-  printf("Thread:%lu, Stack: Size = %d\n", tid, stack->size);
+  printf("Thread:%lu, Stack: Size = %zu\n", tid, stack->size);
   stack_print(stack, customer_to_string);
 
   pthread_join(thread1, NULL);
   pthread_join(thread2, NULL);
 
   printf("Thread ID: End: %lu\n", tid);
-  printf("Thread:%lu, Stack: Size = %d\n", tid, stack->size);
+  printf("Thread:%lu, Stack: Size = %zu\n", tid, stack->size);
 
   stack_print(stack, customer_to_string);
   stack_destroy(stack, free_data_func);
@@ -132,13 +132,13 @@ int queue_demo(void) {
   queue_enqueue(queue, new_customer(3, "Janishar Ali 3", 5, true));
   queue_enqueue(queue, new_customer(4, "Janishar Ali 4", 87, true));
 
-  printf("Queue: Size = %d\n", queue->size);
+  printf("Queue: Size = %zu\n", queue->size);
 
   char *data = queue_get(queue, 2);
   printf("Queue: Get - Position 2 = %s\n", data);
 
   queue_dequeue(queue, free_data_func);
-  printf("Queue Dequeue: Size = %d\n", queue->size);
+  printf("Queue Dequeue: Size = %zu\n", queue->size);
 
   Customer *customer = queue_peek(queue);
   printf("Queue: Peek = %s\n", customer_to_string(customer));
@@ -169,7 +169,7 @@ void *q_thread_1_push_function(void *arg) {
     usleep(1500000);
   }
 
-  printf("Thread:%lu, Queue: Size = %d\n", tid, queue->size);
+  printf("Thread:%lu, Queue: Size = %zu\n", tid, queue->size);
   return NULL;
 }
 
@@ -183,12 +183,12 @@ void *q_thread_2_push_function(void *arg) {
     usleep(2000000);
   }
 
-  printf("Thread:%lu, Queue: Size = %d\n", tid, queue->size);
+  printf("Thread:%lu, Queue: Size = %zu\n", tid, queue->size);
 
   Customer *cust = queue_peek(queue);
   printf("Thread:%lu, Queue: Pop = %s\n", tid, customer_to_string(cust));
   queue_dequeue(queue, free_data_func);
-  printf("Thread:%lu, Queue: Size = %d\n", tid, queue->size);
+  printf("Thread:%lu, Queue: Size = %zu\n", tid, queue->size);
 
   return NULL;
 }
@@ -204,14 +204,14 @@ int queue_concurrent_demo(void) {
   pthread_create(&thread1, NULL, q_thread_1_push_function, queue);
   pthread_create(&thread2, NULL, q_thread_2_push_function, queue);
 
-  printf("Thread:%lu, Queue: Size = %d\n", tid, queue->size);
+  printf("Thread:%lu, Queue: Size = %zu\n", tid, queue->size);
   queue_print(queue, customer_to_string);
 
   pthread_join(thread1, NULL);
   pthread_join(thread2, NULL);
 
   printf("Thread ID: End: %lu\n", tid);
-  printf("Thread:%lu, Queue: Size = %d\n", tid, queue->size);
+  printf("Thread:%lu, Queue: Size = %zu\n", tid, queue->size);
 
   queue_print(queue, customer_to_string);
   queue_destroy(queue, free_data_func);
@@ -250,15 +250,15 @@ int graph_demo(void) {
   Graph *graph = graph_create();
   graph->debug = true;
 
-  unsigned int id_A = graph_insert(graph, "A", 0);
-  unsigned int id_B = graph_insert(graph, "B", 1, id_A);
-  unsigned int id_C = graph_insert(graph, "C", 1, id_B);
-  unsigned int id_D = graph_insert(graph, "D", 1, id_C);
-  unsigned int id_E = graph_insert(graph, "E", 2, id_B, id_D);
-  unsigned int id_F = graph_insert(graph, "F", 2, id_A, id_E);
-  unsigned int id_G = graph_insert(graph, "G", 1, id_F);
-  unsigned int id_H = graph_insert(graph, "H", 2, id_E, id_G);
-  unsigned int id_I = graph_insert(graph, "I", 2, id_D, id_H);
+  size_t id_A = graph_insert(graph, "A", 0);
+  size_t id_B = graph_insert(graph, "B", 1, id_A);
+  size_t id_C = graph_insert(graph, "C", 1, id_B);
+  size_t id_D = graph_insert(graph, "D", 1, id_C);
+  size_t id_E = graph_insert(graph, "E", 2, id_B, id_D);
+  size_t id_F = graph_insert(graph, "F", 2, id_A, id_E);
+  size_t id_G = graph_insert(graph, "G", 1, id_F);
+  size_t id_H = graph_insert(graph, "H", 2, id_E, id_G);
+  size_t id_I = graph_insert(graph, "I", 2, id_D, id_H);
   (void)id_I;  // suppress unused warning
 
   graph_print(graph, str_data_to_string);
@@ -276,36 +276,36 @@ void croutine1(void *arg) {
   printf("Thread ID: croutine1: %lu\n", tid);
 
   Graph *graph = arg;
-  unsigned int id_A = 0;
-  unsigned int id_B = graph_insert(graph, "B", 1, id_A);
+  size_t id_A = 0;
+  size_t id_B = graph_insert(graph, "B", 1, id_A);
 
   usleep(1250000);
   printf("Thread ID: croutine1: %lu\n", tid);
-  unsigned int id_C = graph_insert(graph, "C", 1, id_B);
+  size_t id_C = graph_insert(graph, "C", 1, id_B);
 
   usleep(2250000);
   printf("Thread ID: croutine1: %lu\n", tid);
-  unsigned int id_D = graph_insert(graph, "D", 1, id_C);
+  size_t id_D = graph_insert(graph, "D", 1, id_C);
 
   usleep(550000);
   printf("Thread ID: croutine1: %lu\n", tid);
-  unsigned int id_E = graph_insert(graph, "E", 2, id_B, id_D);
+  size_t id_E = graph_insert(graph, "E", 2, id_B, id_D);
 
   usleep(1500000);
   printf("Thread ID: croutine1: %lu\n", tid);
-  unsigned int id_F = graph_insert(graph, "F", 2, id_A, id_E);
+  size_t id_F = graph_insert(graph, "F", 2, id_A, id_E);
 
   usleep(100000);
   printf("Thread ID: croutine1: %lu\n", tid);
-  unsigned int id_G = graph_insert(graph, "G", 1, id_F);
+  size_t id_G = graph_insert(graph, "G", 1, id_F);
 
   usleep(300000);
   printf("Thread ID: croutine1: %lu\n", tid);
-  unsigned int id_H = graph_insert(graph, "H", 2, id_E, id_G);
+  size_t id_H = graph_insert(graph, "H", 2, id_E, id_G);
 
   usleep(1000000);
   printf("Thread ID: croutine1: %lu\n", tid);
-  unsigned int id_I = graph_insert(graph, "I", 2, id_D, id_H);
+  size_t id_I = graph_insert(graph, "I", 2, id_D, id_H);
 
   (void)id_I;  // suppress unused warning
   usleep(2000000);
@@ -364,11 +364,11 @@ int tree_demo(void) {
   Tree *tree = tree_create();
   tree->debug = true;
 
-  unsigned int id_A = tree_insert_root(tree, "A");
-  unsigned int id_B = tree_insert(tree, "B", id_A);
-  unsigned int id_C = tree_insert(tree, "C", id_A);
-  unsigned int id_D = tree_insert(tree, "D", id_A);
-  unsigned int id_E = tree_insert(tree, "E", id_B);
+  size_t id_A = tree_insert_root(tree, "A");
+  size_t id_B = tree_insert(tree, "B", id_A);
+  size_t id_C = tree_insert(tree, "C", id_A);
+  size_t id_D = tree_insert(tree, "D", id_A);
+  size_t id_E = tree_insert(tree, "E", id_B);
   tree_insert(tree, "F", id_B);
   tree_insert(tree, "G", id_C);
   tree_insert(tree, "H", id_C);
@@ -376,7 +376,7 @@ int tree_demo(void) {
   tree_insert(tree, "J", id_E);
   tree_insert(tree, "K", id_E);
   tree_insert(tree, "L", id_E);
-  unsigned int id_M = tree_insert(tree, "M", id_A);
+  size_t id_M = tree_insert(tree, "M", id_A);
   tree_insert(tree, "N", id_A);
   tree_insert(tree, "O", id_M);
   tree_insert(tree, "P", id_M);
@@ -384,13 +384,13 @@ int tree_demo(void) {
   tree_print(tree, str_data_to_string);
 
   char *data = tree_get(tree, id_C);
-  printf("\nTree: Get - id %d = %s\n", id_C, data);
+  printf("\nTree: Get - id %zu = %s\n", id_C, data);
 
   int maxdepth = tree_max_depth(tree);
   printf("\nTree: Max Depth = %d\n", maxdepth);
 
   tree_delete(tree, id_C, NULL);
-  printf("\nTree: Remove - id %d = %s", id_D, data);
+  printf("\nTree: Remove - id %zu = %s", id_D, data);
   tree_print_raw(tree, str_data_to_string);
   tree_print(tree, str_data_to_string);
 
@@ -455,7 +455,7 @@ int linked_list_demo(void) {
   list_print(list, customer_to_string);
 
   list_delete_at(list, list->size - 1, free_data_func);
-  printf("List delete at %d\n", list->size);
+  printf("List delete at %zu\n", list->size);
   list_print(list, customer_to_string);
 
   Customer *item = list_get_at(list, 2);

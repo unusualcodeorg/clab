@@ -18,7 +18,7 @@ typedef struct StackNode {
 
 typedef struct {
   StackNode *top;
-  unsigned int size;
+  size_t size;
   pthread_rwlock_t rwlock;
 } Stack;
 
@@ -26,7 +26,7 @@ Stack *stack_create(void);
 void stack_push(Stack *stack, void *data);
 void *stack_pop(Stack *stack, FreeDataFunc freedatafunc);
 void *stack_peek(Stack *stack);
-void *stack_get(Stack *stack, unsigned int position);
+void *stack_get(Stack *stack, size_t position);
 void stack_print(Stack *stack, DataToString tostring);
 void stack_destroy(Stack *stack, FreeDataFunc freedatafunc);
 

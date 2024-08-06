@@ -16,8 +16,8 @@
 void maze_solution_step_print(MazeData *mazedata, Stack *stack) {
   char ***patharr = util_create_2d_str_arr(mazedata->rows, mazedata->cols, 5);
 
-  for (unsigned int i = 0; i < mazedata->rows; i++) {
-    for (unsigned int j = 0; j < mazedata->cols; j++) {
+  for (size_t i = 0; i < mazedata->rows; i++) {
+    for (size_t j = 0; j < mazedata->cols; j++) {
       if (strcmp(mazedata->arr[i][j], "#") != 0) {
         *patharr[i][j] = ' ';
         continue;
@@ -29,15 +29,15 @@ void maze_solution_step_print(MazeData *mazedata, Stack *stack) {
   StackNode *node = stack->top;
   while (node) {
     Location *loc = (Location *)node->data;
-    unsigned int position = *(unsigned int *)loc->data;
-    unsigned i = position / mazedata->cols;
-    unsigned j = position % mazedata->cols;
+    size_t position = *(size_t *)loc->data;
+    size_t i = position / mazedata->cols;
+    size_t j = position % mazedata->cols;
     strcpy(patharr[i][j], mazedata->arr[i][j]);
     node = node->next;
   }
 
-  for (unsigned int i = 0; i < mazedata->rows; i++) {
-    for (unsigned int j = 0; j < mazedata->cols; j++) {
+  for (size_t i = 0; i < mazedata->rows; i++) {
+    for (size_t j = 0; j < mazedata->cols; j++) {
       printf("%s", patharr[i][j]);
     }
     printf("\n");
@@ -93,13 +93,13 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
      * We generate permisations on mazedata->cpindexes
      * We find pair waise short distances: (S, 1),(1, 2),(2, 3),(3, G)
      */
-    unsigned int distance = 0;
+    size_t distance = 0;
     Queue *queue = queue_create();
-    for (unsigned int k = 0; k <= mazedata->cpindexes->size; k++) {
+    for (size_t k = 0; k <= mazedata->cpindexes->size; k++) {
       char *srckey, *destkey;
-      unsigned int index_first, index_second;
-      unsigned int i_first, j_first;
-      unsigned int i_second, j_second;
+      size_t index_first, index_second;
+      size_t i_first, j_first;
+      size_t i_second, j_second;
 
       if (k == 0) {
         index_first = mazedata->srcindex;
@@ -120,8 +120,8 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
       j_second = index_second % mazedata->cols;
       destkey = mazedata->arr[i_second][j_second];
 
-      unsigned int srcid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, srckey);
-      unsigned int destid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, destkey);
+      size_t srcid = *(size_t *)hashmap_get(mazedata->gmap->idmap, srckey);
+      size_t destid = *(size_t *)hashmap_get(mazedata->gmap->idmap, destkey);
 
       /**
        * caching the pair waise distance since it is quite a small number
@@ -151,10 +151,10 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
 
 void maze_permutation_producer(BufferQueue *bq, void *context) {
   MazeData *mazedata = (MazeData *)context;
-  unsigned int arr[mazedata->cpindexes->size];
+  size_t arr[mazedata->cpindexes->size];
 
-  for (unsigned int i = 0; i < mazedata->cpindexes->size; i++) {
-    unsigned int *index = list_get_at(mazedata->cpindexes, i);
+  for (size_t i = 0; i < mazedata->cpindexes->size; i++) {
+    size_t *index = list_get_at(mazedata->cpindexes, i);
     if (index == NULL) {
       perror("List of checkpoints does not have all the indexes");
       exit(EXIT_FAILURE);
@@ -169,18 +169,18 @@ void maze_search_solution(MazeData *mazedata) {
   printf("\nSearching: please wait...\n");
   // only source and destination case
   if (mazedata->cpindexes->size == 0) {
-    unsigned int srcid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, mazedata->src);
-    unsigned int dstid = *(unsigned int *)hashmap_get(mazedata->gmap->idmap, mazedata->dest);
+    size_t srcid = *(size_t *)hashmap_get(mazedata->gmap->idmap, mazedata->src);
+    size_t dstid = *(size_t *)hashmap_get(mazedata->gmap->idmap, mazedata->dest);
 
     Stack *stack = path_find_shortest(mazedata->gmap->graph, srcid, dstid);
     maze_sd_result_print(stack, mazedata->arr, mazedata->rows, mazedata->cols);
     stack_destroy(stack, free_data_func);
   } else {
-    unsigned int conscount = 10;  // 10 threads
-    unsigned int capacity = 1000;
+    size_t conscount = 10;  // 10 threads
+    size_t capacity = 1000;
     Pipeline *pipe = pipeline_create(1, conscount, capacity);
     pipeline_add_producer(pipe, maze_permutation_producer, mazedata);
-    for (unsigned int i = 0; i < conscount; i++) {
+    for (size_t i = 0; i < conscount; i++) {
       pipeline_add_consumer(pipe, maze_permutation_consumer, mazedata);
     }
 
@@ -188,15 +188,15 @@ void maze_search_solution(MazeData *mazedata) {
 
     if (mazedata->mindistance < INT_MAX) {
       maze_solution_result_print(mazedata);
-      printf("Maze: shortest travel distance %d\n", mazedata->mindistance);
+      printf("Maze: shortest travel distance %zu\n", mazedata->mindistance);
     } else {
       printf("Maze: can't find shortest travel distance\n");
     }
   }
 }
 
-MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
-                            unsigned int elemstrlen) {
+MazeData *maze_prepare_data(char ***arr, size_t rows, size_t cols,
+                            size_t elemstrlen) {
   List *cpindexes = list_create();
 
   char *src = "S";
@@ -206,22 +206,22 @@ MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
 
   printf("Maze: Making Checkpoint Unique\n");
 
-  unsigned int srcindex = 0;
-  unsigned int destindex = 0;
-  unsigned int count = 0;
-  for (unsigned int i = 0; i < rows; i++) {
-    for (unsigned int j = 0; j < cols; j++) {
+  size_t srcindex = 0;
+  size_t destindex = 0;
+  size_t count = 0;
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       char *data = arr[i][j];
-      unsigned int index = i * cols + j;
+      size_t index = i * cols + j;
 
       if (strcmp(data, checkpoint) == 0) {
-        unsigned int *cindex = malloc(sizeof(unsigned int));
+        size_t *cindex = malloc(sizeof(size_t));
         *cindex = index;
         list_add(cpindexes, cindex);
       }
 
       if (strcmp(data, checkpoint) == 0) {
-        snprintf(data, elemstrlen, "%d", ++count);  // rename for search
+        snprintf(data, elemstrlen, "%zu", ++count);  // rename for search
       } else {
         snprintf(data, elemstrlen, "%s", data);
       }
@@ -248,7 +248,7 @@ MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
   }
 
   // nC2 = (n (n - 1)) / 2 [add 1 in pairs for the rounding]
-  unsigned int pairs = ((cpindexes->size + 2) * (cpindexes->size + 1)) / 2 + 1;
+  size_t pairs = ((cpindexes->size + 2) * (cpindexes->size + 1)) / 2 + 1;
   MazeData *mazedata = (MazeData *)malloc(sizeof(MazeData));
   mazedata->arr = arr;
   mazedata->rows = rows;
@@ -270,26 +270,26 @@ MazeData *maze_prepare_data(char ***arr, unsigned int rows, unsigned int cols,
 }
 
 int maze_solution(void) {
-  unsigned int rows, cols;
-  unsigned int max = 1000;
-  unsigned int elemstrlen = 5;
+  size_t rows, cols;
+  size_t max = 1000;
+  size_t elemstrlen = 5;
 
   printf("Enter number of rows: ");
-  scanf("%u", &rows);
+  scanf("%zu", &rows);
 
   printf("Enter number of columns: ");
-  scanf("%u", &cols);
+  scanf("%zu", &cols);
 
   if (rows > max || cols > max) {
-    printf("Rows and Columns should less than %d", max);
+    printf("Rows and Columns should less than %zu", max);
     return EXIT_FAILURE;
   }
 
-  printf("Enter elements of the %dx%d array:\n", rows, cols);
+  printf("Enter elements of the %zdx%zd array:\n", rows, cols);
 
   char ***arr = util_create_2d_str_arr(rows, cols, elemstrlen);
-  for (unsigned int i = 0; i < rows; ++i) {
-    for (unsigned int j = 0; j < cols; ++j) {
+  for (size_t i = 0; i < rows; ++i) {
+    for (size_t j = 0; j < cols; ++j) {
       /**
        * space before %d tells scanf to ignore any leading whitespace characters
        * (including newlines)
@@ -301,7 +301,7 @@ int maze_solution(void) {
   ClockTime *time = clocktime_create();
   clocktime_start(time);
 
-  printf("\nYour input %dx%d array:\n", rows, cols);
+  printf("\nYour input %zdx%zd array:\n", rows, cols);
 
   MazeData *mazedata = maze_prepare_data(arr, rows, cols, elemstrlen);
   maze_search_solution(mazedata);

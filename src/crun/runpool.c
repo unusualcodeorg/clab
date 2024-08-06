@@ -4,7 +4,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-Runpool *runpool_create(unsigned short size) {
+Runpool *runpool_create(size_t size) {
   if (size < 1) return NULL;
 
   Runpool *pool = (Runpool *)malloc(sizeof(Runpool));
@@ -13,9 +13,9 @@ Runpool *runpool_create(unsigned short size) {
   pool->size = size;
   pool->runtimes = (Runtime **)malloc(size * sizeof(Runtime *));
 
-  for (unsigned short i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i++) {
     char *rname = malloc(100 * sizeof(char));
-    snprintf(rname, 100, "%s:%s-%u", pool->name, "Thread", i + 1);
+    snprintf(rname, 100, "%s:%s-%zu", pool->name, "Thread", i + 1);
     pool->runtimes[i] = runtime_create();
     pool->runtimes[i]->name = rname;
   }
@@ -27,18 +27,18 @@ void runpool_debug(Runpool *pool, char *poolname) {
   pool->name = poolname;
   pool->debug = true;
 
-  for (unsigned short i = 0; i < pool->size; i++) {
+  for (size_t i = 0; i < pool->size; i++) {
     free(pool->runtimes[i]->name);
     char *rname = malloc(100 * sizeof(char));
-    snprintf(rname, 100, "%s:%s-%u", pool->name, "Thread", i + 1);
+    snprintf(rname, 100, "%s:%s-%zu", pool->name, "Thread", i + 1);
     runtime_debug(pool->runtimes[i], rname);
   }
 }
 
 void runpool_exec(Runpool *pool, Croutine croutine, void *context) {
-  unsigned short tasksize = 0;
+  size_t tasksize = 0;
   Runtime *preferred = NULL;
-  for (unsigned short i = 0; i < pool->size; i++) {
+  for (size_t i = 0; i < pool->size; i++) {
     Runtime *runtime = pool->runtimes[i];
     if (runtime->pause == true) {
       preferred = runtime;
@@ -62,7 +62,7 @@ void runpool_exec(Runpool *pool, Croutine croutine, void *context) {
 }
 
 void runpool_join_destroy(Runpool *pool) {
-  for (unsigned short i = 0; i < pool->size; i++) {
+  for (size_t i = 0; i < pool->size; i++) {
     Runtime *runtime = pool->runtimes[i];
     char *name = runtime->name;
     runtime_join_destroy(runtime);

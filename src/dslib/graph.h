@@ -18,20 +18,20 @@ extern "C" {
 
 // Traversal direction will be opposite to the direction of visit
 typedef struct {
-  unsigned short weight;
+  size_t weight;
   struct GraphNode *end;  // Use forward-declared GraphNode
 } GraphEdge;
 
 typedef struct GraphNode {
-  unsigned int id;
+  size_t id;
   void *data;
-  unsigned short esize;
+  size_t esize;
   GraphEdge **edges;
 } GraphNode;
 
 typedef struct {
   bool debug;
-  unsigned int counter;
+  size_t counter;
   pthread_rwlock_t rwlock;
   DataToString tostring;
 } GraphCallbackArg;
@@ -45,27 +45,27 @@ typedef void *(*GraphDataCopier)(void *data);
  */
 typedef struct {
   bool debug;
-  unsigned int size;
+  size_t size;
   List *inodes;  // isolated nodes
   GraphNode *root;
   pthread_rwlock_t rwlock;
 } Graph;
 
 Graph *graph_create(void);
-GraphNode *graph_find_bfs(Graph *graph, unsigned int nodeid);
-GraphNode *graph_find_dfs(Graph *graph, unsigned int nodeid);
-void *graph_get(Graph *graph, unsigned int nodeid);
+GraphNode *graph_find_bfs(Graph *graph, size_t nodeid);
+GraphNode *graph_find_dfs(Graph *graph, size_t nodeid);
+void *graph_get(Graph *graph, size_t nodeid);
 // var arg for node ids to link with other nodes
-int graph_insert(Graph *graph, void *data, unsigned int linkcount, ...);
-int graph_insert_arr(Graph *graph, void *data, unsigned int linkcount, unsigned int *nodeids);
-int graph_delete(Graph *graph, unsigned int nodeid, FreeDataFunc freedatafunc);
+int graph_insert(Graph *graph, void *data, size_t linkcount, ...);
+int graph_insert_arr(Graph *graph, void *data, size_t linkcount, size_t *nodeids);
+int graph_delete(Graph *graph, size_t nodeid, FreeDataFunc freedatafunc);
 void graph_print(Graph *graph, DataToString tostring);
 void graph_traverse(Graph *graph, GraphDataCallback callback);
 Graph *graph_clone(Graph *graph, GraphDataCopier datacopier);
 void graph_destroy(Graph *graph, FreeDataFunc freedatafunc);
 
-// int graph_insert_weighted(Graph *graph, void *data, unsigned int linkcount,
-//                           unsigned int *linknodeids, unsigned int *edgeweights);
+// int graph_insert_weighted(Graph *graph, void *data, size_t linkcount,
+//                           size_t *linknodeids, size_t *edgeweights);
 
 #ifdef __cplusplus
 }

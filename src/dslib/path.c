@@ -13,7 +13,7 @@
 char *path_tree_data_to_string(void *arg) {
   GraphNode *node = (GraphNode *)arg;
   char *buffer = malloc(50);
-  snprintf(buffer, 50, "[%d]", node->id);
+  snprintf(buffer, 50, "[%zu]", node->id);
   return buffer;
 }
 
@@ -44,7 +44,7 @@ void free_location_data_func(void *data) {
   free(loc);
 }
 
-Stack *path_shortest_nwg_tree(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid) {
+Stack *path_shortest_nwg_tree(Graph *graph, size_t srcnodeid, size_t dstnodeid) {
   return path_shortest_nwg_tree_vis(graph, srcnodeid, dstnodeid, path_tree_data_to_string);
 }
 
@@ -53,7 +53,7 @@ Stack *path_shortest_nwg_tree(Graph *graph, unsigned int srcnodeid, unsigned int
  * Stack holds the backtracked path,
  * Traversal algo don't allow to go back and up
  */
-Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned int dstnodeid,
+Stack *path_shortest_nwg_tree_vis(Graph *graph, size_t srcnodeid, size_t dstnodeid,
                                   DataToString tostring) {
   Stack *stack = stack_create();
 
@@ -86,7 +86,7 @@ Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned
       break;
     }
 
-    for (unsigned short i = 0; i < node->esize; i++) {
+    for (size_t i = 0; i < node->esize; i++) {
       GraphEdge *edge = node->edges[i];
       if (edge == NULL || edge->end == NULL) continue;
 
@@ -109,7 +109,7 @@ Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned
   }
 
   if (graph->debug) tree_print_raw(tree, tostring);
-  if (graph->debug) printf("Tree Node: %d", tree->size);
+  if (graph->debug) printf("Tree Node: %zu", tree->size);
 
   tree_destroy(tree, NULL);
   queue_destroy(queue, NULL);
@@ -120,7 +120,7 @@ Stack *path_shortest_nwg_tree_vis(Graph *graph, unsigned int srcnodeid, unsigned
 /**
  * graph should contain data of type location
  */
-Stack *path_find_shortest(Graph *igraph, unsigned int srcnodeid, unsigned int dstnodeid) {
+Stack *path_find_shortest(Graph *igraph, size_t srcnodeid, size_t dstnodeid) {
   // making copy to allow multiple threads works concurrently
   Graph *graph = graph_clone(igraph, location_as_data_clone);
 
@@ -155,11 +155,11 @@ Stack *path_find_shortest(Graph *igraph, unsigned int srcnodeid, unsigned int ds
 
     Location *loc = (Location *)node->data;
 
-    for (unsigned short i = 0; i < node->esize; i++) {
+    for (size_t i = 0; i < node->esize; i++) {
       GraphEdge *edge = node->edges[i];
       if (edge == NULL || edge->end == NULL) continue;
 
-      unsigned int cost = loc->cost + edge->weight;
+      size_t cost = loc->cost + edge->weight;
 
       Location *ezloc = (Location *)edge->end->data;
       if (ezloc->cost > cost) ezloc->cost = cost;
@@ -176,9 +176,9 @@ Stack *path_find_shortest(Graph *igraph, unsigned int srcnodeid, unsigned int ds
     if (loc->cost == 0) break;
 
     GraphNode *next = NULL;
-    unsigned int min = UINT_MAX;
+    size_t min = UINT_MAX;
 
-    for (unsigned short i = 0; i < current->esize; i++) {
+    for (size_t i = 0; i < current->esize; i++) {
       GraphEdge *edge = current->edges[i];
       if (edge == NULL || edge->end == NULL) continue;
 

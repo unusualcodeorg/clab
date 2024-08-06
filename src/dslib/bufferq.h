@@ -14,7 +14,7 @@ typedef struct {
   bool debug;
   bool writerclosed;
   bool readerclosed;
-  unsigned int capacity;
+  size_t capacity;
   Queue *queue;
   pthread_mutexattr_t mutexattr;
   pthread_mutex_t mutex;
@@ -22,7 +22,7 @@ typedef struct {
   pthread_cond_t readcond;
 } BufferQueue;
 
-BufferQueue *bufferq_create(unsigned int capacity);
+BufferQueue *bufferq_create(size_t capacity);
 void bufferq_write(BufferQueue *bq, void *data);
 void *bufferq_read(BufferQueue *bq);
 bool bufferq_can_read(BufferQueue *bq);

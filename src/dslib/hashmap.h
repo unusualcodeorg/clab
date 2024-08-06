@@ -18,12 +18,12 @@ typedef struct HashNode {
 } HashNode;
 
 typedef struct {
-  unsigned int size;
+  size_t size;
   HashNode **buckets;  // Array of pointers to linked lists (HashNode)
   pthread_rwlock_t rwlock;
 } HashMap;
 
-HashMap *hashmap_create(unsigned int size);
+HashMap *hashmap_create(size_t size);
 void hashmap_put(HashMap *map, char *key, void *value);
 void *hashmap_get(HashMap *map, char *key);
 void hashmap_delete(HashMap *map, char *key, FreeDataFunc freedatafunc);

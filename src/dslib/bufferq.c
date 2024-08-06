@@ -6,7 +6,7 @@
 
 #include "queue.h"
 
-BufferQueue *bufferq_create(unsigned int capacity) {
+BufferQueue *bufferq_create(size_t capacity) {
   BufferQueue *bq = (BufferQueue *)malloc(sizeof(BufferQueue));
   bq->debug = false;
   bq->writerclosed = false;

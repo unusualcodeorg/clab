@@ -30,7 +30,7 @@ void render(void *context) {
   free(frame);
 }
 
-Console *console_create(unsigned int ftime_mills) {
+Console *console_create(size_t ftime_mills) {
   Runtime *runtime = runtime_create();
   Console *console = (Console *)malloc(sizeof(Console));
   console->runtime = runtime;

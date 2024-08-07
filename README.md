@@ -52,9 +52,327 @@ Background:
 > I got this problem statement in my college placement, but I was not able to solve it in the given deadline. Later in the holidays I went home and was able to solve it ([solution link](https://github.com/janishar/orienteering-problem)), but with the limited knowledge it was difficult to optimize it. Now, after a decade its exciting to revisit the problem and take it as an opportunity to experiment with many other programming concepts.
 
 ### Solution pointers
-- If there are N checkpoints the total possible path is N!. Factorial N get very large with increase in N. For example: 
-factorial 12 is 479,001,600. 
-- To handle this large combination 
+This project develops as an experiement - We play with one part at a time and build it as a general solution through investigation.
+
+- If there are N checkpoints the total possible path is N!. Factorial N gets very large with increase in N. For example: factorial 12 is 479,001,600. 
+- To process such a large combination, we have to reduce memory space through better algorithms.
+- We will use threads to do concurrent processing.
+- Many data-structures will play a role in the solution: Graph, Stack, Queue, HashMap, LinkedList, Array, BufferQueue, Tree (for fun)
+- The Maze conversion into a Graph and printing solution is also a good problem statement in itself.
+- All the data-structures need to be thread safe, since we are using concurrent processing.
+
+Note:
+> We will not use recursion, since the function stack size is limited, and easily throws stackoverflow error. We will use Stack data-structure for computation in suce cases.
+
+C does not have generics, but it has void pointer to reference any data type. We will use this to hold data in our data-structures. In this case we will have to pass function pointers to free those data, when we destroy our data-structure.
+
+### Important Data-Structures and Algorithms
+
+---
+
+#### Helper functions:
+```c
+// src/dslib/destroy.h
+typedef void (*FreeDataFunc)(void *);
+
+// src/dslib/destroy.c
+void free_data_func(void *data) {
+  if (data != NULL) free(data);
+}
+
+// src/dslib/datastr.h
+typedef char *(*DataToString)(void *);
+
+// src/dslib/datastr.c
+char *char_data_to_string(void *arg) {
+  char data = *(char *)arg;
+  char *buffer = malloc(50);
+  snprintf(buffer, 50, "%c", data);
+  return buffer;
+}
+```
+
+---
+
+#### Stack - `src/dslib/stack.h`
+```c
+typedef struct StackNode {
+  void *data;
+  struct StackNode *next;
+} StackNode;
+
+typedef struct {
+  StackNode *top;
+  size_t size;
+  pthread_rwlock_t rwlock;
+} Stack;
+
+Stack *stack_create(void);
+void stack_push(Stack *stack, void *data);
+void *stack_pop(Stack *stack, FreeDataFunc freedatafunc);
+void *stack_peek(Stack *stack);
+void *stack_get(Stack *stack, size_t position);
+void stack_print(Stack *stack, DataToString tostring);
+void stack_destroy(Stack *stack, FreeDataFunc freedatafunc);
+```
+
+Stack is a simple data-structure, we push items on the top and also remove items from the top. The item which goes in first comes out at last. Stack help in DFS (depth first search) in trees and graphs, i.e. we move to the last node first and then move to the top.
+
+In recursion case, it help to go to the base condition and then accumulate the result moving up.
+
+---
+
+#### Queue - `src/dslib/queue.h`
+
+```c
+typedef struct QueueNode {
+  void *data;
+  struct QueueNode *next;
+} QueueNode;
+
+typedef struct {
+  QueueNode *start;
+  QueueNode *end;
+  size_t size;
+  pthread_rwlock_t rwlock;
+} Queue;
+
+Queue *queue_create(void);
+void queue_enqueue(Queue *queue, void *data);
+void *queue_dequeue(Queue *queue, FreeDataFunc freedatafunc);
+void *queue_peek(Queue *queue);
+void *queue_get(Queue *queue, size_t position);
+void queue_print(Queue *queue, DataToString tostring);
+void queue_destroy(Queue *queue, FreeDataFunc freedatafunc);
+
+```
+Queue stores the data at the end and gives from the start. The items which goes in first comes out first. This helps in BFS (breadth first search) in trees and graphs. We visit the nearest nodes first before moving to the farthest nodes, opposite to the Stack.
+
+---
+
+#### HashMap - `src/dslib/hashmap.h`
+
+```c
+typedef struct HashNode {
+  char *key;
+  void *value;
+  struct HashNode *next;  // seperate chining in linked list
+} HashNode;
+
+typedef struct {
+  size_t size;
+  HashNode **buckets;  // Array of pointers to linked lists (HashNode)
+  pthread_rwlock_t rwlock;
+} HashMap;
+
+HashMap *hashmap_create(size_t size);
+void hashmap_put(HashMap *map, char *key, void *value);
+void *hashmap_get(HashMap *map, char *key);
+void hashmap_delete(HashMap *map, char *key, FreeDataFunc freedatafunc);
+void hashmap_print(HashMap *map, DataToString tostring);
+void hashmap_destroy(HashMap *map, FreeDataFunc freedatafunc);
+
+```
+HashMap stores key-value pairs. The hash function maps the key to an index. In case of collision, the values are moved to a seperate chain (linkedlist). The primary use here is to search a value using a key in O(1) time in the best case. 
+
+We will use the HashMap to store the Maze values and their respective Graph Node Ids. It will also be used to store pair waise distance, to speed up the miminum distance calucation.
+
+---
+
+#### LinkedList - `src/dslib/list.h`
+
+```c
+typedef bool (*ListMatcher)(void *item, void *match);
+
+typedef struct ListNode {
+  void *data;
+  struct ListNode *next;
+} ListNode;
+
+typedef struct {
+  ListNode *tail;  // keeps the insertion order
+  ListNode *head;
+  size_t size;
+  pthread_rwlock_t rwlock;
+} List;
+
+List *list_create(void);
+size_t list_add(List *list, void *data);
+size_t list_add_at(List *list, void *data, size_t index);
+void *list_delete_at(List *list, size_t index, FreeDataFunc freedatafunc);
+void *list_get_at(List *list, size_t index);
+long list_index_of(List *list, void *match, ListMatcher matcher);
+void list_print(List *list, DataToString tostring);
+void list_destroy(List *list, FreeDataFunc freedatafunc);
+
+```
+
+LinkedList stores the data in a sequence. It allows to access or remove the data at a particular position. We will use the list to store the isolated nodes while building the graph. Also, we will use it to store the checkpoints while distance calculation.
+
+---
+
+#### Tree - `src/dslib/tree.h`
+
+```c
+typedef struct TreeNode {
+  size_t id;
+  void *data;
+  size_t csize;
+  struct TreeNode **children;
+  struct TreeNode *parent;
+} TreeNode;
+
+typedef struct {
+  bool debug;
+  size_t counter;
+  DataToString tostring;
+} TreeCallbackArg;
+
+typedef void (*TreeCallback)(TreeNode *, TreeCallbackArg *arg);
+
+typedef struct {
+  bool debug;
+  size_t size;
+  TreeNode *root;
+  pthread_rwlock_t rwlock;
+} Tree;
+
+Tree *tree_create(void);
+TreeNode *tree_find_dfs(Tree *tree, size_t nodeid);
+TreeNode *tree_find_bfs(Tree *tree, size_t nodeid);
+void *tree_get(Tree *tree, size_t nodeid);
+size_t tree_insert_root(Tree *tree, void *data);
+TreeNode *tree_insert_node(Tree *tree, void *data, TreeNode *parent);
+size_t tree_insert(Tree *tree, void *data, size_t parentid);
+size_t tree_delete(Tree *tree, size_t nodeid, FreeDataFunc freedatafunc);
+size_t tree_max_depth(Tree *tree);
+void tree_print_raw(Tree *tree, DataToString tostring);
+void tree_print(Tree *tree, DataToString tostring);
+void tree_destroy(Tree *tree, FreeDataFunc freedatafunc);
+
+```
+Tree stores the data in hierarchy. Each child has a single parent and a parent can have multiple children. We will use tree to experiment with an alternate way to find the minimum distance. But it will be very memory hungry as the distance between the points on maze increases. 
+
+---
+
+#### Graph - `src/dslib/graph.h`
+
+```c
+// Traversal direction will be opposite to the direction of visit
+typedef struct {
+  size_t weight;
+  struct GraphNode *end;  // Use forward-declared GraphNode
+} GraphEdge;
+
+typedef struct GraphNode {
+  size_t id;
+  void *data;
+  size_t esize;
+  GraphEdge **edges;
+} GraphNode;
+
+typedef struct {
+  bool debug;
+  size_t counter;
+  DataToString tostring;
+} GraphCallbackArg;
+
+typedef void (*GraphCallback)(GraphNode *, GraphCallbackArg *arg);
+typedef void (*GraphDataCallback)(void *data);
+typedef void *(*GraphDataCopier)(void *data);
+
+/**
+ * Think as if a 1D array of nodes, in which a node can connect with other nodes via connections
+ */
+typedef struct {
+  bool debug;
+  size_t size;
+  List *inodes;  // isolated nodes
+  GraphNode *root;
+  pthread_rwlock_t rwlock;
+} Graph;
+
+Graph *graph_create(void);
+GraphNode *graph_find_bfs(Graph *graph, size_t nodeid);
+GraphNode *graph_find_dfs(Graph *graph, size_t nodeid);
+void *graph_get(Graph *graph, size_t nodeid);
+// var arg for node ids to link with other nodes
+size_t graph_insert(Graph *graph, void *data, size_t linkcount, ...);
+size_t graph_insert_arr(Graph *graph, void *data, size_t linkcount, size_t *nodeids);
+size_t graph_delete(Graph *graph, size_t nodeid, FreeDataFunc freedatafunc);
+void graph_print(Graph *graph, DataToString tostring);
+void graph_traverse(Graph *graph, GraphDataCallback callback);
+Graph *graph_clone(Graph *graph, GraphDataCopier datacopier);
+void graph_destroy(Graph *graph, FreeDataFunc freedatafunc);
+
+```
+
+Graph is very similar to a tree, only that each children can have multiple parents. So, a node can be connected with many other nodes. The connection between nodes are called edges. We will use graph to store maze data and the path. The minimum distance between pair of points will give us the solution of the maze problem.
+
+---
+
+#### Path - `src/dslib/queue.h`
+
+```c
+// this is used to send the result of the path search, id is the graph id, and data is graph data
+typedef struct {
+  size_t id;
+  size_t cost;
+  void *data;
+} Location;
+
+Location *location_create(void *data);
+Location *location_clone(Location *loc);
+
+void free_location_data_func(void *data);
+
+char *path_tree_data_to_string(void *arg);
+
+// non weighted graph
+Stack *path_shortest_nwg_tree_vis(Graph *graph, size_t srcnodeid, size_t dstnodeid,
+                                  DataToString tostring);
+// non weighted graph
+Stack *path_shortest_nwg_tree(Graph *graph, size_t srcnodeid, size_t dstnodeid);
+
+// any graph with search better algorithm
+// graph must contain location data
+Stack *path_find_shortest(Graph *graph, size_t srcnodeid, size_t dstnodeid);
+
+```
+
+Path implements the algorithms to find the shortest distance using graph (based on Dijkstra algorithm) and various experimental approaches using trees.
+
+---
+
+#### BufferQueue - `src/dslib/bufferq.h`
+
+```c
+typedef struct {
+  bool debug;
+  bool writerclosed;
+  bool readerclosed;
+  size_t capacity;
+  Queue *queue;
+  pthread_mutexattr_t mutexattr;
+  pthread_mutex_t mutex;
+  pthread_cond_t writecond;
+  pthread_cond_t readcond;
+} BufferQueue;
+
+BufferQueue *bufferq_create(size_t capacity);
+void bufferq_write(BufferQueue *bq, void *data);
+void *bufferq_read(BufferQueue *bq);
+bool bufferq_can_read(BufferQueue *bq);
+void bufferq_close_writer(BufferQueue *bq);
+void bufferq_destroy(BufferQueue *bq, FreeDataFunc freefunc);
+
+```
+
+BufferQueue data-structure allows to read and write using a fixed capacity queue. When the buffer is empty the reader will wait for more items, and when it is full then the writer will wait for items to be read. 
+
+We will use BufferQueue to process path permutation, using 1 producer thread and multiple consumer threads. This will make the maze solution finding concurrent and fast.
+
+---
 
 ## Project Structure
 ```
@@ -115,7 +433,7 @@ factorial 12 is 479,001,600.
     │   ├── tree.h
     │   ├── util.c
     │   └── util.h
-  	├── puzzle
+    ├── puzzle
     │   ├── maps.txt
     │   ├── maze.c
     │   ├── maze.h

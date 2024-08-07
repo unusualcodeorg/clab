@@ -374,6 +374,159 @@ We will use BufferQueue to process path permutation, using 1 producer thread and
 
 ---
 
+### Multithreading
+
+The project has developed few structures to make multithreading simpler (src/crun). We will use `pthreads` to build our solution. 
+
+> A pthread, short for POSIX thread, is a unit of execution within a process in POSIX-compliant operating systems, such as Linux and Unix. The POSIX threads, or pthreads, library provides a standard API for creating and managing threads in a C or C++ program.
+
+---
+
+#### Croutine - `src/crun/croutine.h`
+
+```c
+typedef void (*Croutine)(void *context);
+
+typedef struct {
+  Croutine croutine;
+  void *context;
+} Execution;
+```
+
+Croutine provides a function type which will be used by a thread for executing a given task.
+
+#### Runtime - `src/crun/croutine.h`
+
+```c
+typedef struct {
+  char *name;
+  Queue *execs;
+  pthread_mutexattr_t mutexattr;
+  pthread_mutex_t mutex;  // can acquire lock again, which rwlock does not provide
+  pthread_cond_t cond;
+  pthread_t thread;
+  bool exit;
+  bool pause;
+  bool debug;
+} Runtime;
+
+Runtime *runtime_create(void);
+void runtime_pause(Runtime *runtime);
+void runtime_resume(Runtime *runtime);
+void runtime_exec(Runtime *runtime, Croutine croutine, void *context);
+void runtime_debug(Runtime *runtime, char *name);
+void runtime_join_destroy(Runtime *runtime);
+
+```
+
+Runtime creates a thread and stores a queue of croutines. The thread one by one executes the croutines and then wait for more croutines.
+
+#### Runpool - `src/crun/runpool.h`
+
+```c
+typedef struct {
+  char *name;
+  bool debug;
+  size_t size;
+  Runtime **runtimes;
+} Runpool;
+
+Runpool *runpool_create(size_t size);
+void runpool_exec(Runpool *pool, Croutine croutine, void *context);
+void runpool_debug(Runpool *pool, char *poolname);
+void runpool_join_destroy(Runpool *pool);
+```
+
+Runpool creates a pool of threads using Runtimes, and executes the croutines using a thread pool, in a way to maximize their execution. The free threads or thread with minimum load are given the task first.
+
+#### Pipeline - `src/crun/pipeline.h`
+
+```c
+typedef void (*PipelineWork)(BufferQueue* bq, void* context);
+
+typedef struct {
+  void* context;
+  PipelineWork work;
+  BufferQueue* bq;
+} PipelineContextWrap;
+
+typedef struct {
+  bool debug;
+  BufferQueue* bq;
+  Runpool* prodpool;
+  Runpool* conspool;
+} Pipeline;
+
+Pipeline* pipeline_create(size_t prodworkers, size_t consworkers,
+                          size_t capacity);
+
+void pipeline_add_producer(Pipeline* pipe, PipelineWork work, void* context);
+void pipeline_add_consumer(Pipeline* pipe, PipelineWork work, void* context);
+void pipeline_debug(Pipeline* pipe);
+void pipeline_join_destory(Pipeline* pipe,  FreeDataFunc freedatafunc);
+
+```
+
+Pipeline simplifies the producer-consumer multithreded execution using BufferQueue, and Runpool.
+
+#### Pipeline example - `src/demo/puzzledemo.c`
+
+```c
+
+void path_permutation_producer(BufferQueue *bq, void *context) {
+  size_t arrsize = *(size_t *)context;
+  int arr[arrsize];
+
+  for (size_t i = 0; i < arrsize; i++) {
+    arr[i] = i + 1;
+  }
+
+  generate_permutations_buffered(bq, arr, arrsize); // src/puzzle/utils.c
+}
+
+void path_permutation_consumer(BufferQueue *bq, void *context) {
+  size_t arrsize = *(size_t *)context;
+
+  while (bufferq_can_read(bq)) {
+    int *arr = (int *)bufferq_read(bq);
+    if (arr == NULL) continue;
+
+    for (size_t i = 0; i < arrsize; i++) {
+      printf("%d ", arr[i]);
+    }
+    printf("\n");
+    sleep(2);
+  }
+}
+
+int path_permutation_pipeline_demo(void) {
+
+  // 1 producer, 3 consumers, 4 work capacity
+  Pipeline *pipe = pipeline_create(1, 3, 4);
+  pipeline_debug(pipe);
+
+  size_t *arrsize = malloc(sizeof(size_t));
+  *arrsize = 4;
+
+  // 1 producer
+  pipeline_add_producer(pipe, path_permutation_producer, arrsize);
+
+  // 3 consumers
+  pipeline_add_consumer(pipe, path_permutation_consumer, arrsize);
+  pipeline_add_consumer(pipe, path_permutation_consumer, arrsize);
+  pipeline_add_consumer(pipe, path_permutation_consumer, arrsize);
+
+  pipeline_join_destory(pipe, NULL);
+  free(arrsize);
+
+  return EXIT_SUCCESS;
+}
+```
+
+---
+
+
+
 ## Project Structure
 ```
 .

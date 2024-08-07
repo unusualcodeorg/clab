@@ -140,19 +140,15 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
       queue_enqueue(queue, stack);
     }
 
+    // need to synchronize for mazedata->solution destroy
+    pthread_mutex_lock(&mazedata->mutex);
     if (distance < mazedata->mindistance) {
-      // need to synchronize for mazedata->solution destroy
-      pthread_mutex_lock(&mazedata->mutex);
-      // duplicating logic to optimize locks
-      if (distance < mazedata->mindistance) {
-        queue_destroy(mazedata->solution, NULL);  // stack lives in hashmap
-        mazedata->mindistance = distance;
-        mazedata->solution = queue;
-      } else {
-        queue_destroy(queue, NULL);
-      }
+      queue_destroy(mazedata->solution, NULL);  // stack lives in hashmap
+      mazedata->mindistance = distance;
+      mazedata->solution = queue;
       pthread_mutex_unlock(&mazedata->mutex);
     } else {
+      pthread_mutex_unlock(&mazedata->mutex);
       queue_destroy(queue, NULL);
     }
   }

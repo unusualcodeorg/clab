@@ -664,11 +664,10 @@ make clean
 ## Run the Maze solution
 ```
 make runclab cmd1=debug cmd2=maze_solution
-```
+
 Enter number of rows: 6
 Enter number of columns: 28
 Enter elements of the 6x28 array:
-```
 ############################
 #@...S...###........@..#####
 ##...##...@...###..........#

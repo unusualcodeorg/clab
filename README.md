@@ -630,22 +630,28 @@ make release
 
 ### Run Dev Program
 ```bash
-make runclabdev cmd=stack
+make runclabdev cmd1=stack
+
 # or 
 make runclabdev cmd1=debug cmd2=maze_solution_demo
+
 # or
 ./bin/clabdev stack
+
 # or
 ./bin/clabdev debug maze_solution_demo
 ```
 
 ### Run Release Program
 ```bash
-make runclab cmd=stack
+make runclab cmd1=stack
+
 # or 
 make runclab cmd1=debug cmd2=maze_solution_demo
+
 # or
 ./bin/clab stack
+
 # or
 ./bin/clab debug maze_solution_demo
 ```

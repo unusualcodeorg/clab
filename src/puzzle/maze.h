@@ -26,6 +26,7 @@ typedef struct {
   char *cp;  // checkpoints
   char *skip;
   Graph2DMap *gmap;
+	pthread_mutex_t mutex;
 } MazeData;
 
 void free_maze_data_func(void *data);

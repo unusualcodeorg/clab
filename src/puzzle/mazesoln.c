@@ -77,6 +77,7 @@ void free_maze_data_func(void *data) {
   graph_destroy(mazedata->gmap->graph, free_location_data_func);  // free location
   util_destroy_2d_str_arr(mazedata->arr, mazedata->rows, mazedata->cols);
 
+  pthread_mutex_destroy(&mazedata->mutex);
   free(mazedata->gmap);
   free(mazedata);
 }
@@ -140,9 +141,17 @@ void maze_permutation_consumer(BufferQueue *bq, void *context) {
     }
 
     if (distance < mazedata->mindistance) {
-      queue_destroy(mazedata->solution, NULL);  // stack lives in hashmap
-      mazedata->mindistance = distance;
-      mazedata->solution = queue;
+      // need to synchronize for mazedata->solution destroy
+      pthread_mutex_lock(&mazedata->mutex);
+      // duplicating logic to optimize locks
+      if (distance < mazedata->mindistance) {
+        queue_destroy(mazedata->solution, NULL);  // stack lives in hashmap
+        mazedata->mindistance = distance;
+        mazedata->solution = queue;
+      } else {
+        queue_destroy(queue, NULL);
+      }
+      pthread_mutex_unlock(&mazedata->mutex);
     } else {
       queue_destroy(queue, NULL);
     }
@@ -262,6 +271,7 @@ MazeData *maze_prepare_data(char ***arr, size_t rows, size_t cols, size_t elemst
   mazedata->cp = checkpoint;
   mazedata->gmap =
       maze_graph_map_create(mazedata->arr, mazedata->rows, mazedata->cols, mazedata->skip);
+  pthread_mutex_init(&mazedata->mutex, NULL);
 
   return mazedata;
 }

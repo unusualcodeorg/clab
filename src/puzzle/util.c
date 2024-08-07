@@ -24,8 +24,8 @@ PermutationState *create_permutation_state(int *arr, size_t arrsize, size_t left
 }
 
 Queue *generate_permutations(int *arr, size_t arrsize) {
-  if (arrsize > 15) {
-    perror("permutation larger than 15 will take a lot of memory");
+  if (arrsize > 12) {
+    perror("permutation larger than 12 will take a lot of memory");
     exit(EXIT_FAILURE);
   }
 
@@ -65,8 +65,8 @@ Queue *generate_permutations(int *arr, size_t arrsize) {
 }
 
 void generate_permutations_buffered(BufferQueue *bq, int *arr, size_t arrsize) {
-  if (arrsize > 15) {
-    perror("permutation larger than 15 will take a lot of memory");
+  if (arrsize > 12) {
+    perror("permutation larger than 12 will take a lot of memory");
     exit(EXIT_FAILURE);
   }
 

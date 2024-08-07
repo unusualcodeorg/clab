@@ -523,8 +523,17 @@ int path_permutation_pipeline_demo(void) {
 }
 ```
 
+### Demo
+The working examples of every components can be found in `src/demo`. You can execute the demo function using `src/debug/dfunc.h`
+
+```bash
+make runclab cmd1=debug cmd2=maze_solution_demo
+```
+
 ---
 
+## Detailed Discussion on the Maze Problem
+[Article - TODO]()
 
 
 ## Project Structure
@@ -532,14 +541,14 @@ int path_permutation_pipeline_demo(void) {
 .
 ├── Makefile
 ├── README.md
-├── bin
+├── bin [generates on make]
 │   ├── clab [binary]
 │   └── clabdev [binary]
-├── build
+├── build [generates on make]
 │   ├── dev [directory]
 │   └── release [directory]
 └── src
-    ├── crun
+    ├── crun [multithreading]
     │   ├── clocktime.c
     │   ├── clocktime.h
     │   ├── croutine.h
@@ -549,7 +558,7 @@ int path_permutation_pipeline_demo(void) {
     │   ├── runpool.h
     │   ├── runtime.c
     │   └── runtime.h
-    ├── demo
+    ├── demo [working examples]
     │   ├── crundemo.c
     │   ├── crundemo.h
     │   ├── dslibdemo.c
@@ -562,7 +571,7 @@ int path_permutation_pipeline_demo(void) {
     │   ├── puzzledemo.h
     │   ├── termdemo.c
     │   └── termdemo.h
-    ├── dslib
+    ├── dslib [data-structures and algorithms]
     │   ├── bufferq.c
     │   ├── bufferq.h
     │   ├── datastr.c
@@ -586,17 +595,17 @@ int path_permutation_pipeline_demo(void) {
     │   ├── tree.h
     │   ├── util.c
     │   └── util.h
-    ├── puzzle
+    ├── puzzle [maze problem]
     │   ├── maps.txt
     │   ├── maze.c
     │   ├── maze.h
     │   ├── mazesoln.c
     │   ├── util.c
     │   └── util.h
-    ├── term
+    ├── term [terminal animation]
     │   ├── console.c
     │   └── console.h
-    ├── debug
+    ├── debug [execute single function]
     │   ├── dfunc.c
     │   └── dfunc.h
     └── main.c

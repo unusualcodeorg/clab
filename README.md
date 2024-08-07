@@ -311,7 +311,7 @@ Graph is very similar to a tree, only that each children can have multiple paren
 
 ---
 
-#### Path - `src/dslib/queue.h`
+#### Path - `src/dslib/path.h`
 
 ```c
 // this is used to send the result of the path search, id is the graph id, and data is graph data
@@ -395,7 +395,7 @@ typedef struct {
 
 Croutine provides a function type which will be used by a thread for executing a given task.
 
-#### Runtime - `src/crun/croutine.h`
+#### Runtime - `src/crun/runtime.h`
 
 ```c
 typedef struct {

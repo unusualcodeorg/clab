@@ -655,10 +655,38 @@ make runclab cmd1=debug cmd2=maze_solution_demo
 # or
 ./bin/clab debug maze_solution_demo
 ```
+
 ### To remove all build files and binaries
 ```bash
 make clean
 ```
+
+## Run the Maze solution
+```
+make runclab cmd1=debug cmd2=maze_solution
+```
+Enter number of rows: 6
+Enter number of columns: 28
+Enter elements of the 6x28 array:
+```
+############################
+#@...S...###........@..#####
+##...##...@...###..........#
+####.#####...........@.#####
+#.@.........@...####.....G##
+############################
+```
+
+You will get the output solution.
+```
+...
+Maze: shortest travel distance 45
+Time taken: 0.029095 sec
+```
+
+>You can find many maze example in `src/puzzle.maps.txt`. You can copy and paste the maze in the terminal, when array is asked by the program.
+
+>Note: There can be more than one solution path, but the program will show only one out of them.
 
 ## Find this project useful ? :heart:
 * Support it by clicking the :star: button on the upper right of this page. :v:
